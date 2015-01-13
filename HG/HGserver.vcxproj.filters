@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="net">
+      <UniqueIdentifier>{702d5db2-6c67-4284-8593-55d93a3018f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{d94cd8fe-e607-431f-ba06-879175543aa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{f6252db4-8262-4e5e-8bf4-d815aff8ca3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{a787362c-7746-4631-b816-e995ce8102fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{d5be2c5b-a950-4b48-bb34-a24a01761835}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="char">
+      <UniqueIdentifier>{745059b3-b740-4521-ab83-aabf21fb6c45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="char\item">
+      <UniqueIdentifier>{87e24c4b-b712-450f-9ebf-992b7ba18265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xsd">
+      <UniqueIdentifier>{b7d2e073-cd44-40d5-b8f3-39eba33fc6bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared">
+      <UniqueIdentifier>{2759e921-5eec-4e4e-8593-8637cb7a4243}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="net\MessageIndex.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net\Msg.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net\UserMessages.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="net\XSocket.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="res\resource.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\winmain.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="map\DynamicObject.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\DynamicObjectID.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Map.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\OccupyFlag.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\StrategicPoint.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Teleport.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\TeleportLoc.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\Tile.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="char\ActionID.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Client.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\combat.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Crafting.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\DelayEvent.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Magic.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\movement.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Npc.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Quest.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Skill.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\Unit.h">
+      <Filter>char</Filter>
+    </ClInclude>
+    <ClInclude Include="char\item\BuildItem.h">
+      <Filter>char\item</Filter>
+    </ClInclude>
+    <ClInclude Include="char\item\Fish.h">
+      <Filter>char\item</Filter>
+    </ClInclude>
+    <ClInclude Include="char\item\Item.h">
+      <Filter>char\item</Filter>
+    </ClInclude>
+    <ClInclude Include="char\item\Mineral.h">
+      <Filter>char\item</Filter>
+    </ClInclude>
+    <ClInclude Include="char\item\Potion.h">
+      <Filter>char\item</Filter>
+    </ClInclude>
+    <ClInclude Include="droplist.hxx">
+      <Filter>xsd</Filter>
+    </ClInclude>
+    <ClInclude Include="Astoria.h" />
+    <ClInclude Include="englishitem.h" />
+    <ClInclude Include="GlobalDef.h" />
+    <ClInclude Include="HG.h" />
+    <ClInclude Include="Ini.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Misc.h" />
+    <ClInclude Include="StrTok.h" />
+    <ClInclude Include="DropManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="net\Msg.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\XSocket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\Wmain.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="map\DynamicObject.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Map.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\OccupyFlag.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\StrategicPoint.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Teleport.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\TeleportLoc.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\Tile.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Client.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\combat.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Crafting.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\DelayEvent.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Magic.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Npc.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Quest.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Skill.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\Unit.cpp">
+      <Filter>char</Filter>
+    </ClCompile>
+    <ClCompile Include="char\item\BuildItem.cpp">
+      <Filter>char\item</Filter>
+    </ClCompile>
+    <ClCompile Include="char\item\Fish.cpp">
+      <Filter>char\item</Filter>
+    </ClCompile>
+    <ClCompile Include="char\item\Item.cpp">
+      <Filter>char\item</Filter>
+    </ClCompile>
+    <ClCompile Include="char\item\Mineral.cpp">
+      <Filter>char\item</Filter>
+    </ClCompile>
+    <ClCompile Include="char\item\Potion.cpp">
+      <Filter>char\item</Filter>
+    </ClCompile>
+    <ClCompile Include="droplist.cxx">
+      <Filter>xsd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\buffer.cpp">
+      <Filter>shared</Filter>
+    </ClCompile>
+    <ClCompile Include="Astoria.cpp" />
+    <ClCompile Include="HG.cpp" />
+    <ClCompile Include="Ini.cpp" />
+    <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="DropManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\Shared\lib\GameServerStrTok.lib">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\Shared\lib\WINMM.LIB">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\Shared\lib\WS2_32.LIB">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\Shared\lib\xerces-c_3.lib">
+      <Filter>lib</Filter>
+    </Library>
+    <Library Include="..\Shared\lib\xerces-c_3D.lib">
+      <Filter>lib</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\1.ico">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\resources.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CXX_Tree_Mapping_Rule Include="..\..\configs\droplist.xsd">
+      <Filter>xsd</Filter>
+    </CXX_Tree_Mapping_Rule>
+  </ItemGroup>
+</Project>

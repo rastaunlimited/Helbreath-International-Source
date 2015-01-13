@@ -1,0 +1,3 @@
+    <CustomBuild Include="droplist.xsd">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xsd.exe cxx-tree "%(FullPath)"  --generate-intellisense </Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xsd cxx-tree  --generate-intellisense  "%(FullPath)"</Command>

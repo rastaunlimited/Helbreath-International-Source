@@ -1,0 +1,30 @@
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Cleroth (Moblix) -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xsd:complexType name="droplist_t">
+		<xsd:sequence>
+			<xsd:element name="npc_t" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="tier_t" maxOccurs="unbounded">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="item_t" maxOccurs="unbounded">
+										<xsd:complexType>
+											<xsd:attribute name="name" type="xsd:string" use="required"/>
+											<xsd:attribute name="prob" type="xsd:positiveInteger" use="required"/>
+										</xsd:complexType>
+									</xsd:element>
+								</xsd:sequence>
+								<xsd:attribute name="prob" type="xsd:positiveInteger" use="required"/>
+								<xsd:attribute name="type" type="xsd:string" use="required"/>
+							</xsd:complexType>
+						</xsd:element>
+					</xsd:sequence>
+					<xsd:attribute name="name" type="xsd:string" use="required"/>
+					<xsd:attribute name="num" type="xsd:positiveInteger" use="optional" default="1"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="droplist" type="droplist_t"/>
+</xsd:schema>
