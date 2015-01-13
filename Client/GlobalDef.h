@@ -19,7 +19,7 @@
 /*** Some more compilation options ***/
 //#define USING_WIN_IME		// Used for unicode characters (unchecked)
 #define MAKE_ACCOUNT		// Enable acc creation. Missing sprites, fixed!
-//#define SELECTSERVER		// Show/Hides server selection screen.
+#define SELECTSERVER		// Show/Hides server selection screen.
 
 #define COMMA_GOLD		// Allows to show commas number (ie: 1,200,000)
 

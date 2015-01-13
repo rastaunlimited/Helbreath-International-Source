@@ -906,9 +906,9 @@ void CLoginServer::CloseClientSocket(WORD ID, BOOL log)
           }
 }
 //=============================================================================
-BYTE CLoginServer::CheckAccountLogin(char *AccName, char *AccPwd, MYSQL myConn)
+BYTE CLoginServer::CheckAccountLogin(char *AccName, char *AccPwd, char *WorldName, MYSQL myConn)
 {
- char QueryConsult[500], Txt[200], GoodName[25];
+ char QueryConsult[500], Txt[200], GoodName[25], GoodWorldName[25];
  st_mysql_res    *QueryResult = NULL;
  MYSQL_FIELD *field[2];
  MYSQL_ROW myRow;
@@ -917,7 +917,9 @@ BYTE CLoginServer::CheckAccountLogin(char *AccName, char *AccPwd, MYSQL myConn)
 		ZeroMemory(QueryConsult, sizeof(QueryConsult));
 		ZeroMemory(GoodName, sizeof(GoodName));
 		MakeGoodName(GoodName, AccName);
-		sprintf(QueryConsult, "SELECT `name`, `password` FROM `account_database` WHERE `name` = '%s' LIMIT 1;", GoodName);
+			ZeroMemory(GoodWorldName, sizeof(GoodWorldName));
+		MakeGoodName(GoodWorldName, WorldName);
+		sprintf(QueryConsult, "SELECT `name`, `password` FROM `account_database` WHERE `name` = '%s' AND `WorldName` = '%s' ", GoodName, GoodWorldName); // LIMIT 1;
         if(ProcessQuery(&myConn, QueryConsult) == -1) return 0;
         QueryResult = mysql_store_result(&myConn);
 		if(mysql_num_rows(QueryResult) == 0){
@@ -946,19 +948,22 @@ BYTE CLoginServer::CheckAccountLogin(char *AccName, char *AccPwd, MYSQL myConn)
 //=============================================================================
 BOOL CLoginServer::ProcessClientLogin(char *Data, WORD ClientID, MYSQL myConn)
 {
-	char AccountName[15], AccountPwd[15], Txt200[200];
+	char AccountName[15], AccountPwd[15], WorldName[15], Txt200[200];
 	DWORD *dwp;
 	WORD *wp; 
 
 	ZeroMemory(AccountName, sizeof(AccountName));
 	ZeroMemory(AccountPwd, sizeof(AccountPwd));
+	ZeroMemory(WorldName, sizeof(WorldName));
 	ZeroMemory(Txt200, sizeof(Txt200));
 
 	dwp = (DWORD*) Txt200;
 	*dwp = MSGID_RESPONSE_LOG;
 	SafeCopy(AccountName, Data, 10);
 	SafeCopy(AccountPwd, Data+10, 10);
-	switch(CheckAccountLogin(AccountName, AccountPwd, myConn))
+	SafeCopy(WorldName, Data+20, 10);
+
+	switch(CheckAccountLogin(AccountName, AccountPwd, WorldName, myConn))
 	{
 	case ACCOUNTDONTEXISTS:
 		wp = (WORD*)(Txt200 +4);
@@ -1906,7 +1911,7 @@ void CLoginServer::OnTimer()
 //=============================================================================
 void CLoginServer::ProcessClientRequestEnterGame(char *Data, DWORD ClientID, MYSQL myConn)
 {
- char MapName[15], SendBuff[100], AccName[15], GoodAccName[25], AccPwd[15], GoodCharName[25], CharName[15], QueryConsult[300];
+ char MapName[15], WorldName[15], SendBuff[100], AccName[15], GoodAccName[25], AccPwd[15], GoodCharName[25], CharName[15], QueryConsult[300];
  _ADDRESS GameServerIP, ClientIP;
  WORD *wp, CharLevel;
  DWORD *dwp, dwGetResponseTime;
@@ -1926,21 +1931,23 @@ void CLoginServer::ProcessClientRequestEnterGame(char *Data, DWORD ClientID, MYS
 		ZeroMemory(CharName, sizeof(CharName));
         SafeCopy(CharName, Data+2, 10);
         ZeroMemory(MapName, sizeof(MapName));
-		//SafeCopy(MapName, Data+12, 10);
-		ZeroMemory(GameServerIP, sizeof(GameServerIP));
+		SafeCopy(MapName, Data+12, 10);
 		ZeroMemory(AccName, sizeof(AccName));
         SafeCopy(AccName, Data+22, 10);
         ZeroMemory(AccPwd, sizeof(AccPwd));
         SafeCopy(AccPwd, Data+32, 10);
-        ZeroMemory(ClientIP, sizeof(ClientIP));
-        ClientSocket[ClientID]->iGetPeerAddress(ClientIP);
-        CharLevel = wGetOffsetValue(Data, 42);
-
+      
+		 ZeroMemory(WorldName, sizeof(WorldName));
+        SafeCopy(WorldName, Data+42, 10);
+  CharLevel = wGetOffsetValue(Data, 52);
 		ZeroMemory(QueryConsult, sizeof(QueryConsult));
 		ZeroMemory(GoodAccName, sizeof(GoodAccName));
 		MakeGoodName(GoodAccName, AccName);
 		ZeroMemory(GoodCharName, sizeof(GoodCharName));
 		MakeGoodName(GoodCharName, CharName);
+
+		ZeroMemory(ClientIP, sizeof(ClientIP));
+        ClientSocket[ClientID]->iGetPeerAddress(ClientIP);
 
         sprintf(QueryConsult, "SELECT `MapLoc` FROM `char_database` WHERE `account_name` = '%s' AND `char_name` = '%s' LIMIT 1;", GoodAccName, GoodCharName);
         if(ProcessQuery(&myConn, QueryConsult) == -1) return;
@@ -3072,7 +3079,7 @@ uint64 CLoginServer::GetLastInsertedItemID(MYSQL myConn)
 //=============================================================================
 void CLoginServer::RequestCreateNewGuildHandler(char *Data, BYTE GSID, MYSQL myConn)
 {
- char CharName[15], AccountName[15], AccountPwd[15], GuildName[25], GuildLoc[15],
+ char CharName[15], AccountName[15], AccountPwd[15], WorldName[30], GuildName[25], GuildLoc[15],
 	  SendBuff[50], QueryConsult[500], CreationTime[50], GoodGuildName[50], GoodCharName[25];
  DWORD *dwp, GuildID;
  WORD *wp;
@@ -3097,10 +3104,13 @@ void CLoginServer::RequestCreateNewGuildHandler(char *Data, BYTE GSID, MYSQL myC
 		ZeroMemory(GuildLoc, sizeof(GuildLoc));
 		SafeCopy(GuildLoc, Data+50, 10);
 
+		ZeroMemory(WorldName, sizeof(WorldName));
+		SafeCopy(WorldName, Data+60, 30);
+
 		dwp = (DWORD*)SendBuff;
 		*dwp = MSGID_RESPONSE_CREATENEWGUILD;
 
-		if(CheckAccountLogin(AccountName, AccountPwd, myConn) == LOGINOK){
+		if(CheckAccountLogin(AccountName, AccountPwd, WorldName, myConn) == LOGINOK){
 			if(GuildExists(GuildName, &GuildID, myConn)){
 				wp = (WORD*)(SendBuff+4);
 				*wp = LOGRESMSGTYPE_REJECT;
@@ -3175,7 +3185,7 @@ BOOL CLoginServer::GuildExists(char *GuildName, DWORD *GuildID, MYSQL myConn)
 //=============================================================================
 void CLoginServer::RequestDisbandGuildHandler(char *Data, BYTE GSID, MYSQL myConn)
 {
- char	SendBuff[50], CharName[15], GoodCharName[25], AccName[15], AccPwd[15], GuildName[25], GoodGuildName[50];
+ char	SendBuff[50], CharName[15], WorldName[30], GoodCharName[25], AccName[15], AccPwd[15], GuildName[25], GoodGuildName[50];
  DWORD	*dwp, GuildID;
  WORD	*wp;
  char QueryConsult[150];
@@ -3198,7 +3208,13 @@ void CLoginServer::RequestDisbandGuildHandler(char *Data, BYTE GSID, MYSQL myCon
 		ZeroMemory(GuildName, sizeof(GuildName));
 		SafeCopy(GuildName, Data+30, 20);
 
-		if(CheckAccountLogin(AccName, AccPwd, myConn) == LOGINOK){
+		//ZeroMemory(GuildLoc, sizeof(GuildLoc));
+		//SafeCopy(GuildLoc, Data+50, 10);
+
+		ZeroMemory(WorldName, sizeof(WorldName));
+		SafeCopy(WorldName, Data+60, 30);;
+
+		if(CheckAccountLogin(AccName, AccPwd, WorldName, myConn) == LOGINOK){
 			if(GuildExists(GuildName, &GuildID, myConn) && IsGuildMaster(CharName, GuildName, myConn)){
 				ZeroMemory(QueryConsult, sizeof(QueryConsult));
 				ZeroMemory(GoodGuildName, sizeof(GoodGuildName));

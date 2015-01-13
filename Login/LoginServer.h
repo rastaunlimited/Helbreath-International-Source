@@ -52,7 +52,7 @@ public:
         void OnGameServerRead(WORD GSID);
 		void CloseGameServerSocket(WORD ID, BOOL log = TRUE);
         void CloseClientSocket(WORD ID, BOOL log = FALSE);
-		BYTE CheckAccountLogin(char *AccName, char *AccPwd, MYSQL myConn);
+		BYTE CheckAccountLogin(char *AccName, char *AccPwd, char *WorldName, MYSQL myConn);
         BOOL ProcessClientLogin(char *Data, WORD ClientID, MYSQL myConn);
         bool IsDatePast(char *Date);
         void ChangeDateIntoInt(char *date, WORD *year, BYTE *month, BYTE *day, BYTE *hour = NULL, BYTE *minute = NULL, BYTE *second = NULL);
