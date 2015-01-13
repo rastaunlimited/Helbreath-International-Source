@@ -1,0 +1,77 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{B046891F-46C6-48B3-8BAC-777929D872EE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HGserver", "HG\HGserver.vcxproj", "{ACEE894D-3B50-4C92-BE53-621951424477}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{4D2969BE-6AE9-4395-8C95-91F9AA404BBF}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\buffer.cpp = Shared\buffer.cpp
+		Shared\buffer.h = Shared\buffer.h
+		Shared\common.h = Shared\common.h
+		Shared\DntSvcs.h = Shared\DntSvcs.h
+		Shared\items.h = Shared\items.h
+		Shared\lgnSvcs.h = Shared\lgnSvcs.h
+		Shared\magicID.h = Shared\magicID.h
+		Shared\maps.h = Shared\maps.h
+		Shared\Maths.h = Shared\Maths.h
+		Shared\NetMessages.h = Shared\NetMessages.h
+		Shared\npcType.h = Shared\npcType.h
+		Shared\Skilltypes.h = Shared\Skilltypes.h
+		Shared\TypeDefs.h = Shared\TypeDefs.h
+		Shared\version.h = Shared\version.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{5FD13ED8-0914-4FC9-927A-035CED868A69}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\lib\Cint.lib = Shared\lib\Cint.lib
+		Shared\lib\cximage.lib = Shared\lib\cximage.lib
+		Shared\lib\d3dx9.lib = Shared\lib\d3dx9.lib
+		Shared\lib\DDRAW.LIB = Shared\lib\DDRAW.LIB
+		Shared\lib\DesDll.lib = Shared\lib\DesDll.lib
+		Shared\lib\DINPUT.LIB = Shared\lib\DINPUT.LIB
+		Shared\lib\DSOUND.LIB = Shared\lib\DSOUND.LIB
+		Shared\lib\DXGUID.LIB = Shared\lib\DXGUID.LIB
+		Shared\lib\GameServerStrTok.lib = Shared\lib\GameServerStrTok.lib
+		Shared\lib\IMM32.LIB = Shared\lib\IMM32.LIB
+		Shared\lib\jpeg.lib = Shared\lib\jpeg.lib
+		Shared\lib\libmysql.dll = Shared\lib\libmysql.dll
+		Shared\lib\xerces-c_3D.lib = Shared\lib\xerces-c_3D.lib
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcxproj", "{18AC5040-0866-46B3-B2F3-04FC2DBF402E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Template|Win32 = Template|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Debug|Win32.Build.0 = Debug|Win32
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Release|Win32.ActiveCfg = Release|Win32
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Release|Win32.Build.0 = Release|Win32
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Template|Win32.ActiveCfg = Release|Win32
+		{B046891F-46C6-48B3-8BAC-777929D872EE}.Template|Win32.Build.0 = Release|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Debug|Win32.Build.0 = Debug|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Release|Win32.ActiveCfg = Release|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Release|Win32.Build.0 = Release|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Template|Win32.ActiveCfg = Template|Win32
+		{ACEE894D-3B50-4C92-BE53-621951424477}.Template|Win32.Build.0 = Template|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Debug|Win32.Build.0 = Debug|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Release|Win32.ActiveCfg = Release|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Release|Win32.Build.0 = Release|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Template|Win32.ActiveCfg = Release|Win32
+		{18AC5040-0866-46B3-B2F3-04FC2DBF402E}.Template|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5FD13ED8-0914-4FC9-927A-035CED868A69} = {4D2969BE-6AE9-4395-8C95-91F9AA404BBF}
+	EndGlobalSection
+EndGlobal
