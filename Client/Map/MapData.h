@@ -2,8 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MAPDATA_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_)
-#define AFX_MAPDATA_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_
+#if !defined(AFX_MapData_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_)
+#define AFX_MapData_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -24,8 +24,8 @@
 #include "..\directx\TileSpr.h"
 
 
-#define MAPDATASIZEX	40
-#define MAPDATASIZEY	35
+#define MapDataSIZEX	40
+#define MapDataSIZEY	35
 
 class CMapData  
 {
@@ -63,8 +63,8 @@ public:
 
 	int getChatMsgIndex(WORD wObjectID) const;
 
-	class CTile m_pData[MAPDATASIZEX][MAPDATASIZEY];
-	class CTile m_pTmpData[MAPDATASIZEX][MAPDATASIZEY];
+	class CTile m_Data[MapDataSIZEX][MapDataSIZEY];
+	class CTile m_pTmData[MapDataSIZEX][MapDataSIZEY];
 	class CTileSpr m_tile[550][550];//[752][752];
 	class CGame * m_pGame;
 
@@ -83,4 +83,4 @@ public:
 	short m_sPivotX, m_sPivotY;
 };
 
-#endif // !defined(AFX_MAPDATA_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_)
+#endif // !defined(AFX_MapData_H__DA7A0760_758B_11D2_A8E6_00001C7030A6__INCLUDED_)

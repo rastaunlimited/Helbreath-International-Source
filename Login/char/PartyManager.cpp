@@ -67,7 +67,7 @@ BOOL PartyManager::bDeleteParty(int iPartyID)
 {
  int i;
  BOOL bFlag;
- char * cp, cData[120];
+ char * cp, Data[120];
  DWORD * dwp;
  WORD * wp;
 
@@ -83,8 +83,8 @@ BOOL PartyManager::bDeleteParty(int iPartyID)
 		bFlag = TRUE;
 	}
 
-	ZeroMemory(cData, sizeof(cData));
-	cp = (char *)cData;
+	ZeroMemory(Data, sizeof(Data));
+	cp = (char *)Data;
 	dwp = (DWORD *)cp;
 	*dwp = MSGID_PARTYOPERATION;
 	cp += 4;
@@ -94,7 +94,7 @@ BOOL PartyManager::bDeleteParty(int iPartyID)
 	wp = (WORD *)cp;
 	*wp = iPartyID;
 	cp += 2;
-	m_pGateCore->SendMsgToAllGameServers(NULL, cData, 10, TRUE);
+	m_pGateCore->SendMsgToAllGameServers(NULL, Data, 10, TRUE);
 
 	return bFlag;
 }
@@ -160,7 +160,7 @@ BOOL PartyManager::bRemoveMember(int iPartyID, char *pMemberName)
 BOOL PartyManager::bCheckPartyMember(int iClientH, int iGSCH, int iPartyID, char *pName)
 {
  int i;
- char * cp, cData[120];
+ char * cp, Data[120];
  DWORD * dwp;
  WORD * wp;
 
@@ -170,8 +170,8 @@ BOOL PartyManager::bCheckPartyMember(int iClientH, int iGSCH, int iPartyID, char
 		return TRUE;
 	}
 
-	ZeroMemory(cData, sizeof(cData));
-	cp = (char *)cData;
+	ZeroMemory(Data, sizeof(Data));
+	cp = (char *)Data;
 	dwp = (DWORD *)cp;
 	*dwp = MSGID_PARTYOPERATION;
 	cp += 4;
@@ -183,7 +183,7 @@ BOOL PartyManager::bCheckPartyMember(int iClientH, int iGSCH, int iPartyID, char
 	cp += 2;
 	memcpy(cp, pName, 10);
 	cp += 10;
-	m_pGateCore->SendMsgToGS(iClientH, cData, 20);
+	m_pGateCore->SendMsgToGS(iClientH, Data, 20);
 	
 	return FALSE;
 }
@@ -191,12 +191,12 @@ BOOL PartyManager::bCheckPartyMember(int iClientH, int iGSCH, int iPartyID, char
 BOOL PartyManager::bGetPartyInfo(int iClientH, int iGSCH, char * pName, int iPartyID)
 {
  int i, iTotal;
- char * cp, cData[1024];
+ char * cp, Data[1024];
  DWORD * dwp;
  WORD * wp, * wpTotal;
 
-	ZeroMemory(cData, sizeof(cData));
-	cp = (char *)cData;
+	ZeroMemory(Data, sizeof(Data));
+	cp = (char *)Data;
 	dwp = (DWORD *)cp;
 	*dwp = MSGID_PARTYOPERATION;
 	cp += 4;
@@ -221,7 +221,7 @@ BOOL PartyManager::bGetPartyInfo(int iClientH, int iGSCH, char * pName, int iPar
 	}
 	
 	*wpTotal = iTotal;
-	m_pGateCore->SendMsgToGS(iClientH, cData, 20 + iTotal*11 +1);
+	m_pGateCore->SendMsgToGS(iClientH, Data, 20 + iTotal*11 +1);
 
 	return TRUE;
 }
@@ -256,7 +256,7 @@ void PartyManager::CheckMemberActivity()
 {
  int i;
  DWORD * dwp, dwTime = timeGetTime();
- char * cp, cData[120];
+ char * cp, Data[120];
  WORD * wp;
 
 	if ((dwTime - m_dwCheckMemberActTime) > 1000*2) {
@@ -265,8 +265,8 @@ void PartyManager::CheckMemberActivity()
 
 	for (i = 1; i < MAXPARTY; i++)
 	if ((m_stMemberNameList[i].m_dwServerChangeTime != NULL) && ((dwTime - m_stMemberNameList[i].m_dwServerChangeTime) > 1000*20)) {
-		ZeroMemory(cData, sizeof(cData));
-		cp = (char *)cData;
+		ZeroMemory(Data, sizeof(Data));
+		cp = (char *)Data;
 		dwp = (DWORD *)cp;
 		*dwp = MSGID_PARTYOPERATION;
 		cp += 4;
@@ -283,7 +283,7 @@ void PartyManager::CheckMemberActivity()
 		wp = (WORD *)cp;
 		*wp = (WORD)m_stMemberNameList[i].m_iPartyID;
 		cp += 2;
-		m_pGateCore->SendMsgToAllGameServers(NULL, cData, 22, TRUE);
+		m_pGateCore->SendMsgToAllGameServers(NULL, Data, 22, TRUE);
 
 		bRemoveMember(m_stMemberNameList[i].m_iPartyID, m_stMemberNameList[i].m_cName);
 	}

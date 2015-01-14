@@ -139,9 +139,9 @@ BOOL CSoundBuffer::bCreateBuffer_LoadWavFileContents(char cBufferIndex)
 
 BOOL CSoundBuffer::_LoadWavContents(char cBufferIndex, FILE * pFile, DWORD dwSize, DWORD dwPos)
 {
- LPVOID  pData1;
+ LPVOID  Data1;
  DWORD   dwData1Size;
- LPVOID  pData2;
+ LPVOID  Data2;
  DWORD   dwData2Size;
  HRESULT rval;
 	
@@ -149,19 +149,19 @@ BOOL CSoundBuffer::_LoadWavContents(char cBufferIndex, FILE * pFile, DWORD dwSiz
 	if (dwPos == 0xffffffff) return FALSE;
 	if (fseek(pFile, dwPos, SEEK_SET) != 0) return FALSE;
 
-	rval = m_lpDSB[cBufferIndex]->Lock(0, dwSize, &pData1, &dwData1Size, &pData2, &dwData2Size, DSBLOCK_ENTIREBUFFER);
+	rval = m_lpDSB[cBufferIndex]->Lock(0, dwSize, &Data1, &dwData1Size, &Data2, &dwData2Size, DSBLOCK_ENTIREBUFFER);
 	//DSBLOCK_FROMWRITECURSOR); // DSBLOCK_ENTIREBUFFER
 	if (rval != DS_OK) return FALSE;
 
 	if (dwData1Size > 0) 
-	if (fread(pData1, dwData1Size, 1, pFile) != 1) 
+	if (fread(Data1, dwData1Size, 1, pFile) != 1) 
 		return FALSE;
 		
 	if (dwData2Size > 0) 
-	if (fread(pData2, dwData2Size, 1, pFile) != 1) 
+	if (fread(Data2, dwData2Size, 1, pFile) != 1) 
 		return FALSE;
 	
-	rval = m_lpDSB[cBufferIndex]->Unlock(pData1, dwData1Size, pData2, dwData2Size);
+	rval = m_lpDSB[cBufferIndex]->Unlock(Data1, dwData1Size, Data2, dwData2Size);
 	if (rval != DS_OK) return FALSE;
  
 	

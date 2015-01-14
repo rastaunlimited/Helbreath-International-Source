@@ -714,6 +714,7 @@ public:
 	~CGame();
 
 	char m_cServerName[12];
+	char WorldName[12];
 	char m_cGameServerAddr[16];
 	char m_cGameServerAddrExternal[16];
 	char m_cLogServerAddr[16];

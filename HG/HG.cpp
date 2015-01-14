@@ -2940,12 +2940,12 @@ bool CGame::bSendMsgToLS(DWORD dwMsg, int iClientH, bool bFlag,char * pData)
 
 		cp = (char *)(G_cData50000 + INDEX2_MSGTYPE + 2);
 
-		//if (m_iGameServerMode == 1) // LAN
-		//	SafeCopy(cAddress, m_cLogServerAddrExternal, strlen(m_cLogServerAddrExternal));
-		//else // INTERNET
 		SafeCopy(cAddress, m_cGameServerAddr, strlen(m_cGameServerAddr));
 		
 		SafeCopy(cp, m_cServerName, 10);
+		cp += 10;
+
+		SafeCopy(cp, WorldName, 10);
 		cp += 10;
 
 		SafeCopy(cp, cAddress, 16);
@@ -2971,8 +2971,9 @@ bool CGame::bSendMsgToLS(DWORD dwMsg, int iClientH, bool bFlag,char * pData)
 			cp += 11;
 		}
 
-		m_pSubLogSock[m_iCurSubLogSockIndex]->iSendMsg(G_cData50000, 37 + m_iTotalMaps*11);
+		m_pSubLogSock[m_iCurSubLogSockIndex]->iSendMsg(G_cData50000, 47 + m_iTotalMaps*11);
 		return TRUE;
+
 
 	case MSGID_REQUEST_REGISTERGAMESERVERSOCKET:
 		dwp  = (DWORD *)(G_cData50000 + INDEX4_MSGID);
@@ -4014,6 +4015,19 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 					break;
 
 				case 10:
+					ZeroMemory(WorldName, sizeof(WorldName));
+					if (strlen(token) > 10) {
+						wsprintf(cTxt, "(!!!) World server name(%s) must be within 10 chars!", token);
+						PutLogList(cTxt);
+						return FALSE;
+					}
+					strcpy(WorldName, token);
+					wsprintf(cTxt, "(*) World server name : %s", WorldName);
+					PutLogList(cTxt);
+					cReadMode = 0;
+					break;
+
+				case 11:
 					if (strlen(token) > 10) {
 						wsprintf(cTxt, "(!!!) CRITICAL ERROR! Map name(%s) must be within 10 chars!", token);
 						PutLogList(cTxt);
@@ -4029,6 +4043,7 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 			}
 			else {
 				if (memcmp(token, "game-server-name", 16) == 0)			cReadMode = 1;
+				
 				if (memcmp(token, "game-server-port", 16) == 0)			cReadMode = 2;
 				if (memcmp(token, "log-server-address", 18) == 0)		cReadMode = 3;
 				if (memcmp(token, "log-server-port", 15) == 0)			cReadMode = 4;
@@ -4037,7 +4052,8 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 				if (memcmp(token, "log-server-ext-address", 22) == 0)		cReadMode = 7;
 				if (memcmp(token, "game-server-address", 19) == 0)		cReadMode = 8;
 				if (memcmp(token, "game-server-ext-address", 23) == 0)	cReadMode = 9;
-				if (memcmp(token, "game-server-map", 15) == 0)			cReadMode = 10;
+				if (memcmp(token, "world-server-name", 17) == 0)			cReadMode = 10;
+				if (memcmp(token, "game-server-map", 15) == 0)			cReadMode = 11;
 			}
 
 			token = pStrTok->pGet();

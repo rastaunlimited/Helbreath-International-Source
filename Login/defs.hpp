@@ -10,23 +10,23 @@ typedef signed long     sDWORD;
 
 #define SAFEDELETE( PointerVariable )       \
 {											\
-    if(PointerVariable != NULL){            \
-    delete PointerVariable;		    \
-    PointerVariable = NULL;    }	    \
+	if(PointerVariable != NULL){            \
+	delete PointerVariable;		    \
+	PointerVariable = NULL;    }	    \
 }
 
 #define SAFEDELETEARRAY( PointerVariable )	\
 {											\
-    if(PointerVariable != NULL){                \
-    delete [] PointerVariable;			\
-    PointerVariable = NULL;    }		\
+	if(PointerVariable != NULL){                \
+	delete [] PointerVariable;			\
+	PointerVariable = NULL;    }		\
 }
 
 #define SAFEFREERESULT( PointerVariable )	\
 {											\
-    if(PointerVariable != NULL){                \
-    mysql_free_result(PointerVariable);			\
-    PointerVariable = NULL;    }		\
+	if(PointerVariable != NULL){                \
+	mysql_free_result(PointerVariable);			\
+	PointerVariable = NULL;    }		\
 }
 
 #define MAXGAMESERVERS              20
@@ -54,7 +54,7 @@ typedef signed long     sDWORD;
 
 #define MAXLOGMSGS                  50
 #define MAXLOGMSGSIZE               400
-#define MAXLOGSTOSHOW               39
+#define MAXLOGSTOSHOW               20
 
 //mysql query errors
 #define MAXALLOWEDQUERYERROR		10

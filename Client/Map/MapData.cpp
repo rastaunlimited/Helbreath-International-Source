@@ -956,9 +956,9 @@ void CMapData::Init()
 	m_dwFrameAdjustTime = 0;
 	m_sPivotX = -1;
 	m_sPivotY = -1;
-	for (y = 0; y < MAPDATASIZEY; y++)
-	for (x = 0; x < MAPDATASIZEX; x++)
-		m_pData[x][y].Clear();
+	for (y = 0; y < MapDataSIZEY; y++)
+	for (x = 0; x < MapDataSIZEX; x++)
+		m_Data[x][y].Clear();
 
 	for (x = 0; x < 30000; x++) {
 		m_iObjectIDcacheLocX[x] = 0;
@@ -1054,127 +1054,127 @@ void CMapData::_bDecodeMapInfo(char * pHeader)
 void CMapData::ShiftMapData(char cDir)
 {
 	int ix, iy;
-	for (iy = 0; iy < MAPDATASIZEY; iy++)
-	for (ix = 0; ix < MAPDATASIZEX; ix++)
-		m_pTmpData[ix][iy].Clear();
+	for (iy = 0; iy < MapDataSIZEY; iy++)
+	for (ix = 0; ix < MapDataSIZEX; ix++)
+		m_pTmData[ix][iy].Clear();
 
 	switch (cDir) {
 	case 1:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 21; ix++)
-			memcpy(&m_pTmpData[4+5+ix][6+5+iy], &m_pData[4+5+ix][5+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[4+5+ix][6+5+iy], &m_Data[4+5+ix][5+5+iy], sizeof(class CTile));
 		m_sPivotY--;
 		break;
 	case 2:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[4+5+ix][6+5+iy], &m_pData[5+5+ix][5+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[4+5+ix][6+5+iy], &m_Data[5+5+ix][5+5+iy], sizeof(class CTile));
 		m_sPivotX++;
 		m_sPivotY--;
 		break;
 	case 3:
 		for (iy = 0; iy < 16; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[4+5+ix][5+5+iy], &m_pData[5+5+ix][5+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[4+5+ix][5+5+iy], &m_Data[5+5+ix][5+5+iy], sizeof(class CTile));
 		m_sPivotX++;
 		break;
 	case 4:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[4+5+ix][5+5+iy], &m_pData[5+5+ix][6+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[4+5+ix][5+5+iy], &m_Data[5+5+ix][6+5+iy], sizeof(class CTile));
 		m_sPivotX++;
 		m_sPivotY++;
 		break;
 	case 5:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 21; ix++)
-			memcpy(&m_pTmpData[4+5+ix][5+5+iy], &m_pData[4+5+ix][6+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[4+5+ix][5+5+iy], &m_Data[4+5+ix][6+5+iy], sizeof(class CTile));
 		m_sPivotY++;
 		break;
 	case 6:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[5+5+ix][5+5+iy], &m_pData[4+5+ix][6+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[5+5+ix][5+5+iy], &m_Data[4+5+ix][6+5+iy], sizeof(class CTile));
 		m_sPivotX--;
 		m_sPivotY++;
 		break;
 	case 7:
 		for (iy = 0; iy < 16; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[5+5+ix][5+5+iy], &m_pData[4+5+ix][5+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[5+5+ix][5+5+iy], &m_Data[4+5+ix][5+5+iy], sizeof(class CTile));
 		m_sPivotX--;
 		break;
 	case 8:
 		for (iy = 0; iy < 15; iy++)
 		for (ix = 0; ix < 20; ix++)
-			memcpy(&m_pTmpData[5+5+ix][6+5+iy], &m_pData[4+5+ix][5+5+iy], sizeof(class CTile));
+			memcpy(&m_pTmData[5+5+ix][6+5+iy], &m_Data[4+5+ix][5+5+iy], sizeof(class CTile));
 		m_sPivotX--;
 		m_sPivotY--;
 		break;
 	}
-	memcpy(&m_pData[0][0], &m_pTmpData[0][0], sizeof(m_pData));
+	memcpy(&m_Data[0][0], &m_pTmData[0][0], sizeof(m_Data));
 }
 
 BOOL CMapData::bGetIsLocateable(short sX, short sY)
 {
 	int dX, dY;
-	if ((sX < m_sPivotX) || (sX > m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY > m_sPivotY + MAPDATASIZEY)) return FALSE;
+	if ((sX < m_sPivotX) || (sX > m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY > m_sPivotY + MapDataSIZEY)) return FALSE;
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
-	if (m_pData[dX][dY].m_sOwnerType != NULL) return FALSE;
+	if (m_Data[dX][dY].m_sOwnerType != NULL) return FALSE;
 	if (m_tile[sX][sY].m_bIsMoveAllowed == FALSE) return FALSE;
-	if (m_pData[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_MINERAL1) return FALSE;
-	if (m_pData[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_MINERAL2) return FALSE;
-	if (m_pData[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_ARESDENFLAG) return FALSE;
-	if (m_pData[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_ELVINEFLAG) return FALSE;
+	if (m_Data[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_MINERAL1) return FALSE;
+	if (m_Data[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_MINERAL2) return FALSE;
+	if (m_Data[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_ARESDENFLAG) return FALSE;
+	if (m_Data[dX][dY].m_sDynamicObjectType == DYNAMICOBJECT_ELVINEFLAG) return FALSE;
 
-	if (m_pData[dX+1][dY+1].m_sOwnerType == 66) return FALSE;
-	if (m_pData[dX+1]  [dY].m_sOwnerType == 66) return FALSE;
-	if ((dY > 0) && (m_pData[dX+1][dY-1].m_sOwnerType == 66)) return FALSE;
-	if (m_pData  [dX][dY+1].m_sOwnerType == 66) return FALSE;
-	if (m_pData  [dX]  [dY].m_sOwnerType == 66) return FALSE;
-	if ((dY > 0) && (m_pData  [dX][dY-1].m_sOwnerType == 66)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1][dY+1].m_sOwnerType == 66)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1]  [dY].m_sOwnerType == 66)) return FALSE;
-	if ((dX > 0) && (dY > 0) && (m_pData[dX-1][dY-1].m_sOwnerType == 66)) return FALSE;
+	if (m_Data[dX+1][dY+1].m_sOwnerType == 66) return FALSE;
+	if (m_Data[dX+1]  [dY].m_sOwnerType == 66) return FALSE;
+	if ((dY > 0) && (m_Data[dX+1][dY-1].m_sOwnerType == 66)) return FALSE;
+	if (m_Data  [dX][dY+1].m_sOwnerType == 66) return FALSE;
+	if (m_Data  [dX]  [dY].m_sOwnerType == 66) return FALSE;
+	if ((dY > 0) && (m_Data  [dX][dY-1].m_sOwnerType == 66)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1][dY+1].m_sOwnerType == 66)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1]  [dY].m_sOwnerType == 66)) return FALSE;
+	if ((dX > 0) && (dY > 0) && (m_Data[dX-1][dY-1].m_sOwnerType == 66)) return FALSE;
 
-	if (m_pData[dX+1][dY+1].m_sOwnerType == 73) return FALSE;
-	if (m_pData[dX+1]  [dY].m_sOwnerType == 73) return FALSE;
-	if ((dY > 0) && (m_pData[dX+1][dY-1].m_sOwnerType == 73)) return FALSE;
-	if (m_pData  [dX][dY+1].m_sOwnerType == 73) return FALSE;
-	if (m_pData  [dX]  [dY].m_sOwnerType == 73) return FALSE;
-	if ((dY > 0) && (m_pData  [dX][dY-1].m_sOwnerType == 73)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1][dY+1].m_sOwnerType == 73)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1]  [dY].m_sOwnerType == 73)) return FALSE;
-	if ((dX > 0) && (dY > 0) && (m_pData[dX-1][dY-1].m_sOwnerType == 73)) return FALSE;
+	if (m_Data[dX+1][dY+1].m_sOwnerType == 73) return FALSE;
+	if (m_Data[dX+1]  [dY].m_sOwnerType == 73) return FALSE;
+	if ((dY > 0) && (m_Data[dX+1][dY-1].m_sOwnerType == 73)) return FALSE;
+	if (m_Data  [dX][dY+1].m_sOwnerType == 73) return FALSE;
+	if (m_Data  [dX]  [dY].m_sOwnerType == 73) return FALSE;
+	if ((dY > 0) && (m_Data  [dX][dY-1].m_sOwnerType == 73)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1][dY+1].m_sOwnerType == 73)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1]  [dY].m_sOwnerType == 73)) return FALSE;
+	if ((dX > 0) && (dY > 0) && (m_Data[dX-1][dY-1].m_sOwnerType == 73)) return FALSE;
 
-	if (m_pData[dX+1][dY+1].m_sOwnerType == 81) return FALSE;
-	if (m_pData[dX+1]  [dY].m_sOwnerType == 81) return FALSE;
-	if ((dY > 0) && (m_pData[dX+1][dY-1].m_sOwnerType == 81)) return FALSE;
-	if (m_pData  [dX][dY+1].m_sOwnerType == 81) return FALSE;
-	if (m_pData  [dX]  [dY].m_sOwnerType == 81) return FALSE;
-	if ((dY > 0) && (m_pData  [dX][dY-1].m_sOwnerType == 81)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1][dY+1].m_sOwnerType == 81)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1]  [dY].m_sOwnerType == 81)) return FALSE;
-	if ((dX > 0) && (dY > 0) && (m_pData[dX-1][dY-1].m_sOwnerType == 81)) return FALSE;
+	if (m_Data[dX+1][dY+1].m_sOwnerType == 81) return FALSE;
+	if (m_Data[dX+1]  [dY].m_sOwnerType == 81) return FALSE;
+	if ((dY > 0) && (m_Data[dX+1][dY-1].m_sOwnerType == 81)) return FALSE;
+	if (m_Data  [dX][dY+1].m_sOwnerType == 81) return FALSE;
+	if (m_Data  [dX]  [dY].m_sOwnerType == 81) return FALSE;
+	if ((dY > 0) && (m_Data  [dX][dY-1].m_sOwnerType == 81)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1][dY+1].m_sOwnerType == 81)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1]  [dY].m_sOwnerType == 81)) return FALSE;
+	if ((dX > 0) && (dY > 0) && (m_Data[dX-1][dY-1].m_sOwnerType == 81)) return FALSE;
 
-	if (m_pData[dX+1][dY+1].m_sOwnerType == 91) return FALSE;
-	if (m_pData[dX+1]  [dY].m_sOwnerType == 91) return FALSE;
-	if ((dY > 0) && (m_pData[dX+1][dY-1].m_sOwnerType == 91)) return FALSE;
-	if (m_pData  [dX][dY+1].m_sOwnerType == 91) return FALSE;
-	if (m_pData  [dX]  [dY].m_sOwnerType == 91) return FALSE;
-	if ((dY > 0) && (m_pData  [dX][dY-1].m_sOwnerType == 91)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1][dY+1].m_sOwnerType == 91)) return FALSE;
-	if ((dX > 0) && (m_pData[dX-1]  [dY].m_sOwnerType == 91)) return FALSE;
-	if ((dX > 0) && (dY > 0) && (m_pData[dX-1][dY-1].m_sOwnerType == 91)) return FALSE;
+	if (m_Data[dX+1][dY+1].m_sOwnerType == 91) return FALSE;
+	if (m_Data[dX+1]  [dY].m_sOwnerType == 91) return FALSE;
+	if ((dY > 0) && (m_Data[dX+1][dY-1].m_sOwnerType == 91)) return FALSE;
+	if (m_Data  [dX][dY+1].m_sOwnerType == 91) return FALSE;
+	if (m_Data  [dX]  [dY].m_sOwnerType == 91) return FALSE;
+	if ((dY > 0) && (m_Data  [dX][dY-1].m_sOwnerType == 91)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1][dY+1].m_sOwnerType == 91)) return FALSE;
+	if ((dX > 0) && (m_Data[dX-1]  [dY].m_sOwnerType == 91)) return FALSE;
+	if ((dX > 0) && (dY > 0) && (m_Data[dX-1][dY-1].m_sOwnerType == 91)) return FALSE;
 	return TRUE;
 }
 
 BOOL CMapData::bIsTeleportLoc(short sX, short sY)
 {
-	if ((sX < m_sPivotX) || (sX > m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY > m_sPivotY + MAPDATASIZEY)) return FALSE;
+	if ((sX < m_sPivotX) || (sX > m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY > m_sPivotY + MapDataSIZEY)) return FALSE;
 
 	if (m_tile[sX][sY].m_bIsTeleport == FALSE) return FALSE;
 
@@ -1194,28 +1194,28 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 	dwTime = m_dwFrameTime;
 	iEffectType = iEffectFrame = iEffectTotalFrame = 0;
 	if (   (wObjectID < 30000)
-		&& (  (sX < m_sPivotX) || (sX >= m_sPivotX + MAPDATASIZEX)
-		   || (sY < m_sPivotY) || (sY >= m_sPivotY + MAPDATASIZEY)) )
+		&& (  (sX < m_sPivotX) || (sX >= m_sPivotX + MapDataSIZEX)
+		   || (sY < m_sPivotY) || (sY >= m_sPivotY + MapDataSIZEY)) )
 	{	if (m_iObjectIDcacheLocX[wObjectID] > 0)
 		{	iX = m_iObjectIDcacheLocX[wObjectID] - m_sPivotX;
 			iY = m_iObjectIDcacheLocY[wObjectID] - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
 
-			if (m_pData[iX][iY].m_wObjectID == wObjectID)
-			{	m_pData[iX][iY].m_sOwnerType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cOwnerName, sizeof(m_pData[iX][iY].m_cOwnerName));
+			if (m_Data[iX][iY].m_wObjectID == wObjectID)
+			{	m_Data[iX][iY].m_sOwnerType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cOwnerName, sizeof(m_Data[iX][iY].m_cOwnerName));
 				ZeroMemory(pName, strlen(pName));
 
-				if (m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ] != NULL)
-				{	delete m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ];
-					m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ] = NULL;
+				if (m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ] != NULL)
+				{	delete m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ];
+					m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ] = NULL;
 				}
-				m_pData[iX][iY].m_iChatMsg = NULL;
-				m_pData[iX][iY].m_iEffectType = NULL;
+				m_Data[iX][iY].m_iChatMsg = NULL;
+				m_Data[iX][iY].m_iEffectType = NULL;
 				m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
@@ -1223,49 +1223,49 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		}else if (m_iObjectIDcacheLocX[wObjectID] < 0)
 		{	iX = abs(m_iObjectIDcacheLocX[wObjectID]) - m_sPivotX;
 			iY = abs(m_iObjectIDcacheLocY[wObjectID]) - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
-			if ((m_pData[iX][iY].m_cDeadOwnerFrame == -1) && (m_pData[iX][iY].m_wDeadObjectID == wObjectID))
-			{	m_pData[iX][iY].m_cDeadOwnerFrame = 0;
+			if ((m_Data[iX][iY].m_cDeadOwnerFrame == -1) && (m_Data[iX][iY].m_wDeadObjectID == wObjectID))
+			{	m_Data[iX][iY].m_cDeadOwnerFrame = 0;
 				ZeroMemory(pName, strlen(pName));
-				if (m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ] != NULL)
-				{	delete m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ];
-					m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ] = NULL;
+				if (m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ] != NULL)
+				{	delete m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ];
+					m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ] = NULL;
 				}
-				m_pData[iX][iY].m_iDeadChatMsg = NULL;
+				m_Data[iX][iY].m_iDeadChatMsg = NULL;
 				m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 		}	}
 
-		for (iX = 0; iX < MAPDATASIZEX; iX++)
-		for (iY = 0; iY < MAPDATASIZEY; iY++)
-		{	if (m_pData[iX][iY].m_wObjectID == wObjectID)
-			{	m_pData[iX][iY].m_sOwnerType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cOwnerName, sizeof(m_pData[iX][iY].m_cOwnerName));
+		for (iX = 0; iX < MapDataSIZEX; iX++)
+		for (iY = 0; iY < MapDataSIZEY; iY++)
+		{	if (m_Data[iX][iY].m_wObjectID == wObjectID)
+			{	m_Data[iX][iY].m_sOwnerType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cOwnerName, sizeof(m_Data[iX][iY].m_cOwnerName));
 				ZeroMemory(pName, strlen(pName));
-				if (m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ] != NULL)
-				{	delete m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ];
-					m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iChatMsg ] = NULL;
+				if (m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ] != NULL)
+				{	delete m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ];
+					m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iChatMsg ] = NULL;
 				}
-				m_pData[iX][iY].m_iChatMsg = NULL;
+				m_Data[iX][iY].m_iChatMsg = NULL;
 				m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
-				m_pData[iX][iY].m_iEffectType = NULL;
+				m_Data[iX][iY].m_iEffectType = NULL;
 				return FALSE;
 			}
 
-			if ((m_pData[iX][iY].m_cDeadOwnerFrame == -1) && (m_pData[iX][iY].m_wDeadObjectID == wObjectID))
-			{	m_pData[iX][iY].m_cDeadOwnerFrame = 0;
+			if ((m_Data[iX][iY].m_cDeadOwnerFrame == -1) && (m_Data[iX][iY].m_wDeadObjectID == wObjectID))
+			{	m_Data[iX][iY].m_cDeadOwnerFrame = 0;
 				ZeroMemory(pName, strlen(pName));
-				if (m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ] != NULL)
-				{	delete m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ];
-					m_pGame->m_pChatMsgList[ m_pData[iX][iY].m_iDeadChatMsg ] = NULL;
+				if (m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ] != NULL)
+				{	delete m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ];
+					m_pGame->m_pChatMsgList[ m_Data[iX][iY].m_iDeadChatMsg ] = NULL;
 				}
-				m_pData[iX][iY].m_iDeadChatMsg = NULL;
+				m_Data[iX][iY].m_iDeadChatMsg = NULL;
 				m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
@@ -1283,21 +1283,21 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		if (m_iObjectIDcacheLocX[wObjectID] > 0)
 		{	iX = m_iObjectIDcacheLocX[wObjectID] - m_sPivotX;
 			iY = m_iObjectIDcacheLocY[wObjectID] - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
-			if (m_pData[iX][iY].m_wObjectID == wObjectID) 
-			{	iChatIndex = m_pData[iX][iY].m_iChatMsg;
-				iEffectType  = m_pData[iX][iY].m_iEffectType;
-				iEffectFrame = m_pData[iX][iY].m_iEffectFrame;
-				iEffectTotalFrame = m_pData[iX][iY].m_iEffectTotalFrame;
+			if (m_Data[iX][iY].m_wObjectID == wObjectID) 
+			{	iChatIndex = m_Data[iX][iY].m_iChatMsg;
+				iEffectType  = m_Data[iX][iY].m_iEffectType;
+				iEffectFrame = m_Data[iX][iY].m_iEffectFrame;
+				iEffectTotalFrame = m_Data[iX][iY].m_iEffectTotalFrame;
 
-				m_pData[iX][iY].m_wObjectID  = NULL; //-1; v1.41
-				m_pData[iX][iY].m_iChatMsg   = NULL; // v1.4
-				m_pData[iX][iY].m_sOwnerType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cOwnerName, sizeof(m_pData[iX][iY].m_cOwnerName));
+				m_Data[iX][iY].m_wObjectID  = NULL; //-1; v1.41
+				m_Data[iX][iY].m_iChatMsg   = NULL; // v1.4
+				m_Data[iX][iY].m_sOwnerType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cOwnerName, sizeof(m_Data[iX][iY].m_cOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = sX;
 				m_iObjectIDcacheLocY[wObjectID] = sY;
 				goto EXIT_SEARCH_LOOP;
@@ -1305,19 +1305,19 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		}else if (m_iObjectIDcacheLocX[wObjectID] < 0)
 		{	iX = abs(m_iObjectIDcacheLocX[wObjectID]) - m_sPivotX;
 			iY = abs(m_iObjectIDcacheLocY[wObjectID]) - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
-			if ((m_pData[iX][iY].m_cDeadOwnerFrame == -1) && (m_pData[iX][iY].m_wDeadObjectID == wObjectID))
-			{	iChatIndex = m_pData[iX][iY].m_iDeadChatMsg;
-				iEffectType  = m_pData[iX][iY].m_iEffectType;
-				iEffectFrame = m_pData[iX][iY].m_iEffectFrame;
-				iEffectTotalFrame = m_pData[iX][iY].m_iEffectTotalFrame;
-				m_pData[iX][iY].m_wDeadObjectID   = NULL;
-				m_pData[iX][iY].m_iDeadChatMsg    = NULL; // v1.4
-				m_pData[iX][iY].m_sDeadOwnerType  = NULL;
+			if ((m_Data[iX][iY].m_cDeadOwnerFrame == -1) && (m_Data[iX][iY].m_wDeadObjectID == wObjectID))
+			{	iChatIndex = m_Data[iX][iY].m_iDeadChatMsg;
+				iEffectType  = m_Data[iX][iY].m_iEffectType;
+				iEffectFrame = m_Data[iX][iY].m_iEffectFrame;
+				iEffectTotalFrame = m_Data[iX][iY].m_iEffectTotalFrame;
+				m_Data[iX][iY].m_wDeadObjectID   = NULL;
+				m_Data[iX][iY].m_iDeadChatMsg    = NULL; // v1.4
+				m_Data[iX][iY].m_sDeadOwnerType  = NULL;
 				m_iObjectIDcacheLocX[wObjectID] = -1*sX;
 				m_iObjectIDcacheLocY[wObjectID] = -1*sY;
 				goto EXIT_SEARCH_LOOP;
@@ -1327,35 +1327,35 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		for (iX = sX - iAdd; iX <= sX + iAdd; iX++)
 		for (iY = sY - iAdd; iY <= sY + iAdd; iY++)
 		{	if (iX < m_sPivotX) break;
-			else if (iX >= m_sPivotX + MAPDATASIZEX) break;
+			else if (iX >= m_sPivotX + MapDataSIZEX) break;
 			if (iY < m_sPivotY) break;
-			else if (iY >= m_sPivotY + MAPDATASIZEY) break;
-			//if (memcmp(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName, cTmpName, 10) == 0) {
-			if (m_pData[iX - m_sPivotX][iY - m_sPivotY].m_wObjectID == wObjectID)
-			{	iChatIndex = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iChatMsg;
-				iEffectType  = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType;
-				iEffectFrame = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectFrame;
-				iEffectTotalFrame = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectTotalFrame;
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_wObjectID  = NULL; //-1; v1.41
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iChatMsg   = NULL;
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_sOwnerType = NULL;
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType = NULL;
-				ZeroMemory(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName, sizeof(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName));
+			else if (iY >= m_sPivotY + MapDataSIZEY) break;
+			//if (memcmp(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName, cTmpName, 10) == 0) {
+			if (m_Data[iX - m_sPivotX][iY - m_sPivotY].m_wObjectID == wObjectID)
+			{	iChatIndex = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iChatMsg;
+				iEffectType  = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType;
+				iEffectFrame = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectFrame;
+				iEffectTotalFrame = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectTotalFrame;
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_wObjectID  = NULL; //-1; v1.41
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iChatMsg   = NULL;
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_sOwnerType = NULL;
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType = NULL;
+				ZeroMemory(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName, sizeof(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = sX;
 				m_iObjectIDcacheLocY[wObjectID] = sY;
 				goto EXIT_SEARCH_LOOP;
 			}
 
-			//if (memcmp(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName, cTmpName, 10) == 0) {
-			if (m_pData[iX - m_sPivotX][iY - m_sPivotY].m_wDeadObjectID == wObjectID)
-			{	iChatIndex = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iDeadChatMsg;
-				iEffectType  = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType;
-				iEffectFrame = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectFrame;
-				iEffectTotalFrame = m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iEffectTotalFrame;
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_wDeadObjectID  = NULL; //-1; v1.41
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_iDeadChatMsg   = NULL;
-				m_pData[iX - m_sPivotX][iY - m_sPivotY].m_sDeadOwnerType = NULL;
-				ZeroMemory(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName, sizeof(m_pData[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName));
+			//if (memcmp(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName, cTmpName, 10) == 0) {
+			if (m_Data[iX - m_sPivotX][iY - m_sPivotY].m_wDeadObjectID == wObjectID)
+			{	iChatIndex = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iDeadChatMsg;
+				iEffectType  = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectType;
+				iEffectFrame = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectFrame;
+				iEffectTotalFrame = m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iEffectTotalFrame;
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_wDeadObjectID  = NULL; //-1; v1.41
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_iDeadChatMsg   = NULL;
+				m_Data[iX - m_sPivotX][iY - m_sPivotY].m_sDeadOwnerType = NULL;
+				ZeroMemory(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName, sizeof(m_Data[iX - m_sPivotX][iY - m_sPivotY].m_cDeadOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = -1*sX;
 				m_iObjectIDcacheLocY[wObjectID] = -1*sY;
 				goto EXIT_SEARCH_LOOP;
@@ -1370,12 +1370,12 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		if (m_iObjectIDcacheLocX[wObjectID] > 0)
 		{	iX = m_iObjectIDcacheLocX[wObjectID] - m_sPivotX;
 			iY = m_iObjectIDcacheLocY[wObjectID] - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
-			if (m_pData[iX][iY].m_wObjectID == wObjectID)
+			if (m_Data[iX][iY].m_wObjectID == wObjectID)
 			{	dX = iX;
 				dY = iY;
 				switch (sAction) {
@@ -1398,33 +1398,33 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 					break;
 				}
 				if (   (wObjectID != (WORD)m_pGame->m_sPlayerObjectID)
-					&& (m_pData[dX][dY].m_sOwnerType != NULL) && (m_pData[dX][dY].m_wObjectID != wObjectID))
+					&& (m_Data[dX][dY].m_sOwnerType != NULL) && (m_Data[dX][dY].m_wObjectID != wObjectID))
 				{	m_pGame->RequestFullObjectData(wObjectID);
 					ZeroMemory(pName, strlen(pName));
 					return FALSE;
 				}
-				iChatIndex = m_pData[iX][iY].m_iChatMsg;
+				iChatIndex = m_Data[iX][iY].m_iChatMsg;
 				if (sAction != OBJECTNULLACTION)
-				{	sType      = m_pData[iX][iY].m_sOwnerType;
-					sAppr1     = m_pData[iX][iY].m_sAppr1;
-					sAppr2     = m_pData[iX][iY].m_sAppr2;
-					sAppr3     = m_pData[iX][iY].m_sAppr3;
-					sAppr4     = m_pData[iX][iY].m_sAppr4;
-					iApprColor = m_pData[iX][iY].m_iApprColor;
-					iStatus    = m_pData[iX][iY].m_iStatus;
-					iEffectType  = m_pData[iX][iY].m_iEffectType;
-					iEffectFrame = m_pData[iX][iY].m_iEffectFrame;
-					iEffectTotalFrame = m_pData[iX][iY].m_iEffectTotalFrame;
+				{	sType      = m_Data[iX][iY].m_sOwnerType;
+					sAppr1     = m_Data[iX][iY].m_sAppr1;
+					sAppr2     = m_Data[iX][iY].m_sAppr2;
+					sAppr3     = m_Data[iX][iY].m_sAppr3;
+					sAppr4     = m_Data[iX][iY].m_sAppr4;
+					iApprColor = m_Data[iX][iY].m_iApprColor;
+					iStatus    = m_Data[iX][iY].m_iStatus;
+					iEffectType  = m_Data[iX][iY].m_iEffectType;
+					iEffectFrame = m_Data[iX][iY].m_iEffectFrame;
+					iEffectTotalFrame = m_Data[iX][iY].m_iEffectTotalFrame;
 				}
 				ZeroMemory(cTmpName, sizeof(cTmpName));
-				memcpy(cTmpName, m_pData[iX][iY].m_cOwnerName, 10);
+				memcpy(cTmpName, m_Data[iX][iY].m_cOwnerName, 10);
 				ZeroMemory(pName, sizeof(pName));
-				memcpy(pName, m_pData[iX][iY].m_cOwnerName, 10);
-				m_pData[iX][iY].m_wObjectID  = NULL; //-1; v1.41
-				m_pData[iX][iY].m_iChatMsg   = NULL;
-				m_pData[iX][iY].m_sOwnerType = NULL;
-				m_pData[iX][iY].m_iEffectType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cOwnerName, sizeof(m_pData[iX][iY].m_cOwnerName));
+				memcpy(pName, m_Data[iX][iY].m_cOwnerName, 10);
+				m_Data[iX][iY].m_wObjectID  = NULL; //-1; v1.41
+				m_Data[iX][iY].m_iChatMsg   = NULL;
+				m_Data[iX][iY].m_sOwnerType = NULL;
+				m_Data[iX][iY].m_iEffectType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cOwnerName, sizeof(m_Data[iX][iY].m_cOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = dX + m_sPivotX;
 				m_iObjectIDcacheLocY[wObjectID] = dY + m_sPivotY;
 				goto EXIT_SEARCH_LOOP;
@@ -1432,12 +1432,12 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 		}else if (m_iObjectIDcacheLocX[wObjectID] < 0)
 		{	iX = abs(m_iObjectIDcacheLocX[wObjectID]) - m_sPivotX;
 			iY = abs(m_iObjectIDcacheLocY[wObjectID]) - m_sPivotY;
-			if ((iX < 0) || (iX >= MAPDATASIZEX) || (iY < 0) || (iY >= MAPDATASIZEY))
+			if ((iX < 0) || (iX >= MapDataSIZEX) || (iY < 0) || (iY >= MapDataSIZEY))
 			{	m_iObjectIDcacheLocX[wObjectID] = 0;
 				m_iObjectIDcacheLocY[wObjectID] = 0;
 				return FALSE;
 			}
-			if ((m_pData[iX][iY].m_cDeadOwnerFrame == -1) && (m_pData[iX][iY].m_wDeadObjectID == wObjectID))
+			if ((m_Data[iX][iY].m_cDeadOwnerFrame == -1) && (m_Data[iX][iY].m_wDeadObjectID == wObjectID))
 			{	dX = iX;
 				dY = iY;
 				switch (sAction) {
@@ -1460,37 +1460,37 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 					break;
 				}
 				if ((wObjectID != (WORD)m_pGame->m_sPlayerObjectID) &&
-					(m_pData[dX][dY].m_sOwnerType != NULL) && (m_pData[dX][dY].m_wObjectID != wObjectID))
+					(m_Data[dX][dY].m_sOwnerType != NULL) && (m_Data[dX][dY].m_wObjectID != wObjectID))
 				{	m_pGame->RequestFullObjectData(wObjectID);
 					ZeroMemory(pName, strlen(pName));
 					return FALSE;
 				}
-				iChatIndex = m_pData[iX][iY].m_iDeadChatMsg;
+				iChatIndex = m_Data[iX][iY].m_iDeadChatMsg;
 				if (sAction != OBJECTNULLACTION) {
-			   		sType      = m_pData[iX][iY].m_sDeadOwnerType;
-					sAppr1     = m_pData[iX][iY].m_sDeadAppr1;
-					sAppr2     = m_pData[iX][iY].m_sDeadAppr2;
-					sAppr3     = m_pData[iX][iY].m_sDeadAppr3;
-					sAppr4     = m_pData[iX][iY].m_sDeadAppr4;
-					iApprColor = m_pData[iX][iY].m_iDeadApprColor;
-					iStatus    = m_pData[iX][iY].m_iDeadStatus;
+			   		sType      = m_Data[iX][iY].m_sDeadOwnerType;
+					sAppr1     = m_Data[iX][iY].m_sDeadAppr1;
+					sAppr2     = m_Data[iX][iY].m_sDeadAppr2;
+					sAppr3     = m_Data[iX][iY].m_sDeadAppr3;
+					sAppr4     = m_Data[iX][iY].m_sDeadAppr4;
+					iApprColor = m_Data[iX][iY].m_iDeadApprColor;
+					iStatus    = m_Data[iX][iY].m_iDeadStatus;
 				}
 				ZeroMemory(cTmpName, sizeof(cTmpName));
-				memcpy(cTmpName, m_pData[iX][iY].m_cDeadOwnerName, 10);
+				memcpy(cTmpName, m_Data[iX][iY].m_cDeadOwnerName, 10);
 				ZeroMemory(pName, sizeof(pName));
-				memcpy(pName, m_pData[iX][iY].m_cDeadOwnerName, 10);
-				m_pData[iX][iY].m_wDeadObjectID  = NULL; // -1; v1.41
-				m_pData[iX][iY].m_iDeadChatMsg   = NULL;
-				m_pData[iX][iY].m_sDeadOwnerType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cDeadOwnerName, sizeof(m_pData[iX][iY].m_cDeadOwnerName));
+				memcpy(pName, m_Data[iX][iY].m_cDeadOwnerName, 10);
+				m_Data[iX][iY].m_wDeadObjectID  = NULL; // -1; v1.41
+				m_Data[iX][iY].m_iDeadChatMsg   = NULL;
+				m_Data[iX][iY].m_sDeadOwnerType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cDeadOwnerName, sizeof(m_Data[iX][iY].m_cDeadOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = -1*(dX + m_sPivotX);
 				m_iObjectIDcacheLocY[wObjectID] = -1*(dY + m_sPivotY);
 				goto EXIT_SEARCH_LOOP;
 		}	}
 
-		for (iX = 0; iX < MAPDATASIZEX; iX++)
-		for (iY = 0; iY < MAPDATASIZEY; iY++)
-		{	if (m_pData[iX][iY].m_wObjectID == wObjectID)
+		for (iX = 0; iX < MapDataSIZEX; iX++)
+		for (iY = 0; iY < MapDataSIZEY; iY++)
+		{	if (m_Data[iX][iY].m_wObjectID == wObjectID)
 			{	dX = iX;
 				dY = iY;
 				switch (sAction) {
@@ -1513,38 +1513,38 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 					break;
 				}
 				if (   (wObjectID != (WORD)m_pGame->m_sPlayerObjectID) 
-					&& (m_pData[dX][dY].m_sOwnerType != NULL) && (m_pData[dX][dY].m_wObjectID != wObjectID))
+					&& (m_Data[dX][dY].m_sOwnerType != NULL) && (m_Data[dX][dY].m_wObjectID != wObjectID))
 				{	m_pGame->RequestFullObjectData(wObjectID);
 					ZeroMemory(pName, strlen(pName));
 					return FALSE;
 				}
-				iChatIndex = m_pData[iX][iY].m_iChatMsg;
+				iChatIndex = m_Data[iX][iY].m_iChatMsg;
 				if (sAction != OBJECTNULLACTION) {
-					sType      = m_pData[iX][iY].m_sOwnerType;
-					sAppr1     = m_pData[iX][iY].m_sAppr1;
-					sAppr2     = m_pData[iX][iY].m_sAppr2;
-					sAppr3     = m_pData[iX][iY].m_sAppr3;
-					sAppr4     = m_pData[iX][iY].m_sAppr4;
-					iApprColor = m_pData[iX][iY].m_iApprColor; // v1.4
-					iStatus    = m_pData[iX][iY].m_iStatus;
-					iEffectType  = m_pData[iX][iY].m_iEffectType;
-					iEffectFrame = m_pData[iX][iY].m_iEffectFrame;
-					iEffectTotalFrame = m_pData[iX][iY].m_iEffectTotalFrame;
+					sType      = m_Data[iX][iY].m_sOwnerType;
+					sAppr1     = m_Data[iX][iY].m_sAppr1;
+					sAppr2     = m_Data[iX][iY].m_sAppr2;
+					sAppr3     = m_Data[iX][iY].m_sAppr3;
+					sAppr4     = m_Data[iX][iY].m_sAppr4;
+					iApprColor = m_Data[iX][iY].m_iApprColor; // v1.4
+					iStatus    = m_Data[iX][iY].m_iStatus;
+					iEffectType  = m_Data[iX][iY].m_iEffectType;
+					iEffectFrame = m_Data[iX][iY].m_iEffectFrame;
+					iEffectTotalFrame = m_Data[iX][iY].m_iEffectTotalFrame;
 				}
 				ZeroMemory(cTmpName, sizeof(cTmpName));
-				memcpy(cTmpName, m_pData[iX][iY].m_cOwnerName, 10);
+				memcpy(cTmpName, m_Data[iX][iY].m_cOwnerName, 10);
 				ZeroMemory(pName, sizeof(pName));
-				memcpy(pName, m_pData[iX][iY].m_cOwnerName, 10);
-				m_pData[iX][iY].m_wObjectID  = NULL; //-1; v1.41
-				m_pData[iX][iY].m_iChatMsg   = NULL;
-				m_pData[iX][iY].m_sOwnerType = NULL;
-				m_pData[iX][iY].m_iEffectType = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cOwnerName, sizeof(m_pData[iX][iY].m_cOwnerName));
+				memcpy(pName, m_Data[iX][iY].m_cOwnerName, 10);
+				m_Data[iX][iY].m_wObjectID  = NULL; //-1; v1.41
+				m_Data[iX][iY].m_iChatMsg   = NULL;
+				m_Data[iX][iY].m_sOwnerType = NULL;
+				m_Data[iX][iY].m_iEffectType = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cOwnerName, sizeof(m_Data[iX][iY].m_cOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = dX + m_sPivotX;
 				m_iObjectIDcacheLocY[wObjectID] = dY + m_sPivotY;
 				goto EXIT_SEARCH_LOOP;
 			}
-			if (m_pData[iX][iY].m_wDeadObjectID == wObjectID)
+			if (m_Data[iX][iY].m_wDeadObjectID == wObjectID)
 			{	dX = iX;
 				dY = iY;
 				switch (sAction) {
@@ -1567,30 +1567,30 @@ BOOL __fastcall CMapData::bSetOwner(WORD wObjectID, int sX, int sY, int sType, i
 					break;
 				}
 				if ((wObjectID != (WORD)m_pGame->m_sPlayerObjectID) &&
-					(m_pData[dX][dY].m_sOwnerType != NULL) && (m_pData[dX][dY].m_wObjectID != wObjectID))
+					(m_Data[dX][dY].m_sOwnerType != NULL) && (m_Data[dX][dY].m_wObjectID != wObjectID))
 				{	m_pGame->RequestFullObjectData(wObjectID);
 					ZeroMemory(pName, strlen(pName));
 					return FALSE;
 				}
-				iChatIndex = m_pData[iX][iY].m_iDeadChatMsg;
+				iChatIndex = m_Data[iX][iY].m_iDeadChatMsg;
 				if (sAction != OBJECTNULLACTION) {
-			   		sType      = m_pData[iX][iY].m_sDeadOwnerType;
-					sAppr1     = m_pData[iX][iY].m_sDeadAppr1;
-					sAppr2     = m_pData[iX][iY].m_sDeadAppr2;
-					sAppr3     = m_pData[iX][iY].m_sDeadAppr3;
-					sAppr4     = m_pData[iX][iY].m_sDeadAppr4;
-					iApprColor = m_pData[iX][iY].m_iDeadApprColor; // v1.4
-					iStatus    = m_pData[iX][iY].m_iDeadStatus;
+			   		sType      = m_Data[iX][iY].m_sDeadOwnerType;
+					sAppr1     = m_Data[iX][iY].m_sDeadAppr1;
+					sAppr2     = m_Data[iX][iY].m_sDeadAppr2;
+					sAppr3     = m_Data[iX][iY].m_sDeadAppr3;
+					sAppr4     = m_Data[iX][iY].m_sDeadAppr4;
+					iApprColor = m_Data[iX][iY].m_iDeadApprColor; // v1.4
+					iStatus    = m_Data[iX][iY].m_iDeadStatus;
 				}
 				ZeroMemory(cTmpName, sizeof(cTmpName));
-				memcpy(cTmpName, m_pData[iX][iY].m_cDeadOwnerName, 10);
+				memcpy(cTmpName, m_Data[iX][iY].m_cDeadOwnerName, 10);
 				ZeroMemory(pName, sizeof(pName));
-				memcpy(pName, m_pData[iX][iY].m_cDeadOwnerName, 10);
-				m_pData[iX][iY].m_wDeadObjectID  = NULL; //-1; v1.41
-				m_pData[iX][iY].m_iDeadChatMsg   = NULL;
-				m_pData[iX][iY].m_sDeadOwnerType = NULL;
-				m_pData[iX][iY].m_iEffectType    = NULL;
-				ZeroMemory(m_pData[iX][iY].m_cDeadOwnerName, sizeof(m_pData[iX][iY].m_cDeadOwnerName));
+				memcpy(pName, m_Data[iX][iY].m_cDeadOwnerName, 10);
+				m_Data[iX][iY].m_wDeadObjectID  = NULL; //-1; v1.41
+				m_Data[iX][iY].m_iDeadChatMsg   = NULL;
+				m_Data[iX][iY].m_sDeadOwnerType = NULL;
+				m_Data[iX][iY].m_iEffectType    = NULL;
+				ZeroMemory(m_Data[iX][iY].m_cDeadOwnerName, sizeof(m_Data[iX][iY].m_cDeadOwnerName));
 				m_iObjectIDcacheLocX[wObjectID] = -1*(dX + m_sPivotX);
 				m_iObjectIDcacheLocY[wObjectID] = -1*(dY + m_sPivotY);
 				goto EXIT_SEARCH_LOOP;
@@ -1606,105 +1606,105 @@ EXIT_SEARCH_LOOP:;
 	{	dX = sX - m_sPivotX;
 		dY = sY - m_sPivotY;
 	}
-	if ((iPreLoc == 0) && (m_pData[dX][dY].m_sOwnerType != NULL) && (m_pData[dX][dY].m_cOwnerAction == OBJECTDYING))
-	{	m_pData[dX][dY].m_wDeadObjectID        = m_pData[dX][dY].m_wObjectID;
-		m_pData[dX][dY].m_sDeadOwnerType       = m_pData[dX][dY].m_sOwnerType;
-		m_pData[dX][dY].m_cDeadDir             = m_pData[dX][dY].m_cDir;
-		m_pData[dX][dY].m_sDeadAppr1           = m_pData[dX][dY].m_sAppr1;
-		m_pData[dX][dY].m_sDeadAppr2           = m_pData[dX][dY].m_sAppr2;
-		m_pData[dX][dY].m_sDeadAppr3           = m_pData[dX][dY].m_sAppr3;
-		m_pData[dX][dY].m_sDeadAppr4           = m_pData[dX][dY].m_sAppr4;
-		m_pData[dX][dY].m_iDeadApprColor       = m_pData[dX][dY].m_iApprColor; // v1.4
-		m_pData[dX][dY].m_iDeadStatus          = m_pData[dX][dY].m_iStatus;
-		m_pData[dX][dY].m_cDeadOwnerFrame      = -1;
-		m_pData[dX][dY].m_dwDeadOwnerTime	   = dwTime;
-		memcpy(m_pData[dX][dY].m_cDeadOwnerName, m_pData[dX][dY].m_cOwnerName, 11);
-		m_pData[dX][dY].m_iDeadChatMsg         = m_pData[dX][dY].m_iChatMsg;
-		m_pData[dX][dY].m_wObjectID  = NULL;
-		m_pData[dX][dY].m_sOwnerType = NULL;
-		m_pData[dX][dY].m_iChatMsg   = NULL;
-		ZeroMemory(m_pData[dX][dY].m_cOwnerName, sizeof(m_pData[dX][dY].m_cOwnerName));
-		m_iObjectIDcacheLocX[m_pData[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocX[m_pData[dX][dY].m_wDeadObjectID];//dX; // v1.4
-		m_iObjectIDcacheLocY[m_pData[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocY[m_pData[dX][dY].m_wDeadObjectID];//dY;
+	if ((iPreLoc == 0) && (m_Data[dX][dY].m_sOwnerType != NULL) && (m_Data[dX][dY].m_cOwnerAction == OBJECTDYING))
+	{	m_Data[dX][dY].m_wDeadObjectID        = m_Data[dX][dY].m_wObjectID;
+		m_Data[dX][dY].m_sDeadOwnerType       = m_Data[dX][dY].m_sOwnerType;
+		m_Data[dX][dY].m_cDeadDir             = m_Data[dX][dY].m_cDir;
+		m_Data[dX][dY].m_sDeadAppr1           = m_Data[dX][dY].m_sAppr1;
+		m_Data[dX][dY].m_sDeadAppr2           = m_Data[dX][dY].m_sAppr2;
+		m_Data[dX][dY].m_sDeadAppr3           = m_Data[dX][dY].m_sAppr3;
+		m_Data[dX][dY].m_sDeadAppr4           = m_Data[dX][dY].m_sAppr4;
+		m_Data[dX][dY].m_iDeadApprColor       = m_Data[dX][dY].m_iApprColor; // v1.4
+		m_Data[dX][dY].m_iDeadStatus          = m_Data[dX][dY].m_iStatus;
+		m_Data[dX][dY].m_cDeadOwnerFrame      = -1;
+		m_Data[dX][dY].m_dwDeadOwnerTime	   = dwTime;
+		memcpy(m_Data[dX][dY].m_cDeadOwnerName, m_Data[dX][dY].m_cOwnerName, 11);
+		m_Data[dX][dY].m_iDeadChatMsg         = m_Data[dX][dY].m_iChatMsg;
+		m_Data[dX][dY].m_wObjectID  = NULL;
+		m_Data[dX][dY].m_sOwnerType = NULL;
+		m_Data[dX][dY].m_iChatMsg   = NULL;
+		ZeroMemory(m_Data[dX][dY].m_cOwnerName, sizeof(m_Data[dX][dY].m_cOwnerName));
+		m_iObjectIDcacheLocX[m_Data[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocX[m_Data[dX][dY].m_wDeadObjectID];//dX; // v1.4
+		m_iObjectIDcacheLocY[m_Data[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocY[m_Data[dX][dY].m_wDeadObjectID];//dY;
 
-		if (m_pData[dX][dY].m_iEffectType != 0)
-		{	m_pData[dX][dY].m_iEffectType  = 0;
-			m_pData[dX][dY].m_iEffectFrame = 0;
-			m_pData[dX][dY].m_iEffectTotalFrame = 0;
-			m_pData[dX][dY].m_dwEffectTime      = 0;
+		if (m_Data[dX][dY].m_iEffectType != 0)
+		{	m_Data[dX][dY].m_iEffectType  = 0;
+			m_Data[dX][dY].m_iEffectFrame = 0;
+			m_Data[dX][dY].m_iEffectTotalFrame = 0;
+			m_Data[dX][dY].m_dwEffectTime      = 0;
 	}	}
 
-	if (m_pData[dX][dY].m_sOwnerType != NULL)
+	if (m_Data[dX][dY].m_sOwnerType != NULL)
 	{	if (   (wObjectID != (WORD)m_pGame->m_sPlayerObjectID)
-			&& (m_pData[dX][dY].m_wObjectID == (WORD)m_pGame->m_sPlayerObjectID))
+			&& (m_Data[dX][dY].m_wObjectID == (WORD)m_pGame->m_sPlayerObjectID))
 		{	return FALSE;
 		}else
 		{	return FALSE;
 	}	}
 
 	if (iPreLoc == 0)
-	{	m_pData[dX][dY].m_wObjectID   = wObjectID;
-		m_pData[dX][dY].m_sOwnerType  = sType;
-		m_pData[dX][dY].m_cDir        = cDir;
-		m_pData[dX][dY].m_sAppr1      = sAppr1;
-		m_pData[dX][dY].m_sAppr2      = sAppr2;
-		m_pData[dX][dY].m_sAppr3      = sAppr3;
-		m_pData[dX][dY].m_sAppr4      = sAppr4;
-		m_pData[dX][dY].m_iApprColor  = iApprColor; // v1.4
-		m_pData[dX][dY].m_iStatus     = iStatus;
-		m_pData[dX][dY].m_sV1         = sV1;
-		m_pData[dX][dY].m_sV2         = sV2;
-		m_pData[dX][dY].m_sV3         = sV3;
-		m_pData[dX][dY].m_iEffectType  = iEffectType;
-		m_pData[dX][dY].m_iEffectFrame = iEffectFrame;
-		m_pData[dX][dY].m_iEffectTotalFrame = iEffectTotalFrame;
-		ZeroMemory(m_pData[dX][dY].m_cOwnerName, sizeof(m_pData[dX][dY].m_cOwnerName));
-		strcpy(m_pData[dX][dY].m_cOwnerName, cTmpName);
+	{	m_Data[dX][dY].m_wObjectID   = wObjectID;
+		m_Data[dX][dY].m_sOwnerType  = sType;
+		m_Data[dX][dY].m_cDir        = cDir;
+		m_Data[dX][dY].m_sAppr1      = sAppr1;
+		m_Data[dX][dY].m_sAppr2      = sAppr2;
+		m_Data[dX][dY].m_sAppr3      = sAppr3;
+		m_Data[dX][dY].m_sAppr4      = sAppr4;
+		m_Data[dX][dY].m_iApprColor  = iApprColor; // v1.4
+		m_Data[dX][dY].m_iStatus     = iStatus;
+		m_Data[dX][dY].m_sV1         = sV1;
+		m_Data[dX][dY].m_sV2         = sV2;
+		m_Data[dX][dY].m_sV3         = sV3;
+		m_Data[dX][dY].m_iEffectType  = iEffectType;
+		m_Data[dX][dY].m_iEffectFrame = iEffectFrame;
+		m_Data[dX][dY].m_iEffectTotalFrame = iEffectTotalFrame;
+		ZeroMemory(m_Data[dX][dY].m_cOwnerName, sizeof(m_Data[dX][dY].m_cOwnerName));
+		strcpy(m_Data[dX][dY].m_cOwnerName, cTmpName);
 		if ((sAction != OBJECTNULLACTION) && (sAction != MSGTYPE_CONFIRM) && (sAction != MSGTYPE_REJECT))
-		{	m_pData[dX][dY].m_cOwnerFrame  = iFrame; // 0
-			m_pData[dX][dY].m_cOwnerAction = (char)sAction;
+		{	m_Data[dX][dY].m_cOwnerFrame  = iFrame; // 0
+			m_Data[dX][dY].m_cOwnerAction = (char)sAction;
 		}
-		m_pData[dX][dY].m_dwOwnerTime        = dwTime;
-		m_pData[dX][dY].m_iChatMsg = iChatIndex;
+		m_Data[dX][dY].m_dwOwnerTime        = dwTime;
+		m_Data[dX][dY].m_iChatMsg = iChatIndex;
 		if ((sAppr4 & 0x00F0) != 0)
-		{	m_pData[dX][dY].m_iEffectType = (sAppr4 & 0x00F0) >> 4;
+		{	m_Data[dX][dY].m_iEffectType = (sAppr4 & 0x00F0) >> 4;
 			if (sAction == OBJECTNULLACTION)
-			{	m_pData[dX][dY].m_iEffectFrame = 0;
-				m_pData[dX][dY].m_dwEffectTime = dwTime;
+			{	m_Data[dX][dY].m_iEffectFrame = 0;
+				m_Data[dX][dY].m_dwEffectTime = dwTime;
 			}
-			switch (m_pData[dX][dY].m_iEffectType) {
-			case 1: m_pData[dX][dY].m_iEffectTotalFrame = 13; break;
-			case 2: m_pData[dX][dY].m_iEffectTotalFrame = 11; break;
+			switch (m_Data[dX][dY].m_iEffectType) {
+			case 1: m_Data[dX][dY].m_iEffectTotalFrame = 13; break;
+			case 2: m_Data[dX][dY].m_iEffectTotalFrame = 11; break;
 			}
 		}else
-		{	m_pData[dX][dY].m_iEffectType = 0;
+		{	m_Data[dX][dY].m_iEffectType = 0;
 		}
 	}else // iPreLoc == 1
-	{	m_pData[dX][dY].m_wDeadObjectID   = wObjectID;
-		m_pData[dX][dY].m_sDeadOwnerType  = sType;
-		m_pData[dX][dY].m_cDeadDir        = cDir;
-		m_pData[dX][dY].m_sDeadAppr1      = sAppr1;
-		m_pData[dX][dY].m_sDeadAppr2      = sAppr2;
-		m_pData[dX][dY].m_sDeadAppr3      = sAppr3;
-		m_pData[dX][dY].m_sDeadAppr4      = sAppr4;
-		m_pData[dX][dY].m_iDeadApprColor  = iApprColor; // v1.4
-		m_pData[dX][dY].m_iDeadStatus     = iStatus;
-		ZeroMemory(m_pData[dX][dY].m_cDeadOwnerName, sizeof(m_pData[dX][dY].m_cDeadOwnerName));
-		strcpy(m_pData[dX][dY].m_cDeadOwnerName, cTmpName);
-		m_pData[dX][dY].m_dwDeadOwnerTime  = dwTime;
-		m_pData[dX][dY].m_iDeadChatMsg = iChatIndex;
+	{	m_Data[dX][dY].m_wDeadObjectID   = wObjectID;
+		m_Data[dX][dY].m_sDeadOwnerType  = sType;
+		m_Data[dX][dY].m_cDeadDir        = cDir;
+		m_Data[dX][dY].m_sDeadAppr1      = sAppr1;
+		m_Data[dX][dY].m_sDeadAppr2      = sAppr2;
+		m_Data[dX][dY].m_sDeadAppr3      = sAppr3;
+		m_Data[dX][dY].m_sDeadAppr4      = sAppr4;
+		m_Data[dX][dY].m_iDeadApprColor  = iApprColor; // v1.4
+		m_Data[dX][dY].m_iDeadStatus     = iStatus;
+		ZeroMemory(m_Data[dX][dY].m_cDeadOwnerName, sizeof(m_Data[dX][dY].m_cDeadOwnerName));
+		strcpy(m_Data[dX][dY].m_cDeadOwnerName, cTmpName);
+		m_Data[dX][dY].m_dwDeadOwnerTime  = dwTime;
+		m_Data[dX][dY].m_iDeadChatMsg = iChatIndex;
 		if ((sAppr4 & 0x00F0) != 0)
-		{	m_pData[dX][dY].m_iEffectType = (sAppr4 & 0x00F0) >> 4;
+		{	m_Data[dX][dY].m_iEffectType = (sAppr4 & 0x00F0) >> 4;
 			if (sAction == OBJECTNULLACTION)
-			{	m_pData[dX][dY].m_iEffectFrame = 0;
-				m_pData[dX][dY].m_dwEffectTime = dwTime;
+			{	m_Data[dX][dY].m_iEffectFrame = 0;
+				m_Data[dX][dY].m_dwEffectTime = dwTime;
 			}
-			switch (m_pData[dX][dY].m_iEffectType) {
-			case 1: m_pData[dX][dY].m_iEffectTotalFrame = 13; break;
-			case 2: m_pData[dX][dY].m_iEffectTotalFrame = 11; break;
+			switch (m_Data[dX][dY].m_iEffectType) {
+			case 1: m_Data[dX][dY].m_iEffectTotalFrame = 13; break;
+			case 2: m_Data[dX][dY].m_iEffectTotalFrame = 11; break;
 			}
 		}else
-		{	m_pData[dX][dY].m_iEffectType = 0;
+		{	m_Data[dX][dY].m_iEffectType = 0;
 	}	}
 	return TRUE;
 }
@@ -1714,8 +1714,8 @@ BOOL __fastcall CMapData::bGetOwner(short sX, short sY, short * pOwnerType, char
 {
  int dX, dY;
 
-	if ((sX < m_sPivotX) || (sX > m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY > m_sPivotY + MAPDATASIZEY)) {
+	if ((sX < m_sPivotX) || (sX > m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY > m_sPivotY + MapDataSIZEY)) {
 		ZeroMemory(pName, sizeof(pName));
 		return FALSE;
 	}
@@ -1723,36 +1723,36 @@ BOOL __fastcall CMapData::bGetOwner(short sX, short sY, short * pOwnerType, char
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	*pOwnerType = m_pData[dX][dY].m_sOwnerType;
-	*pAction    = m_pData[dX][dY].m_cOwnerAction;
-	*pDir       = m_pData[dX][dY].m_cDir;
-	*pFrame     = m_pData[dX][dY].m_cOwnerFrame;
-	*pAppr1     = m_pData[dX][dY].m_sAppr1;
-	*pAppr2     = m_pData[dX][dY].m_sAppr2;
-	*pAppr3     = m_pData[dX][dY].m_sAppr3;
-	*pAppr4     = m_pData[dX][dY].m_sAppr4;
-	*pApprColor = m_pData[dX][dY].m_iApprColor; // v1.4
-	*pStatus    = m_pData[dX][dY].m_iStatus;
-	*pChatIndex = m_pData[dX][dY].m_iChatMsg;
-	*pV1        = m_pData[dX][dY].m_sV1;
-	*pV2        = m_pData[dX][dY].m_sV2;
+	*pOwnerType = m_Data[dX][dY].m_sOwnerType;
+	*pAction    = m_Data[dX][dY].m_cOwnerAction;
+	*pDir       = m_Data[dX][dY].m_cDir;
+	*pFrame     = m_Data[dX][dY].m_cOwnerFrame;
+	*pAppr1     = m_Data[dX][dY].m_sAppr1;
+	*pAppr2     = m_Data[dX][dY].m_sAppr2;
+	*pAppr3     = m_Data[dX][dY].m_sAppr3;
+	*pAppr4     = m_Data[dX][dY].m_sAppr4;
+	*pApprColor = m_Data[dX][dY].m_iApprColor; // v1.4
+	*pStatus    = m_Data[dX][dY].m_iStatus;
+	*pChatIndex = m_Data[dX][dY].m_iChatMsg;
+	*pV1        = m_Data[dX][dY].m_sV1;
+	*pV2        = m_Data[dX][dY].m_sV2;
 
-	strcpy(pName, m_pData[dX][dY].m_cOwnerName);
+	strcpy(pName, m_Data[dX][dY].m_cOwnerName);
 
 	return TRUE;
 }
 
 int CMapData::getChatMsgIndex(WORD wObjectID) const 
 { 
-	for (uint32 dX = 0; dX < MAPDATASIZEX; dX++)
+	for (uint32 dX = 0; dX < MapDataSIZEX; dX++)
 	{
-		for (uint32 dY = 0; dY < MAPDATASIZEY; dY++) {
+		for (uint32 dY = 0; dY < MapDataSIZEY; dY++) {
 
-			if (m_pData[dX][dY].m_wObjectID == wObjectID) {
-				return m_pData[dX][dY].m_iChatMsg;
+			if (m_Data[dX][dY].m_wObjectID == wObjectID) {
+				return m_Data[dX][dY].m_iChatMsg;
 			}
-			if (m_pData[dX][dY].m_wDeadObjectID == wObjectID) {
-				return m_pData[dX][dY].m_iDeadChatMsg;
+			if (m_Data[dX][dY].m_wDeadObjectID == wObjectID) {
+				return m_Data[dX][dY].m_iDeadChatMsg;
 			}
 		}
 	}
@@ -1765,8 +1765,8 @@ BOOL __fastcall CMapData::bGetDeadOwner(short sX, short sY, short * pOwnerType, 
 {
  int dX, dY;
 
-	if ((sX < m_sPivotX) || (sX > m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY > m_sPivotY + MAPDATASIZEY)) {
+	if ((sX < m_sPivotX) || (sX > m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY > m_sPivotY + MapDataSIZEY)) {
 
 		ZeroMemory(pName, sizeof(pName));
 		*pItemSprite = NULL;
@@ -1776,20 +1776,20 @@ BOOL __fastcall CMapData::bGetDeadOwner(short sX, short sY, short * pOwnerType, 
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	*pOwnerType = m_pData[dX][dY].m_sDeadOwnerType;
-	*pDir       = m_pData[dX][dY].m_cDeadDir;
-	*pAppr1     = m_pData[dX][dY].m_sDeadAppr1;
-	*pAppr2     = m_pData[dX][dY].m_sDeadAppr2;
-	*pAppr3     = m_pData[dX][dY].m_sDeadAppr3;
-	*pAppr4     = m_pData[dX][dY].m_sDeadAppr4;
-	*pApprColor = m_pData[dX][dY].m_iDeadApprColor; // v1.4
-	*pFrame     = m_pData[dX][dY].m_cDeadOwnerFrame;
-	*pChatIndex = m_pData[dX][dY].m_iDeadChatMsg;
+	*pOwnerType = m_Data[dX][dY].m_sDeadOwnerType;
+	*pDir       = m_Data[dX][dY].m_cDeadDir;
+	*pAppr1     = m_Data[dX][dY].m_sDeadAppr1;
+	*pAppr2     = m_Data[dX][dY].m_sDeadAppr2;
+	*pAppr3     = m_Data[dX][dY].m_sDeadAppr3;
+	*pAppr4     = m_Data[dX][dY].m_sDeadAppr4;
+	*pApprColor = m_Data[dX][dY].m_iDeadApprColor; // v1.4
+	*pFrame     = m_Data[dX][dY].m_cDeadOwnerFrame;
+	*pChatIndex = m_Data[dX][dY].m_iDeadChatMsg;
 
-	strcpy(pName, m_pData[dX][dY].m_cDeadOwnerName);
+	strcpy(pName, m_Data[dX][dY].m_cDeadOwnerName);
 
-	*pItemSprite      = m_pData[dX][dY].m_sItemSprite;
-	*pItemSpriteFrame = m_pData[dX][dY].m_sItemSpriteFrame;
+	*pItemSprite      = m_Data[dX][dY].m_sItemSprite;
+	*pItemSpriteFrame = m_Data[dX][dY].m_sItemSpriteFrame;
 
 	return TRUE;
 }
@@ -1822,8 +1822,8 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 	if ((dwTime - S_dwUpdateTime) > 40) bAutoUpdate = TRUE;
 	dynObjsNeedUpdate = (dwTime - m_dwDOframeTime) > 100;
 
-	//for (dX = 0; dX < MAPDATASIZEX; dX++)
-	//for (dY = 0; dY < MAPDATASIZEY; dY++)
+	//for (dX = 0; dX < MapDataSIZEX; dX++)
+	//for (dY = 0; dY < MapDataSIZEY; dY++)
 	for (dX = 8; dX <= 31; dX++) //19 +/- 11
 	for (dY = 8; dY <= 26; dY++) //17 +/- 9
 	{	
@@ -1832,49 +1832,49 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 		{	
 			sDist = (abs(sCenterX - dX)+abs(sCenterY - dY))/2;
 			//lPan = -(sCenterX - dX)*1000;
-			m_pData[dX][dY].m_iEffectFrame++;
-			switch (m_pData[dX][dY].m_iEffectType) {
+			m_Data[dX][dY].m_iEffectFrame++;
+			switch (m_Data[dX][dY].m_iEffectType) {
 			case 1:
-				if (m_pData[dX][dY].m_iEffectTotalFrame < m_pData[dX][dY].m_iEffectFrame)
-					m_pData[dX][dY].m_iEffectFrame = 4;
+				if (m_Data[dX][dY].m_iEffectTotalFrame < m_Data[dX][dY].m_iEffectFrame)
+					m_Data[dX][dY].m_iEffectFrame = 4;
 				break;
 			case 2:
-				if (m_pData[dX][dY].m_iEffectTotalFrame < m_pData[dX][dY].m_iEffectFrame)
-					m_pData[dX][dY].m_iEffectFrame = 3;
+				if (m_Data[dX][dY].m_iEffectTotalFrame < m_Data[dX][dY].m_iEffectFrame)
+					m_Data[dX][dY].m_iEffectFrame = 3;
 				break;
 			}
-			if (m_pData[dX][dY].m_sDynamicObjectType != NULL)
+			if (m_Data[dX][dY].m_sDynamicObjectType != NULL)
 			{	
-				m_pData[dX][dY].m_cDynamicObjectFrame++;
-				switch (m_pData[dX][dY].m_sDynamicObjectType) {
+				m_Data[dX][dY].m_cDynamicObjectFrame++;
+				switch (m_Data[dX][dY].m_sDynamicObjectType) {
 				case DYNAMICOBJECT_SPIKE:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 13)
-						m_pData[dX][dY].m_cDynamicObjectFrame = 0;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 13)
+						m_Data[dX][dY].m_cDynamicObjectFrame = 0;
 					break;
 
 				case DYNAMICOBJECT_ICESTORM:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 10)
-						m_pData[dX][dY].m_cDynamicObjectFrame = 0;
-					//if (m_pData[dX][dY].m_cDynamicObjectFrame == 1)
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 10)
+						m_Data[dX][dY].m_cDynamicObjectFrame = 0;
+					//if (m_Data[dX][dY].m_cDynamicObjectFrame == 1)
 					//	m_pGame->PlaySound('E', 16, sDist);
 					break;
 
 				case DYNAMICOBJECT_FIRE:// Firewall
 				case DYNAMICOBJECT_FIRE3: // by Snoopy(FireBow)
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 24)
-						m_pData[dX][dY].m_cDynamicObjectFrame = 0;
-					if (m_pData[dX][dY].m_cDynamicObjectFrame == 1) {
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 24)
+						m_Data[dX][dY].m_cDynamicObjectFrame = 0;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame == 1) {
 						m_pGame->PlaySound('E', 9, sDist);
 					}
 					break;
 
 				case DYNAMICOBJECT_FIRE2:	//  // Crusade buildings burning.
-					if (m_pData[dX][dY].m_cDynamicObjectFrame > 27)
-						m_pData[dX][dY].m_cDynamicObjectFrame = 0;
-					if (m_pData[dX][dY].m_cDynamicObjectFrame == 1) {
+					if (m_Data[dX][dY].m_cDynamicObjectFrame > 27)
+						m_Data[dX][dY].m_cDynamicObjectFrame = 0;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame == 1) {
 						m_pGame->PlaySound('E', 9, sDist);
 					}
-					if ((m_pData[dX][dY].m_cDynamicObjectFrame % 6) == 0) {
+					if ((m_Data[dX][dY].m_cDynamicObjectFrame % 6) == 0) {
 						m_pGame->bAddNewEffect(65, (m_sPivotX+dX)*32 +(rand()%10-5) +5, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 						m_pGame->bAddNewEffect(67, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 					}
@@ -1882,83 +1882,83 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 
 				case DYNAMICOBJECT_FISHOBJECT:
 					if ((rand() % 12) == 1)
-						m_pGame->bAddNewEffect(13, (m_sPivotX + dX)*32 + m_pData[dX][dY].m_cDynamicObjectData1, (m_sPivotY + dY)*32 + m_pData[dX][dY].m_cDynamicObjectData2, NULL, NULL, 0);
+						m_pGame->bAddNewEffect(13, (m_sPivotX + dX)*32 + m_Data[dX][dY].m_cDynamicObjectData1, (m_sPivotY + dY)*32 + m_Data[dX][dY].m_cDynamicObjectData2, NULL, NULL, 0);
 					break;
 
 				case DYNAMICOBJECT_FISH:
-					if ((dwTime - m_pData[dX][dY].m_dwDynamicObjectTime) < 100) break;
-					m_pData[dX][dY].m_dwDynamicObjectTime = dwTime;
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 15) m_pData[dX][dY].m_cDynamicObjectFrame = 0;
-					if ((rand() % 15) == 1) m_pGame->bAddNewEffect(13, (m_sPivotX + dX)*32 + m_pData[dX][dY].m_cDynamicObjectData1, (m_sPivotY + dY)*32 + m_pData[dX][dY].m_cDynamicObjectData2, NULL, NULL, 0);
-					cDir = m_pGame->m_Misc.cGetNextMoveDir(m_pData[dX][dY].m_cDynamicObjectData1, m_pData[dX][dY].m_cDynamicObjectData2, 0, 0);
+					if ((dwTime - m_Data[dX][dY].m_dwDynamicObjectTime) < 100) break;
+					m_Data[dX][dY].m_dwDynamicObjectTime = dwTime;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 15) m_Data[dX][dY].m_cDynamicObjectFrame = 0;
+					if ((rand() % 15) == 1) m_pGame->bAddNewEffect(13, (m_sPivotX + dX)*32 + m_Data[dX][dY].m_cDynamicObjectData1, (m_sPivotY + dY)*32 + m_Data[dX][dY].m_cDynamicObjectData2, NULL, NULL, 0);
+					cDir = m_pGame->m_Misc.cGetNextMoveDir(m_Data[dX][dY].m_cDynamicObjectData1, m_Data[dX][dY].m_cDynamicObjectData2, 0, 0);
 					switch (cDir) {
 					case 1:
-						m_pData[dX][dY].m_cDynamicObjectData4 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 -= 2;
 						break;
 					case 2:
-						m_pData[dX][dY].m_cDynamicObjectData4 -= 2;
-						m_pData[dX][dY].m_cDynamicObjectData3 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 += 2;
 						break;
 					case 3:
-						m_pData[dX][dY].m_cDynamicObjectData3 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 += 2;
 						break;
 					case 4:
-						m_pData[dX][dY].m_cDynamicObjectData3 += 2;
-						m_pData[dX][dY].m_cDynamicObjectData4 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 += 2;
 						break;
 					case 5:
-						m_pData[dX][dY].m_cDynamicObjectData4 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 += 2;
 						break;
 					case 6:
-						m_pData[dX][dY].m_cDynamicObjectData3 -= 2;
-						m_pData[dX][dY].m_cDynamicObjectData4 += 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 += 2;
 						break;
 					case 7:
-						m_pData[dX][dY].m_cDynamicObjectData3 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 -= 2;
 						break;
 					case 8:
-						m_pData[dX][dY].m_cDynamicObjectData3 -= 2;
-						m_pData[dX][dY].m_cDynamicObjectData4 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData3 -= 2;
+						m_Data[dX][dY].m_cDynamicObjectData4 -= 2;
 						break;
 					}
 
-					if (m_pData[dX][dY].m_cDynamicObjectData3 < -12) m_pData[dX][dY].m_cDynamicObjectData3 = -12;
-					if (m_pData[dX][dY].m_cDynamicObjectData3 >  12) m_pData[dX][dY].m_cDynamicObjectData3 =  12;
-					if (m_pData[dX][dY].m_cDynamicObjectData4 < -12) m_pData[dX][dY].m_cDynamicObjectData4 = -12;
-					if (m_pData[dX][dY].m_cDynamicObjectData4 >  12) m_pData[dX][dY].m_cDynamicObjectData4 =  12;
+					if (m_Data[dX][dY].m_cDynamicObjectData3 < -12) m_Data[dX][dY].m_cDynamicObjectData3 = -12;
+					if (m_Data[dX][dY].m_cDynamicObjectData3 >  12) m_Data[dX][dY].m_cDynamicObjectData3 =  12;
+					if (m_Data[dX][dY].m_cDynamicObjectData4 < -12) m_Data[dX][dY].m_cDynamicObjectData4 = -12;
+					if (m_Data[dX][dY].m_cDynamicObjectData4 >  12) m_Data[dX][dY].m_cDynamicObjectData4 =  12;
 
-					m_pData[dX][dY].m_cDynamicObjectData1 += m_pData[dX][dY].m_cDynamicObjectData3;
-					m_pData[dX][dY].m_cDynamicObjectData2 += m_pData[dX][dY].m_cDynamicObjectData4;
+					m_Data[dX][dY].m_cDynamicObjectData1 += m_Data[dX][dY].m_cDynamicObjectData3;
+					m_Data[dX][dY].m_cDynamicObjectData2 += m_Data[dX][dY].m_cDynamicObjectData4;
 					break;
 
 				case DYNAMICOBJECT_PCLOUD_BEGIN:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 8) {
-						m_pData[dX][dY].m_sDynamicObjectType  = DYNAMICOBJECT_PCLOUD_LOOP;
-						m_pData[dX][dY].m_cDynamicObjectFrame = rand() % 8;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 8) {
+						m_Data[dX][dY].m_sDynamicObjectType  = DYNAMICOBJECT_PCLOUD_LOOP;
+						m_Data[dX][dY].m_cDynamicObjectFrame = rand() % 8;
 					}
 					break;
 
 				case DYNAMICOBJECT_PCLOUD_LOOP:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 8) {
-						m_pData[dX][dY].m_cDynamicObjectFrame = 0;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 8) {
+						m_Data[dX][dY].m_cDynamicObjectFrame = 0;
 					}
 					break;
 
 				case DYNAMICOBJECT_PCLOUD_END:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 8) {
-						m_pData[dX][dY].m_sDynamicObjectType  = NULL;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 8) {
+						m_Data[dX][dY].m_sDynamicObjectType  = NULL;
 					}
 					break;
 
 				case DYNAMICOBJECT_ARESDENFLAG:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 4) {
-						m_pData[dX][dY].m_cDynamicObjectFrame  = 0;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 4) {
+						m_Data[dX][dY].m_cDynamicObjectFrame  = 0;
 					}
 					break;
 
 				case DYNAMICOBJECT_ELVINEFLAG:
-					if (m_pData[dX][dY].m_cDynamicObjectFrame >= 8) {
-						m_pData[dX][dY].m_cDynamicObjectFrame  = 4;
+					if (m_Data[dX][dY].m_cDynamicObjectFrame >= 8) {
+						m_Data[dX][dY].m_cDynamicObjectFrame  = 4;
 					}
 					break;
 				}	
@@ -1966,30 +1966,30 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 		}
 
 		// Dead think 00496F43
-		if (m_pData[dX][dY].m_sDeadOwnerType != NULL)
-			if ((m_pData[dX][dY].m_cDeadOwnerFrame >= 0) && ((dwTime - m_pData[dX][dY].m_dwDeadOwnerTime) > 150)) {
-				m_pData[dX][dY].m_dwDeadOwnerTime = dwTime;
-				m_pData[dX][dY].m_cDeadOwnerFrame++;
+		if (m_Data[dX][dY].m_sDeadOwnerType != NULL)
+			if ((m_Data[dX][dY].m_cDeadOwnerFrame >= 0) && ((dwTime - m_Data[dX][dY].m_dwDeadOwnerTime) > 150)) {
+				m_Data[dX][dY].m_dwDeadOwnerTime = dwTime;
+				m_Data[dX][dY].m_cDeadOwnerFrame++;
 				if (iRet == 0) {	
 					iRet = -1;
 					S_dwUpdateTime = dwTime;
 				}
-				if (m_pData[dX][dY].m_cDeadOwnerFrame > 10) {	
-					m_pData[dX][dY].m_wDeadObjectID  = NULL;
-					m_pData[dX][dY].m_sDeadOwnerType = NULL;
-					ZeroMemory(m_pData[dX][dY].m_cDeadOwnerName, sizeof(m_pData[dX][dY].m_cDeadOwnerName));
+				if (m_Data[dX][dY].m_cDeadOwnerFrame > 10) {	
+					m_Data[dX][dY].m_wDeadObjectID  = NULL;
+					m_Data[dX][dY].m_sDeadOwnerType = NULL;
+					ZeroMemory(m_Data[dX][dY].m_cDeadOwnerName, sizeof(m_Data[dX][dY].m_cDeadOwnerName));
 				}	
 			}
 
 			// Alive thing 00496FD8
-		if (m_pData[dX][dY].m_sOwnerType != NULL) {	
-				bool isClientPlayer = (memcmp(m_pData[dX][dY].m_cOwnerName, cPlayerName, 10) == 0) ? TRUE : FALSE; //(dX == sCenterX && dY == sCenterY);
+		if (m_Data[dX][dY].m_sOwnerType != NULL) {	
+				bool isClientPlayer = (memcmp(m_Data[dX][dY].m_cOwnerName, cPlayerName, 10) == 0) ? TRUE : FALSE; //(dX == sCenterX && dY == sCenterY);
 				sDist = (abs(sCenterX - dX)+abs(sCenterY - dY))/2;
 				lPan = -(sCenterX - dX)*1000;
-				switch (m_pData[dX][dY].m_cOwnerAction) {
+				switch (m_Data[dX][dY].m_cOwnerAction) {
 				case OBJECTATTACK:
 				case OBJECTATTACKMOVE:
-					iDelay = (m_pData[dX][dY].m_iStatus & 0x000F)*12;
+					iDelay = (m_Data[dX][dY].m_iStatus & 0x000F)*12;
 					break;
 				case OBJECTMAGIC:
 					if(isClientPlayer)
@@ -2002,34 +2002,34 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 					break;
 				}
 
-				if ((m_pData[dX][dY].m_iStatus & STATUS_FROZEN) != 0)
-					if(m_pData[dX][dY].m_sOwnerType <= 6)
+				if ((m_Data[dX][dY].m_iStatus & STATUS_FROZEN) != 0)
+					if(m_Data[dX][dY].m_sOwnerType <= 6)
 						// Player
-						iDelay += (m_stFrame[m_pData[dX][dY].m_sOwnerType][m_pData[dX][dY].m_cOwnerAction].m_sFrameTime)>>2;
+						iDelay += (m_stFrame[m_Data[dX][dY].m_sOwnerType][m_Data[dX][dY].m_cOwnerAction].m_sFrameTime)>>2;
 					else
 						// Monster
-						iDelay += (m_stFrame[m_pData[dX][dY].m_sOwnerType][m_pData[dX][dY].m_cOwnerAction].m_sFrameTime)/2;
+						iDelay += (m_stFrame[m_Data[dX][dY].m_sOwnerType][m_Data[dX][dY].m_cOwnerAction].m_sFrameTime)/2;
 
-				if ((m_pData[dX][dY].m_iStatus & STATUS_RELICHOLDER) != 0)
-					if(m_pData[dX][dY].m_sOwnerType <= 6)
+				if ((m_Data[dX][dY].m_iStatus & STATUS_RELICHOLDER) != 0)
+					if(m_Data[dX][dY].m_sOwnerType <= 6)
 						// Player
-						iDelay += (m_stFrame[m_pData[dX][dY].m_sOwnerType][m_pData[dX][dY].m_cOwnerAction].m_sFrameTime)/3;
+						iDelay += (m_stFrame[m_Data[dX][dY].m_sOwnerType][m_Data[dX][dY].m_cOwnerAction].m_sFrameTime)/3;
 
 
-				dwFrameTime = m_stFrame[m_pData[dX][dY].m_sOwnerType][m_pData[dX][dY].m_cOwnerAction].m_sFrameTime + iDelay;
+				dwFrameTime = m_stFrame[m_Data[dX][dY].m_sOwnerType][m_Data[dX][dY].m_cOwnerAction].m_sFrameTime + iDelay;
 
-				if ((dwTime - m_pData[dX][dY].m_dwOwnerTime) > dwFrameTime)
+				if ((dwTime - m_Data[dX][dY].m_dwOwnerTime) > dwFrameTime)
 				{	
-					if ((dwTime - m_pData[dX][dY].m_dwOwnerTime) >= (dwFrameTime +dwFrameTime) && dwFrameTime != 0)
+					if ((dwTime - m_Data[dX][dY].m_dwOwnerTime) >= (dwFrameTime +dwFrameTime) && dwFrameTime != 0)
 					{	
-						iSkipFrame = ((dwTime - m_pData[dX][dY].m_dwOwnerTime)/dwFrameTime);
+						iSkipFrame = ((dwTime - m_Data[dX][dY].m_dwOwnerTime)/dwFrameTime);
 						if (iSkipFrame > 3) iSkipFrame = 3;
-						m_pData[dX][dY].m_cOwnerFrame += iSkipFrame;
+						m_Data[dX][dY].m_cOwnerFrame += iSkipFrame;
 					}else
 					{	
-						m_pData[dX][dY].m_cOwnerFrame++;
+						m_Data[dX][dY].m_cOwnerFrame++;
 					}
-					m_pData[dX][dY].m_dwOwnerTime = dwTime;
+					m_Data[dX][dY].m_dwOwnerTime = dwTime;
 					if (iRet == 0)
 					{	
 						iRet = -1;
@@ -2043,33 +2043,33 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							m_dwFrameAdjustTime = ((dwRealTime - m_dwFrameCheckTime) - dwFrameTime);
 						m_dwFrameCheckTime = dwRealTime;
 					}
-					if (m_pData[dX][dY].m_cOwnerFrame > m_stFrame[m_pData[dX][dY].m_sOwnerType][m_pData[dX][dY].m_cOwnerAction].m_sMaxFrame)
+					if (m_Data[dX][dY].m_cOwnerFrame > m_stFrame[m_Data[dX][dY].m_sOwnerType][m_Data[dX][dY].m_cOwnerAction].m_sMaxFrame)
 					{	
 						if (  (m_sRectX <= dX) && ((m_sRectX + 20) >= dX)
 							&& (m_sRectY <= dY) && ((m_sRectY + 15) >= dY)) {
-								if (m_pData[dX][dY].m_cOwnerAction == OBJECTDYING) {	
-									m_pData[dX][dY].m_wDeadObjectID        = m_pData[dX][dY].m_wObjectID;
-									m_pData[dX][dY].m_sDeadOwnerType       = m_pData[dX][dY].m_sOwnerType;
-									m_pData[dX][dY].m_cDeadDir             = m_pData[dX][dY].m_cDir;
-									m_pData[dX][dY].m_sDeadAppr1           = m_pData[dX][dY].m_sAppr1;
-									m_pData[dX][dY].m_sDeadAppr2           = m_pData[dX][dY].m_sAppr2;
-									m_pData[dX][dY].m_sDeadAppr3           = m_pData[dX][dY].m_sAppr3;
-									m_pData[dX][dY].m_sDeadAppr4           = m_pData[dX][dY].m_sAppr4;
-									m_pData[dX][dY].m_iDeadApprColor       = m_pData[dX][dY].m_iApprColor;
-									m_pData[dX][dY].m_iDeadStatus          = m_pData[dX][dY].m_iStatus;
-									m_pData[dX][dY].m_iDeadChatMsg         = m_pData[dX][dY].m_iChatMsg;
-									m_pData[dX][dY].m_cDeadOwnerFrame	   = -1;
-									memcpy(m_pData[dX][dY].m_cDeadOwnerName, m_pData[dX][dY].m_cOwnerName, 11);
-									m_pData[dX][dY].m_wObjectID  = NULL;
-									m_pData[dX][dY].m_sOwnerType = NULL;
-									ZeroMemory(m_pData[dX][dY].m_cOwnerName, sizeof(m_pData[dX][dY].m_cOwnerName));
-									m_iObjectIDcacheLocX[m_pData[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocX[m_pData[dX][dY].m_wDeadObjectID]; //dX;
-									m_iObjectIDcacheLocY[m_pData[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocY[m_pData[dX][dY].m_wDeadObjectID]; //dY;
+								if (m_Data[dX][dY].m_cOwnerAction == OBJECTDYING) {	
+									m_Data[dX][dY].m_wDeadObjectID        = m_Data[dX][dY].m_wObjectID;
+									m_Data[dX][dY].m_sDeadOwnerType       = m_Data[dX][dY].m_sOwnerType;
+									m_Data[dX][dY].m_cDeadDir             = m_Data[dX][dY].m_cDir;
+									m_Data[dX][dY].m_sDeadAppr1           = m_Data[dX][dY].m_sAppr1;
+									m_Data[dX][dY].m_sDeadAppr2           = m_Data[dX][dY].m_sAppr2;
+									m_Data[dX][dY].m_sDeadAppr3           = m_Data[dX][dY].m_sAppr3;
+									m_Data[dX][dY].m_sDeadAppr4           = m_Data[dX][dY].m_sAppr4;
+									m_Data[dX][dY].m_iDeadApprColor       = m_Data[dX][dY].m_iApprColor;
+									m_Data[dX][dY].m_iDeadStatus          = m_Data[dX][dY].m_iStatus;
+									m_Data[dX][dY].m_iDeadChatMsg         = m_Data[dX][dY].m_iChatMsg;
+									m_Data[dX][dY].m_cDeadOwnerFrame	   = -1;
+									memcpy(m_Data[dX][dY].m_cDeadOwnerName, m_Data[dX][dY].m_cOwnerName, 11);
+									m_Data[dX][dY].m_wObjectID  = NULL;
+									m_Data[dX][dY].m_sOwnerType = NULL;
+									ZeroMemory(m_Data[dX][dY].m_cOwnerName, sizeof(m_Data[dX][dY].m_cOwnerName));
+									m_iObjectIDcacheLocX[m_Data[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocX[m_Data[dX][dY].m_wDeadObjectID]; //dX;
+									m_iObjectIDcacheLocY[m_Data[dX][dY].m_wDeadObjectID] = -1*m_iObjectIDcacheLocY[m_Data[dX][dY].m_wDeadObjectID]; //dY;
 								}else
 								{	
-									m_pData[dX][dY].m_cOwnerAction = OBJECTSTOP;
-									m_pData[dX][dY].m_dwOwnerTime  = dwTime;
-									m_pData[dX][dY].m_cOwnerFrame  = 0;
+									m_Data[dX][dY].m_cOwnerAction = OBJECTSTOP;
+									m_Data[dX][dY].m_dwOwnerTime  = dwTime;
+									m_Data[dX][dY].m_cOwnerFrame  = 0;
 								}
 								if(isClientPlayer)
 								{	
@@ -2078,17 +2078,17 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 								}
 						}else
 						{	
-							m_pData[dX][dY].m_wObjectID  = NULL;
-							m_pData[dX][dY].m_sOwnerType = NULL;
-							ZeroMemory(m_pData[dX][dY].m_cOwnerName, sizeof(m_pData[dX][dY].m_cOwnerName));
-							if (m_pGame->m_pChatMsgList[ m_pData[dX][dY].m_iChatMsg ] != NULL) {	
-								delete m_pGame->m_pChatMsgList[ m_pData[dX][dY].m_iChatMsg ];
-								m_pGame->m_pChatMsgList[ m_pData[dX][dY].m_iChatMsg ] = NULL;
+							m_Data[dX][dY].m_wObjectID  = NULL;
+							m_Data[dX][dY].m_sOwnerType = NULL;
+							ZeroMemory(m_Data[dX][dY].m_cOwnerName, sizeof(m_Data[dX][dY].m_cOwnerName));
+							if (m_pGame->m_pChatMsgList[ m_Data[dX][dY].m_iChatMsg ] != NULL) {	
+								delete m_pGame->m_pChatMsgList[ m_Data[dX][dY].m_iChatMsg ];
+								m_pGame->m_pChatMsgList[ m_Data[dX][dY].m_iChatMsg ] = NULL;
 							}	
 						}	
 					}
-					if ( m_pData[dX][dY].m_cOwnerAction == OBJECTSTOP ) {
-						switch (m_pData[dX][dY].m_sOwnerType) 
+					if ( m_Data[dX][dY].m_cOwnerAction == OBJECTSTOP ) {
+						switch (m_Data[dX][dY].m_sOwnerType) 
 						{
 						case 1:
 						case 2:
@@ -2096,16 +2096,16 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 						case 4:
 						case 5:
 						case 6: // glowing armor/weapon
-							if (m_pData[dX][dY].m_cOwnerFrame % 3)
+							if (m_Data[dX][dY].m_cOwnerFrame % 3)
 							{	
-								if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0))
+								if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0))
 								{	
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20-10), (m_sPivotY+dY)*32 -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 								}
 								// Snoopy: Angels
-								//if (( rand() % ((m_pData[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
-								//	&& ((m_pData[dX][dY].m_iStatus & 0x0000F000) != 0) 
-								//	&& ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) 
+								//if (( rand() % ((m_Data[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
+								//	&& ((m_Data[dX][dY].m_iStatus & 0x0000F000) != 0) 
+								//	&& ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) 
 								//{	
 								//	m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20+15), (m_sPivotY+dY)*32 -(rand()%40) -30, NULL, NULL, -(rand()%8), 0);
 								//}	
@@ -2122,23 +2122,23 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							}
 							break;
 						case 65: // IceGolem
-							if( m_pData[dX][dY].m_cOwnerFrame == 3 ) {	
+							if( m_Data[dX][dY].m_cOwnerFrame == 3 ) {	
 								m_pGame->bAddNewEffect( 75, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 								m_pGame->bAddNewEffect( 75, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 							}
-							if( m_pData[dX][dY].m_cOwnerFrame == 2 ) {
+							if( m_Data[dX][dY].m_cOwnerFrame == 2 ) {
 								m_pGame->bAddNewEffect( 76, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 								m_pGame->bAddNewEffect( 76, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 							}
-							if( m_pData[dX][dY].m_cOwnerFrame == 1 ) {
+							if( m_Data[dX][dY].m_cOwnerFrame == 1 ) {
 								m_pGame->bAddNewEffect( 77, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 								m_pGame->bAddNewEffect( 77, (m_sPivotX+dX)*32 +(rand()%40-20), (m_sPivotY+dY)*32 +(rand()%40-20), NULL, NULL, NULL);
 							}
 							break;
 						}	
 					} 
-					else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTMOVE ) { //2 //004977BF
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTMOVE ) { //2 //004977BF
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 1:
 						case 2:
 						case 3:
@@ -2148,199 +2148,199 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 						case 46: // TK
 						case 53: // Beholder
 						case 54: // Dark-Elf
-							if ((m_pData[dX][dY].m_cOwnerFrame == 1) || (m_pData[dX][dY].m_cOwnerFrame == 5)) {
+							if ((m_Data[dX][dY].m_cOwnerFrame == 1) || (m_Data[dX][dY].m_cOwnerFrame == 5)) {
 								m_pGame->PlaySound('C', 8, sDist, lPan);
-								if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 									cTotalFrame = 8;
 									cFrameMoveDots = 32 / cTotalFrame;
 									dx = dy = 0;
-									switch (m_pData[dX][dY].m_cDir) {
-									case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-									case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
+									switch (m_Data[dX][dY].m_cDir) {
+									case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+									case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
 									}
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 								}
 								// Snoopy: Angels
-								if (   (((m_pData[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
-									&& ((m_pData[dX][dY].m_iStatus & 0x0000F000) != 0) 
-									&& ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (   (((m_Data[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
+									&& ((m_Data[dX][dY].m_iStatus & 0x0000F000) != 0) 
+									&& ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 										m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%15+10), (m_sPivotY+dY)*32 -(rand()%30) -50, NULL, NULL, -(rand()%8), 0);
 								}	
 							}
 							break;
 
 						case 82: // Snoopy: Sorceress
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 149, sDist, lPan);
 							break;
 
 						case 83: // Snoopy: ATK
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 142, sDist, lPan);
 							break;
 
 						case 84: // Snoopy: MasterElf
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('C', 10, sDist, lPan);
 							break;
 
 						case 85: // Snoopy: DSK
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 147, sDist, lPan);
 							break;
 
 						case 10: // Slime
 						case 50: // TW
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 1, sDist, lPan);
 							break;
 
 						case 11: // SKel
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 13, sDist, lPan);
 							break;
 
 						case 13: // Cyclops
 						case 49: // HC
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 41, sDist, lPan);
 							break;
 
 						case 14: // Orc
 						case 48: // SK
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 9, sDist, lPan);
 							break;
 
 						case 16: // Ant
 						case 43: // LWBeetle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 29, sDist, lPan);
 							break;
 
 						case 17: // Scorpion
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 21, sDist, lPan);
 							break;
 
 						case 18: // Zombie
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 17, sDist, lPan);
 							break;
 
 						case 22: // Snake
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 25, sDist, lPan);
 							break;
 
 						case 23: // Clay-Golem
 						case 52: // Gargoyle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 37, sDist, lPan);
 							break;
 
 						case 27: // HH
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 5, sDist, lPan);
 							break;
 
 						case 28: // Troll
 						case 78: // Snoopy: Ajout Minaus
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 46, sDist, lPan);
 							break;
 
 						case 29: // Ogre
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 51, sDist, lPan);
 							break;
 
 						case 30: // Liche
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 55, sDist, lPan);
 							break;
 
 						case 31: // DD
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 59, sDist, lPan);
 							break;
 
 						case 32: // Uni
 						case 45: // GHKABS
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 63, sDist, lPan);
 							break;
 
 						case 33: // WW
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 67, sDist, lPan);
 							break;
 
 						case 55://Rabbit
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 71, sDist, lPan);
 							break;
 
 						case 56://Cat
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 72, sDist, lPan);
 							break;
 
 						case 57://Giant-Frog
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 73, sDist, lPan);
 							break;
 
 						case 58://Mountain Giant
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 87, sDist, lPan);
 							break;
 
 						case 59://Ettin
 						case 77: // Snoopy: MasterMageOrc
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 91, sDist, lPan);
 							break;
 
 						case 60://Cannibal Plant
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 95, sDist, lPan);
 							break;
 
 						case 61://Rudolph
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('C', 11, sDist, lPan);
 							break;
 
 						case 62: // DireBoar
 						case 74: // Snoopy: GiantCrayFish
 						case 88: // Snoopy: Barbarian
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 87, sDist, lPan);
 							break;
 
 						case 63://Frost
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 25, sDist, lPan);
 							break;
 
 						case 12: // Stone-Golem
 						case 47: // BG
 						case 65: // Snoopy: IceGolem
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 33, sDist, lPan);
 							break;
 							/*	case 65: // IceGolem particulier a la v2.20, absent de la v3.51
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 							{	m_pGame->PlaySound('M', 33, sDist, lPan);
-							switch (m_pData[dX][dY].m_cDir) {
+							switch (m_Data[dX][dY].m_cDir) {
 							case 1 : dx = 0; dy = -1; break;
 							case 2 : dy = -1; dx = 1; break;
 							case 3 : dx = 1; dy = 0; break;
@@ -2357,58 +2357,58 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							break;*/
 
 						case 73: // Snoopy: Fite-Wyvern
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 106, sDist, lPan);
 							break;
 
 						case 80: // Snoopy: Tentocle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 110, sDist, lPan);
 							break;
 
 						case 72: // Snoopy: Claw Turtle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 114, sDist, lPan);
 							break;
 
 						case 71: // Snoopy: Centaurus
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 117, sDist, lPan);
 							break;
 
 						case 76: // Snoopy: Giant Tree
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 122, sDist, lPan);
 							break;
 
 						case 75: // Snoopy: Giant Lizard
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 126, sDist, lPan);
 							break;
 
 						case 70: // Snoopy: Dragon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 130, sDist, lPan);
 							break;
 
 						case 79: // Snoopy: Nizie
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 134, sDist, lPan);
 							break;
 
 						case 81: // void CGame::DrawDruncncity();Abaddon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 136, sDist, lPan);
 							break;
 
 						default:
-							if ((m_pData[dX][dY].m_cOwnerFrame == 1) || (m_pData[dX][dY].m_cOwnerFrame == 3))
+							if ((m_Data[dX][dY].m_cOwnerFrame == 1) || (m_Data[dX][dY].m_cOwnerFrame == 3))
 								m_pGame->PlaySound('C', 8, sDist, lPan);
 							break;
 						}	
 					} 
-					else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTRUN ) {
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTRUN ) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 								case 1:
 								case 2:
 								case 3:
@@ -2416,31 +2416,31 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 								case 5:
 								case 6:
 								case 44: // GHK
-									if ((m_pData[dX][dY].m_cOwnerFrame == 1) || (m_pData[dX][dY].m_cOwnerFrame == 5)) {
+									if ((m_Data[dX][dY].m_cOwnerFrame == 1) || (m_Data[dX][dY].m_cOwnerFrame == 5)) {
 										cTotalFrame = 8;
 										cFrameMoveDots = 32 / cTotalFrame;
 										dx = dy = 0;
-										switch (m_pData[dX][dY].m_cDir) {
-										case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-										case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
+										switch (m_Data[dX][dY].m_cDir) {
+										case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+										case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
 										}
 										if ((m_pGame->m_cWhetherEffectType >= 1) && (m_pGame->m_cWhetherEffectType <= 3))
 											m_pGame->bAddNewEffect(32, (m_sPivotX+dX)*32 +dx, (m_sPivotY+dY)*32 +dy, NULL, NULL, 0, 0);
 										else m_pGame->bAddNewEffect(14, (m_sPivotX+dX)*32 +dx, (m_sPivotY+dY)*32 +dy, NULL, NULL, 0, 0);
-										if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+										if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 											m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 											m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 										}
 										// Snoopy: Angels
-										if (  (((m_pData[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
-											&& ((m_pData[dX][dY].m_iStatus & 0x0000F000) != 0) 
-											&& ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+										if (  (((m_Data[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
+											&& ((m_Data[dX][dY].m_iStatus & 0x0000F000) != 0) 
+											&& ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 												m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%15+10), (m_sPivotY+dY)*32 -(rand()%30) -50, NULL, NULL, -(rand()%8), 0);
 										}
 										m_pGame->PlaySound('C', 10, sDist, lPan);
@@ -2448,40 +2448,40 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 									break;
 								}
 					}
-					else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTATTACKMOVE ) {
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTATTACKMOVE ) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 1:
 						case 2:
 						case 3:
 						case 4:
 						case 5:
 						case 6:
-							if (m_pData[dX][dY].m_cOwnerFrame == 2) {
+							if (m_Data[dX][dY].m_cOwnerFrame == 2) {
 								m_pGame->PlaySound('C', 4, sDist); //bruit fleche
 								cTotalFrame = 8;
 								cFrameMoveDots = 32 / cTotalFrame;
 								dx = dy = 0;
-								switch (m_pData[dX][dY].m_cDir) {
-								case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
-								case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_pData[dX][dY].m_cOwnerFrame); break;
+								switch (m_Data[dX][dY].m_cDir) {
+								case 1 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 2 : dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 3 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 4 : dx = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 5 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 6 : dy = -cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 7 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
+								case 8 : dx =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); dy =  cFrameMoveDots * (cTotalFrame - m_Data[dX][dY].m_cOwnerFrame); break;
 								}
-								if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +dx +(rand()%20-10), (m_sPivotY+dY)*32 +dy -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 								}
 								//Snoopy: Angels						
-								if (  (((m_pData[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
-									&& ((m_pData[dX][dY].m_iStatus & 0x0000F000) != 0) 
-									&& ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (  (((m_Data[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
+									&& ((m_Data[dX][dY].m_iStatus & 0x0000F000) != 0) 
+									&& ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 										m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%15+10), (m_sPivotY+dY)*32 -(rand()%30) -50, NULL, NULL, -(rand()%8), 0);
 								}
-							}else if (m_pData[dX][dY].m_cOwnerFrame == 4) {
+							}else if (m_Data[dX][dY].m_cOwnerFrame == 4) {
 								if ((m_pGame->m_cWhetherEffectType >= 1) && (m_pGame->m_cWhetherEffectType <= 3)) {
 									m_pGame->bAddNewEffect(32, (m_sPivotX+dX)*32 +((rand() % 20)-10), (m_sPivotY+dY)*32 +((rand() % 20)-10), NULL, NULL, 0, 0);
 									m_pGame->bAddNewEffect(32, (m_sPivotX+dX)*32 +((rand() % 20)-10), (m_sPivotY+dY)*32 +((rand() % 20)-10), NULL, NULL, 0, 0);
@@ -2496,8 +2496,8 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 									m_pGame->bAddNewEffect(14, (m_sPivotX+dX)*32 +((rand() % 20)-10), (m_sPivotY+dY)*32 +((rand() % 20)-10), NULL, NULL, 0, 0);
 								}
 								m_pGame->PlaySound('C', 11, sDist, lPan);
-							}else if (m_pData[dX][dY].m_cOwnerFrame == 5) {
-								sWeaponType = ((m_pData[dX][dY].m_sAppr2 & 0x0FF0) >> 4);
+							}else if (m_Data[dX][dY].m_cOwnerFrame == 5) {
+								sWeaponType = ((m_Data[dX][dY].m_sAppr2 & 0x0FF0) >> 4);
 								if ((sWeaponType >= 1) && (sWeaponType <= 2)) {
 									m_pGame->PlaySound('C', 1, sDist, lPan);
 								}else if ((sWeaponType >= 3) && (sWeaponType <= 19)) {
@@ -2511,24 +2511,24 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							break;
 						}	
 								}
-					else if ( (m_pData[dX][dY].m_cOwnerAction == OBJECTATTACK) ) {
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( (m_Data[dX][dY].m_cOwnerAction == OBJECTATTACK) ) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 65: // IceGolem
-							if (m_pData[dX][dY].m_cOwnerFrame == 2) {
+							if (m_Data[dX][dY].m_cOwnerFrame == 2) {
 								m_pGame->bAddNewEffect(73, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, 0, 0, 0, 0 );
 							}
 							break;
 						case 87: // void CGame::DrawDruncncity();Crossbow Turret (Heldenian)
-							if (m_pData[dX][dY].m_cOwnerFrame == 2) {
-								m_pGame->bAddNewEffect(250, m_sPivotX + m_pData[dX][dY].m_sV1, m_sPivotY + m_pData[dX][dY].m_sV2
-									, m_sPivotX + m_pData[dX][dY].m_sV1 + dX, m_sPivotY + m_pData[dX][dY].m_sV2 + dY, 0, 87);
+							if (m_Data[dX][dY].m_cOwnerFrame == 2) {
+								m_pGame->bAddNewEffect(250, m_sPivotX + m_Data[dX][dY].m_sV1, m_sPivotY + m_Data[dX][dY].m_sV2
+									, m_sPivotX + m_Data[dX][dY].m_sV1 + dX, m_sPivotY + m_Data[dX][dY].m_sV2 + dY, 0, 87);
 								//m_pGame->PlaySound('E', 43, sDist, lPan); // Son "wouufffff"
 							}
 							break;
 						case 89: // void CGame::DrawDruncncity();AGT (Heldenian)
-							if (m_pData[dX][dY].m_cOwnerFrame == 2) {
-								m_pGame->bAddNewEffect(2, m_sPivotX + m_pData[dX][dY].m_sV1, m_sPivotY + m_pData[dX][dY].m_sV2
-									, m_sPivotX + m_pData[dX][dY].m_sV1 + dX, m_sPivotY + m_pData[dX][dY].m_sV2 + dY, 0, 89);
+							if (m_Data[dX][dY].m_cOwnerFrame == 2) {
+								m_pGame->bAddNewEffect(2, m_sPivotX + m_Data[dX][dY].m_sV1, m_sPivotY + m_Data[dX][dY].m_sV2
+									, m_sPivotX + m_Data[dX][dY].m_sV1 + dX, m_sPivotY + m_Data[dX][dY].m_sV2 + dY, 0, 89);
 								//m_pGame->PlaySound('E', 43, sDist, lPan); // Son "wouufffff"
 							}
 							break;
@@ -2538,8 +2538,8 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 						case 4:
 						case 5:
 						case 6:
-							if ((m_pData[dX][dY].m_sV3 >= 20) && (m_pData[dX][dY].m_cOwnerFrame == 2)) {
-								switch (m_pData[dX][dY].m_sOwnerType) {
+							if ((m_Data[dX][dY].m_sV3 >= 20) && (m_Data[dX][dY].m_cOwnerFrame == 2)) {
+								switch (m_Data[dX][dY].m_sOwnerType) {
 								case 1:
 								case 2:
 								case 3: 
@@ -2554,73 +2554,73 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 								}
 							}
 
-							if (m_pData[dX][dY].m_cOwnerFrame == 5) {
-								if ((m_pData[dX][dY].m_sAppr2 & 0xF000) != 0){ // not Peace mode
-									if (m_pData[dX][dY].m_sV3 != 1){ // autre que corp à corp
-										m_pGame->bAddNewEffect(m_pData[dX][dY].m_sV3, m_sPivotX + dX, m_sPivotY + dY
-											, m_sPivotX + dX + m_pData[dX][dY].m_sV1, m_sPivotY + dY + m_pData[dX][dY].m_sV2
-											, 0, m_pData[dX][dY].m_sOwnerType);
-										if (m_pData[dX][dY].m_sV3 >= 20) m_pGame->PlaySound('E', 43, sDist, lPan); // Son "loupé"
+							if (m_Data[dX][dY].m_cOwnerFrame == 5) {
+								if ((m_Data[dX][dY].m_sAppr2 & 0xF000) != 0){ // not Peace mode
+									if (m_Data[dX][dY].m_sV3 != 1){ // autre que corp à corp
+										m_pGame->bAddNewEffect(m_Data[dX][dY].m_sV3, m_sPivotX + dX, m_sPivotY + dY
+											, m_sPivotX + dX + m_Data[dX][dY].m_sV1, m_sPivotY + dY + m_Data[dX][dY].m_sV2
+											, 0, m_Data[dX][dY].m_sOwnerType);
+										if (m_Data[dX][dY].m_sV3 >= 20) m_pGame->PlaySound('E', 43, sDist, lPan); // Son "loupé"
 									}
-									if (((m_pData[dX][dY].m_sAppr2 & 0x0FF0) >> 4) == 15){ // StormBlade
+									if (((m_Data[dX][dY].m_sAppr2 & 0x0FF0) >> 4) == 15){ // StormBlade
 										m_pGame->bAddNewEffect(81, m_sPivotX + dX, m_sPivotY + dY
-											, m_sPivotX + dX + m_pData[dX][dY].m_sV1, m_sPivotY + dY + m_pData[dX][dY].m_sV2
-											, 0, m_pData[dX][dY].m_sOwnerType);
+											, m_sPivotX + dX + m_Data[dX][dY].m_sV1, m_sPivotY + dY + m_Data[dX][dY].m_sV2
+											, 0, m_Data[dX][dY].m_sOwnerType);
 									}else	{	
 										m_pGame->bAddNewEffect(250, m_sPivotX + dX, m_sPivotY + dY
-											, m_sPivotX + dX + m_pData[dX][dY].m_sV1, m_sPivotY + dY + m_pData[dX][dY].m_sV2
-											, 0, m_pData[dX][dY].m_sOwnerType);
+											, m_sPivotX + dX + m_Data[dX][dY].m_sV1, m_sPivotY + dY + m_Data[dX][dY].m_sV2
+											, 0, m_Data[dX][dY].m_sOwnerType);
 									}	
 								}
 								// Weapon Glare = m_sAppr4 & 0x000F
-								if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20-10), (m_sPivotY+dY)*32 -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 									m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20-10), (m_sPivotY+dY)*32 -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 								}							
 								//Snoopy: Angels
-								if (  (((m_pData[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
-									&& ((m_pData[dX][dY].m_iStatus & 0x0000F000) != 0) 
-									&& ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+								if (  (((m_Data[dX][dY].m_iStatus & 0x00000F00) >> 8) > rand()%6) // Angel stars
+									&& ((m_Data[dX][dY].m_iStatus & 0x0000F000) != 0) 
+									&& ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 										m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%15+10), (m_sPivotY+dY)*32 -(rand()%30) -50, NULL, NULL, -(rand()%8), 0);
 								}
 							}
 							break;
 
 						default:
-							if (m_pData[dX][dY].m_cOwnerFrame == 2) {
-								if  (m_pData[dX][dY].m_sV3 == 2 ){ // Arrow flying...
+							if (m_Data[dX][dY].m_cOwnerFrame == 2) {
+								if  (m_Data[dX][dY].m_sV3 == 2 ){ // Arrow flying...
 									m_pGame->bAddNewEffect(2, m_sPivotX + dX, m_sPivotY + dY
-										, m_sPivotX + dX + m_pData[dX][dY].m_sV1
-										, m_sPivotY + dY + m_pData[dX][dY].m_sV2
-										, 0, m_pData[dX][dY].m_sOwnerType*1000);
+										, m_sPivotX + dX + m_Data[dX][dY].m_sV1
+										, m_sPivotY + dY + m_Data[dX][dY].m_sV2
+										, 0, m_Data[dX][dY].m_sOwnerType*1000);
 								}	
 							}
 							break;
 						}
 
-						switch (m_pData[dX][dY].m_sOwnerType) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 							case 1:
 							case 2:
 							case 3:
 							case 4:
 							case 5:
 							case 6:
-								if ((m_pData[dX][dY].m_sAppr2 & 0xF000) != 0){
-									sWeaponType = ((m_pData[dX][dY].m_sAppr2 & 0x0FF0) >> 4);
+								if ((m_Data[dX][dY].m_sAppr2 & 0xF000) != 0){
+									sWeaponType = ((m_Data[dX][dY].m_sAppr2 & 0x0FF0) >> 4);
 									if ((sWeaponType >= 1) && (sWeaponType <= 2)){
-										if (m_pData[dX][dY].m_cOwnerFrame == 5){
+										if (m_Data[dX][dY].m_cOwnerFrame == 5){
 											m_pGame->PlaySound('C', 1, sDist, lPan);
 										}
 									}else if ((sWeaponType >= 3) && (sWeaponType <= 19)){
-										if (m_pData[dX][dY].m_cOwnerFrame == 5){
+										if (m_Data[dX][dY].m_cOwnerFrame == 5){
 											m_pGame->PlaySound('C', 2, sDist, lPan);
 										}
 									}else if ((sWeaponType >= 20) && (sWeaponType <= 39)){
-										if (m_pData[dX][dY].m_cOwnerFrame == 2){
+										if (m_Data[dX][dY].m_cOwnerFrame == 2){
 											m_pGame->PlaySound('C', 18, sDist, lPan);
 										}
 									}else if ((sWeaponType >= 41) && (sWeaponType <= 59)){
-										if (m_pData[dX][dY].m_cOwnerFrame == 3){
+										if (m_Data[dX][dY].m_cOwnerFrame == 3){
 											m_pGame->PlaySound('C', 3, sDist, lPan);
 										}	
 									}	
@@ -2628,54 +2628,54 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 								break;
 
 							case 83: // Snoopy: ATK
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 140, sDist, lPan);
 								break;
 
 							case 84: // Snoopy: MasterElf
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('C', 8, sDist, lPan);
 								break;
 
 							case 85: // Snoopy: DSK
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 145, sDist, lPan);
 								break;
 
 							case 53: // Beholder
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('E', 46, sDist, lPan);
 								break;
 
 							case 54: // DE
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('C', 3, sDist, lPan);
 								break;
 
 							case 50: // TW
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('C', 1, sDist, lPan);
 								break;
 
 							case 10: // Slime
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 2, sDist, lPan);
 								break;
 
 							case 11: // Skell
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 14, sDist, lPan);
 								break;
 
 							case 12: // Stone-Golem
 							case 65: // ICeGolem
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 34, sDist, lPan);
 								break;
 
 							case 13: // Cyclops
 							case 49: // HC
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 42, sDist, lPan);
 								break;
 
@@ -2683,712 +2683,712 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							case 45: // GHKABS
 							case 46: // TK
 							case 52: // GG
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('C', 2, sDist, lPan);
 								break;
 
 							case 14: // orc
 							case 48: // SK
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 10, sDist, lPan);
 								break;
 
 							case 16: // Ant
 							case 43: // LWB
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 30, sDist, lPan);
 								break;
 
 							case 17: // Scorpion
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 22, sDist, lPan);
 								break;
 
 							case 18: // Zombie
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 18, sDist, lPan);
 								break;
 
 							case 22: // Snake
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 26, sDist, lPan);
 								break;
 
 							case 23: // Clay-Golem
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 38, sDist, lPan);
 								break;
 
 							case 27: // HH
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 6, sDist, lPan);
 								break;
 
 							case 28: // Troll
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 47, sDist, lPan);
 								break;
 
 							case 29: // Ogre
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 52, sDist, lPan);
 								break;
 
 							case 30: // Liche
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 56, sDist, lPan);
 								break;
 
 							case 31: // DD
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 60, sDist, lPan);
 								break;
 
 							case 32: // Uni
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 64, sDist, lPan);
 								break;
 
 							case 33: // WW
-								if (m_pData[dX][dY].m_cOwnerFrame == 1)
+								if (m_Data[dX][dY].m_cOwnerFrame == 1)
 									m_pGame->PlaySound('M', 68, sDist, lPan);
 								break;
 
 							case 55://Rabbit
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 75, sDist, lPan);
 								break;
 
 							case 56://Cat
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 76, sDist, lPan);
 								break;
 
 							case 57://Giant-Frog
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 77, sDist, lPan);
 								break;
 
 							case 58://Mountain Giant
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 88, sDist, lPan);
 								break;
 
 							case 59://Ettin
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 92, sDist, lPan);
 								break;
 
 							case 60://Cannibal Plant
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 96, sDist, lPan);
 								break;
 
 							case 61://Rudolph
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 38, sDist, lPan);
 								break;
 
 							case 62://DireBoar
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 68, sDist, lPan);
 								break;
 
 							case 63://Frost
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('C', 4, sDist, lPan);
 								break;
 
 							case 77: // Snoopy: Master MageOrc
 							case 88: // Snoopy: Barbarian
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 78, sDist, lPan);
 								break;
 
 							case 74: // Snoopy: GiantCrayFish
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 100, sDist, lPan);
 								break;
 
 							case 73: // Snoopy: Fire Wyvern
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 107, sDist, lPan);
 								break;
 
 							case 80: // Snoopy: Tentocle
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 111, sDist, lPan);
 								break;
 
 							case 81: // Snoopy: Abaddon
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 137, sDist, lPan);
 								break;
 
 							case 72: // Snoopy: Claw-Turtle
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 115, sDist, lPan);
 								break;
 
 							case 71: // Snoopy: Centaurus
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 119, sDist, lPan);
 								break;
 
 							case 76: // Snoopy: Giant-Tree
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 123, sDist, lPan);
 								break;
 
 							case 75: // Snoopy: GiantLizard
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 127, sDist, lPan);
 								break;
 
 							case 70: // Snoopy: Dragon
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 131, sDist, lPan);
 								break;
 
 							case 79: //Snoopy:  Nizie
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 135, sDist, lPan);
 								break;
 
 							case 78: // Snoopy: Minaus
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 104, sDist, lPan);
 								break;
 
 							case 86: // Snoopy: Heavy BattleTank
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 151, sDist, lPan);
 								break;
 
 							case 87: // Snoopy: Crosbow Turret
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 153, sDist, lPan);
 								break;
 
 							case 89: // Snoopy: Cannon Turret
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 									m_pGame->PlaySound('M', 155, sDist, lPan);
 								break;
 
 							case 34: // Dummy
 							case 35: // Snoopy: EnergySphere
 							default:
-								if (m_pData[dX][dY].m_cOwnerFrame == 2) {
+								if (m_Data[dX][dY].m_cOwnerFrame == 2) {
 									m_pGame->PlaySound('C', 2, sDist, lPan);
 								}
 								break;
 							}
 					}
-					else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTDAMAGE ) {
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTDAMAGE ) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 1:
 						case 2:
 						case 3:  // Men
 						case 44: // GHK
 						case 45: // GHKABS
 						case 46: // TK
-							if (m_pData[dX][dY].m_cOwnerFrame == 4)
-							{	if (m_pData[dX][dY].m_sV2 == -1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 4)
+							{	if (m_Data[dX][dY].m_sV2 == -1)
 							iSoundIndex = 5;
-							else if (m_pData[dX][dY].m_sV2 == 0)
+							else if (m_Data[dX][dY].m_sV2 == 0)
 								iSoundIndex = 5;
-							else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+							else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+							else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+							else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 								iSoundIndex = 7;
 							else iSoundIndex = 5;
 							m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 							m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('C', 12, sDist, lPan);
 							break;
 						case 4:
 						case 5:
 						case 6: // Women
-							if (m_pData[dX][dY].m_cOwnerFrame == 4)
-							{	if (m_pData[dX][dY].m_sV2 == -1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 4)
+							{	if (m_Data[dX][dY].m_sV2 == -1)
 							iSoundIndex = 5;
-							else if (m_pData[dX][dY].m_sV2 == 0)
+							else if (m_Data[dX][dY].m_sV2 == 0)
 								iSoundIndex = 5;
-							else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+							else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+							else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+							else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 								iSoundIndex = 7;
 							else iSoundIndex = 5;
 							m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 							m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('C', 13, sDist, lPan);
 							break;
 
 						default:
-							if (m_pData[dX][dY].m_cOwnerFrame == 4)
+							if (m_Data[dX][dY].m_cOwnerFrame == 4)
 							{	
-								if (m_pData[dX][dY].m_sV2 == -1)
+								if (m_Data[dX][dY].m_sV2 == -1)
 									iSoundIndex = 5;  // Hand Attack
-								else if (m_pData[dX][dY].m_sV2 == 0)
+								else if (m_Data[dX][dY].m_sV2 == 0)
 									iSoundIndex = 5;  // Hand Attack
-								else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+								else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 									iSoundIndex = 6;  // Blade hit
-								else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+								else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 									iSoundIndex = 6;  // Blade hit
-								else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+								else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 									iSoundIndex = 7; // Arrow hit
 								else iSoundIndex = 5;
 
 								m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 								if (iSoundIndex == 7){ // Change the effect for Arrows hitting (no more at fixed heigh with arrow flying but on damage)
-									m_pGame->bAddNewEffect(14, (m_sPivotX + dX)*32, (m_sPivotY + dY)*32, 0, 0, 0, m_pData[dX][dY].m_sOwnerType);
+									m_pGame->bAddNewEffect(14, (m_sPivotX + dX)*32, (m_sPivotY + dY)*32, 0, 0, 0, m_Data[dX][dY].m_sOwnerType);
 								}else	{	
 									m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 								}	
 							}
 
-							switch (m_pData[dX][dY].m_sOwnerType) {
+							switch (m_Data[dX][dY].m_sOwnerType) {
 							case 88: // Snoopy: Barbarian
-								if (m_pData[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 144, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 144, sDist, lPan);
 								break;
 
 							case 83: // Snoopy: ATK
-								if (m_pData[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 143, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 143, sDist, lPan);
 								break;
 
 							case 84: // Snoopy: MasterElf
-								if (m_pData[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('C', 7, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('C', 7, sDist, lPan);
 								break;
 
 							case 85: // Snoopy: DSK
-								if (m_pData[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 148, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 1) m_pGame->PlaySound('M', 148, sDist, lPan);
 								break;
 
 							case 54: // DE
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('C', 13, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('C', 13, sDist, lPan);
 								break;
 
 							case 10: // Slime
 							case 53: // BB
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 3, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 3, sDist, lPan);
 								break;
 
 							case 11: // Skell
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 15, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 15, sDist, lPan);
 								break;
 
 							case 12: // Stone-Golem
 							case 65: // IceGolem
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 35, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 35, sDist, lPan);
 								break;
 
 							case 13: // Cyclops
 							case 49: // HC
 							case 52: // GG
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 43, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 43, sDist, lPan);
 								break;
 
 							case 14: // Orc
 							case 48: // SK
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 11, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 11, sDist, lPan);
 								break;
 
 							case 16: // Ant
 							case 43: // LWB
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 31, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 31, sDist, lPan);
 								break;
 
 							case 17: // Scorp
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 23, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 23, sDist, lPan);
 								break;
 
 							case 18: // Zombie
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 19, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 19, sDist, lPan);
 								break;
 
 							case 22: // Snake
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 27, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 27, sDist, lPan);
 								break;
 
 							case 23: // Clay-Golem
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 39, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 39, sDist, lPan);
 								break;
 
 							case 27: // HH
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 7, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 7, sDist, lPan);
 								break;
 
 							case 28: // Troll
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 48, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 48, sDist, lPan);
 								break;
 
 							case 29: // Ogre
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 53, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 53, sDist, lPan);
 								break;
 
 							case 30: // Liche
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 57, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 57, sDist, lPan);
 								break;
 
 							case 31: // DD
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 61, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 61, sDist, lPan);
 								break;
 
 							case 32: // Uni
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 65, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 65, sDist, lPan);
 								break;
 
 							case 33: // WW
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 69, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 69, sDist, lPan);
 								break;
 
 							case 34: // dummy
 							case 35: // Snoopy: EnergyBall
-								if (m_pData[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 2, sDist, lPan);
+								if (m_Data[dX][dY].m_cOwnerFrame == 5) m_pGame->PlaySound('M', 2, sDist, lPan);
 								break;
 
 							case 55://Rabbit
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 79, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 79, sDist, lPan);
 								break;
 
 							case 56://Cat
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 80, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 80, sDist, lPan);
 								break;
 
 							case 57://Giant-Frog
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 81, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 81, sDist, lPan);
 								break;
 
 							case 58: // Mountain Giant
 							case 77: // Snoopy: MasterMageOrc
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 89, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 89, sDist, lPan);
 								break;
 
 							case 59://Ettin
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 93, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 93, sDist, lPan);
 								break;
 							case 60://Cannabl Plant
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 97, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 97, sDist, lPan);
 								break;
 							case 61://Rudolph
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 69, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 69, sDist, lPan);
 								break;
 							case 62://DireBoar
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 78, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 78, sDist, lPan);
 								break;
 							case 63://Frost
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('C', 13, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('C', 13, sDist, lPan);
 								break;
 
 							case 74: // Snoopy: Giant CrayFish
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 101, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 101, sDist, lPan);
 								break;
 
 							case 78: // Snoopy: Minaus
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 102, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 102, sDist, lPan);
 								break;
 
 							case 80: // Snoopy: Tentocle
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 108, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 108, sDist, lPan);
 								break;
 
 							case 81: // Snoopy: Abaddon
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 138, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 138, sDist, lPan);
 								break;
 
 							case 72: // Snoopy: ClawTurtle
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 112, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 112, sDist, lPan);
 								break;
 
 							case 71: // Snoopy: Centaurus
 							case 82: // Snoopy: Sorceress
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 116, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 116, sDist, lPan);
 								break;
 
 							case 76: // Snoopy: GiantTree
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 120, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 120, sDist, lPan);
 								break;
 
 							case 75: // Snoopy: GiantLizard
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 124, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 124, sDist, lPan);
 								break;
 
 							case 70: // Snoopy: Dragon
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 128, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 128, sDist, lPan);
 								break;
 
 							case 79: // Snoopy: Nizie
-								if ( (m_pData[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 132, sDist, lPan);
+								if ( (m_Data[dX][dY].m_cOwnerFrame == 1) ) m_pGame->PlaySound('M', 132, sDist, lPan);
 								break;
 							}
 							break;
 							}	
 					}
-					else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTDAMAGEMOVE ) {
-						switch (m_pData[dX][dY].m_sOwnerType) {
+					else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTDAMAGEMOVE ) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 1:
 						case 2:
 						case 3:
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
-							{	if (m_pData[dX][dY].m_sV2 == -1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
+							{	if (m_Data[dX][dY].m_sV2 == -1)
 							iSoundIndex = 5;
-							else if (m_pData[dX][dY].m_sV2 == 0)
+							else if (m_Data[dX][dY].m_sV2 == 0)
 								iSoundIndex = 5;
-							else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+							else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+							else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+							else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 								iSoundIndex = 7;
 							else iSoundIndex = 5;
 
 							m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 							m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('C', 12, sDist, lPan);
 							break;
 
 						case 4:
 						case 5:
 						case 6:
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
-							{	if (m_pData[dX][dY].m_sV2 == -1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
+							{	if (m_Data[dX][dY].m_sV2 == -1)
 							iSoundIndex = 5;
-							else if (m_pData[dX][dY].m_sV2 == 0)
+							else if (m_Data[dX][dY].m_sV2 == 0)
 								iSoundIndex = 5;
-							else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+							else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+							else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+							else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 								iSoundIndex = 7;
 							else iSoundIndex = 5;
 							m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 							m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('C', 13, sDist, lPan);
 							break;
 
 						default:
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
-							{	if (m_pData[dX][dY].m_sV2 == -1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
+							{	if (m_Data[dX][dY].m_sV2 == -1)
 							iSoundIndex = 5;
-							else if (m_pData[dX][dY].m_sV2 == 0)
+							else if (m_Data[dX][dY].m_sV2 == 0)
 								iSoundIndex = 5;
-							else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+							else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+							else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 								iSoundIndex = 6;
-							else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+							else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 								iSoundIndex = 7;
 							else iSoundIndex = 5;
 							m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 							m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 4);
 							}
 
-						switch (m_pData[dX][dY].m_sOwnerType) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 83: //Snoopy:  ATK
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('M', 143, sDist, lPan);
 							break;
 						case 84: // Snoopy: MasterElf
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('C', 7, sDist, lPan);
 							break;
 						case 88: // Snoopy: Barbarian
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('M', 144, sDist, lPan);
 							break;
 						case 85: // Snoopy: DSK
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('M', 148, sDist, lPan);
 							break;
 
 						case 10: // Slime
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 3, sDist, lPan);
 							break;
 
 						case 11: // Skell
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 15, sDist, lPan);
 							break;
 
 						case 12: // Stone Golem
 						case 65: // IceGolem
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 35, sDist, lPan);
 							break;
 
 						case 13: // Cyclops
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 43, sDist, lPan);
 							break;
 
 						case 14: // Orc
 						case 48: // SK
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 11, sDist, lPan);
 							break;
 
 						case 16: // Ant
 						case 43: // LWB
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 31, sDist, lPan);
 							break;
 
 						case 17: // Scorpion
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 23, sDist, lPan);
 							break;
 
 						case 18: // Zombie
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 19, sDist, lPan);
 							break;
 
 						case 22: // Snake
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 27, sDist, lPan);
 							break;
 
 						case 23: // Clay-Golem
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 39, sDist, lPan);
 							break;
 
 						case 27: // HH
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 7, sDist, lPan);
 							break;
 
 						case 28: // Troll
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 48, sDist, lPan);
 							break;
 
 						case 29: // Ogre
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 53, sDist, lPan);
 							break;
 
 						case 30: // Liche
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 57, sDist, lPan);
 							break;
 
 						case 31: // DD
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 61, sDist, lPan);
 							break;
 
 						case 32: // Uni
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 65, sDist, lPan);
 							break;
 
 						case 33: // WW
-							if (m_pData[dX][dY].m_cOwnerFrame == 2)
+							if (m_Data[dX][dY].m_cOwnerFrame == 2)
 								m_pGame->PlaySound('M', 69, sDist, lPan);
 							break;
 						case 55://Rabbit
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 79, sDist, lPan);
 							break;
 
 						case 56://Cat
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 80, sDist, lPan);
 							break;
 
 						case 57://Giant-Frog
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 81, sDist, lPan);
 							break;
 
 						case 58://Mountain Giant
 						case 77: // Snoopy: MasterMageOrc
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 89, sDist, lPan);
 							break;
 
 						case 59://Ettin
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 93, sDist, lPan);
 							break;
 
 						case 60://Cannibal Plant
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 97, sDist, lPan);
 							break;
 
 						case 61://Rudolph
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 69, sDist, lPan);
 							break;
 						case 62://DireBoar
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 78, sDist, lPan);
 							break;
 
 						case 74: //Snoopy:  GiantCrayFish
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 101, sDist, lPan);
 							break;
 
 						case 78: // Snoopy: Minos
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 101, sDist, lPan);
 							break;
 
 						case 80: // Snoopy: Tentocle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 108, sDist, lPan);
 							break;
 
 						case 81: // Snoopy: Abaddon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 138, sDist, lPan);
 							break;
 
 						case 72: // Snoopy: ClawTurtle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 112, sDist, lPan);
 							break;
 
 						case 71: // Snoopy: Centaurus
 						case 82: // Snoopy: Sorceress
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 116, sDist, lPan);
 							break;
 
 						case 76: // Snoopy: GiantTree
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 120, sDist, lPan);
 							break;
 
 						case 75: // Snoopy: GiantLizard
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 124, sDist, lPan);
 							break;
 
 						case 70: // Snoopy: Dragon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 128, sDist, lPan);
 							break;
 
 						case 79: // Snoopy: Nizie
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 132, sDist, lPan);
 							break;
 
@@ -3398,50 +3398,50 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 					break;
 					}	
 				}
-				else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTMAGIC ) {
-					switch (m_pData[dX][dY].m_sOwnerType) {
+				else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTMAGIC ) {
+					switch (m_Data[dX][dY].m_sOwnerType) {
 					case 1:
 					case 2:
 					case 3:
 					case 4:
 					case 5:
 					case 6:
-						if (m_pData[dX][dY].m_cOwnerFrame == 1) {
+						if (m_Data[dX][dY].m_cOwnerFrame == 1) {
 							m_pGame->PlaySound('C', 16, sDist, lPan);	
-							if (((m_pData[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_pData[dX][dY].m_iStatus & 0x10) == 0)) {
+							if (((m_Data[dX][dY].m_sAppr4 & 0x000F) != 0) && ((m_Data[dX][dY].m_iStatus & 0x10) == 0)) {
 								m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20-10), (m_sPivotY+dY)*32 -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 								m_pGame->bAddNewEffect(54, (m_sPivotX+dX)*32 +(rand()%20-10), (m_sPivotY+dY)*32 -(rand()%50) -5, NULL, NULL, -(rand()%8), 0);
 							}
-							if (m_pData[dX][dY].m_sV1 >= 70)
+							if (m_Data[dX][dY].m_sV1 >= 70)
 								m_pGame->bAddNewEffect(57, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 						}
 						break;
 					}
 				}
-				else if ( m_pData[dX][dY].m_cOwnerAction == OBJECTDYING ) {
-					switch (m_pData[dX][dY].m_sOwnerType) {
+				else if ( m_Data[dX][dY].m_cOwnerAction == OBJECTDYING ) {
+					switch (m_Data[dX][dY].m_sOwnerType) {
 					case 1:
 					case 2:
 					case 3:
 					case 44: // GHK
 					case 45: // GHKABS
 					case 46: // TK
-						if (m_pData[dX][dY].m_cOwnerFrame == 6)
-						{	if (m_pData[dX][dY].m_sV2 == -1)
+						if (m_Data[dX][dY].m_cOwnerFrame == 6)
+						{	if (m_Data[dX][dY].m_sV2 == -1)
 						iSoundIndex = 5;
-						else if (m_pData[dX][dY].m_sV2 == 0)
+						else if (m_Data[dX][dY].m_sV2 == 0)
 							iSoundIndex = 5;
-						else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+						else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+						else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+						else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 							iSoundIndex = 7;
 						else iSoundIndex = 5;
 						m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 						m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 12);
 						}
-						if (m_pData[dX][dY].m_cOwnerFrame == 7)
+						if (m_Data[dX][dY].m_cOwnerFrame == 7)
 							m_pGame->PlaySound('C', 14, sDist, lPan);
 						break;
 
@@ -3449,70 +3449,70 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 					case 5:
 					case 6:
 					case 54: // DE
-						if (m_pData[dX][dY].m_cOwnerFrame == 6)
-						{	if (m_pData[dX][dY].m_sV2 == -1)
+						if (m_Data[dX][dY].m_cOwnerFrame == 6)
+						{	if (m_Data[dX][dY].m_sV2 == -1)
 						iSoundIndex = 5;
-						else if (m_pData[dX][dY].m_sV2 == 0)
+						else if (m_Data[dX][dY].m_sV2 == 0)
 							iSoundIndex = 5;
-						else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+						else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+						else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+						else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 							iSoundIndex = 7;
 						else iSoundIndex = 5;
 						m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 						m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 12);
 						}
-						if (m_pData[dX][dY].m_cOwnerFrame == 7)
+						if (m_Data[dX][dY].m_cOwnerFrame == 7)
 							m_pGame->PlaySound('C', 15, sDist, lPan);
 						break;
 
 					default:
-						if (m_pData[dX][dY].m_cOwnerFrame == 4)
-						{	if (m_pData[dX][dY].m_sV2 == -1)
+						if (m_Data[dX][dY].m_cOwnerFrame == 4)
+						{	if (m_Data[dX][dY].m_sV2 == -1)
 						iSoundIndex = 5;
-						else if (m_pData[dX][dY].m_sV2 == 0)
+						else if (m_Data[dX][dY].m_sV2 == 0)
 							iSoundIndex = 5;
-						else if ((m_pData[dX][dY].m_sV2 >= 1) && (m_pData[dX][dY].m_sV2 <= 19))
+						else if ((m_Data[dX][dY].m_sV2 >= 1) && (m_Data[dX][dY].m_sV2 <= 19))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 20) && (m_pData[dX][dY].m_sV2 <= 39))
+						else if ((m_Data[dX][dY].m_sV2 >= 20) && (m_Data[dX][dY].m_sV2 <= 39))
 							iSoundIndex = 6;
-						else if ((m_pData[dX][dY].m_sV2 >= 40) && (m_pData[dX][dY].m_sV2 <= 59))
+						else if ((m_Data[dX][dY].m_sV2 >= 40) && (m_Data[dX][dY].m_sV2 <= 59))
 							iSoundIndex = 7;
 						else iSoundIndex = 5;
 						m_pGame->PlaySound('C', iSoundIndex, sDist, lPan);
 						m_pGame->bAddNewEffect(1, m_sPivotX + dX, m_sPivotY + dY, 0, 0, 0, 12);
 						}
 
-						switch (m_pData[dX][dY].m_sOwnerType) {
+						switch (m_Data[dX][dY].m_sOwnerType) {
 						case 53: // BB
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 39, sDist, lPan);
 							break;
 
 						case 10: // Slime
 						case 34: // Dummy
 						case 35: // Snoopy: EnergyBall
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 4, sDist, lPan);
 							break;
 
 						case 11: // Skell
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 16, sDist, lPan);
 							break;
 
 						case 12: // Stone-Golem
 						case 47: // BG
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 36, sDist, lPan);
 							break;
 
 						case 65: // IceGolem
-//							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+//							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 //								m_pGame->bAddNewEffect(74, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, 0, 0, 0 );
-							if (m_pData[dX][dY].m_cOwnerFrame == 5) {
+							if (m_Data[dX][dY].m_cOwnerFrame == 5) {
 								m_pGame->bAddNewEffect(74, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, 0, 0, 0 );
 								m_pGame->PlaySound('M', 36, sDist, lPan);
 							}
@@ -3520,75 +3520,75 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 
 						case 13: // Cyclops
 						case 49: // HC
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 44, sDist, lPan);
 							break;
 
 						case 14: // Orc
 						case 48: // SK
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 12, sDist, lPan);
 							break;
 
 						case 16: // Ant
 						case 43: // LWB
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 32, sDist, lPan);
 							break;
 
 						case 17: // Scorp
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 24, sDist, lPan);
 							break;
 
 						case 18: // Zombie
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 20, sDist, lPan);
 							break;
 
 						case 22: // Snake
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 28, sDist, lPan);
 							break;
 
 						case 23: // Clay-Golem
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 40, sDist, lPan);
 							break;
 
 						case 27: // HH
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 8, sDist, lPan);
 							break;
 
 						case 28: // Troll
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 49, sDist, lPan);
 							break;
 
 						case 29: // Ogre
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 54, sDist, lPan);
 							break;
 
 						case 30: // Liche
 						case 50: // TW
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 58, sDist, lPan);
 							break;
 
 						case 31: // DD
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 62, sDist, lPan);
 							break;
 
 						case 32: // Uni
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 66, sDist, lPan);
 							break;
 
 						case 33: // WW
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('M', 70, sDist, lPan);
 							break;
 
@@ -3599,7 +3599,7 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 						case 40: // ESG
 						case 41: // GMG
 						case 42: // ManaStone
-							if (m_pData[dX][dY].m_cOwnerFrame == 3)
+							if (m_Data[dX][dY].m_cOwnerFrame == 3)
 							{	m_pGame->bAddNewEffect(66, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
@@ -3613,7 +3613,7 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							break;
 
 						case 87: // Snoopy: CrossBowTurret
-							if (m_pData[dX][dY].m_cOwnerFrame == 3)
+							if (m_Data[dX][dY].m_cOwnerFrame == 3)
 							{	m_pGame->bAddNewEffect(66, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
@@ -3624,12 +3624,12 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							m_pGame->bAddNewEffect(65, (m_sPivotX+dX)*32 + 30 - (rand() % 60), (m_sPivotY+dY)*32 + 30 - (rand() % 60), NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(65, (m_sPivotX+dX)*32 + 30 - (rand() % 60), (m_sPivotY+dY)*32 + 30 - (rand() % 60), NULL, NULL, -1*(rand() % 2));
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('M', 154, sDist, lPan);
 							break;
 
 						case 89: // Snoopy: CannonTurret
-							if (m_pData[dX][dY].m_cOwnerFrame == 3)
+							if (m_Data[dX][dY].m_cOwnerFrame == 3)
 							{	m_pGame->bAddNewEffect(66, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32, NULL, NULL, NULL, 0);
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10), NULL, NULL, -1*(rand() % 2));
@@ -3640,12 +3640,12 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							m_pGame->bAddNewEffect(65, (m_sPivotX+dX)*32 + 30 - (rand() % 60), (m_sPivotY+dY)*32 + 30 - (rand() % 60), NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(65, (m_sPivotX+dX)*32 + 30 - (rand() % 60), (m_sPivotY+dY)*32 + 30 - (rand() % 60), NULL, NULL, -1*(rand() % 2));
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 								m_pGame->PlaySound('M', 156, sDist, lPan);
 							break;
 
 						case 51: // CP
-							if (m_pData[dX][dY].m_cOwnerFrame == 1)
+							if (m_Data[dX][dY].m_cOwnerFrame == 1)
 							{	m_pGame->bAddNewEffect(66, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32 -30, NULL, NULL, NULL, 0);
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10) -30, NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10) -30, NULL, NULL, -1*(rand() % 2));
@@ -3659,10 +3659,10 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							break;
 
 						case 52: // GG
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 							{	m_pGame->PlaySound('M', 44, sDist, lPan);
 							}
-							if (m_pData[dX][dY].m_cOwnerFrame == 11)
+							if (m_Data[dX][dY].m_cOwnerFrame == 11)
 							{	m_pGame->bAddNewEffect(66, (m_sPivotX+dX)*32, (m_sPivotY+dY)*32 -30, NULL, NULL, NULL, 0);
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10) -30, NULL, NULL, -1*(rand() % 2));
 							m_pGame->bAddNewEffect(12, (m_sPivotX+dX)*32 + 5 - (rand() % 10), (m_sPivotY+dY)*32 + 5 - (rand() % 10) -30, NULL, NULL, -1*(rand() % 2));
@@ -3677,127 +3677,127 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 							break;
 
 						case 55:// Rabbit
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 83, sDist, lPan);
 							break;
 
 						case 56: // Cat
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 84, sDist, lPan);
 							break;
 
 						case 57://Giant-Frog
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 85, sDist, lPan);
 							break;
 
 						case 58://Mountain Giant
 						case 77: // Snoopy: MasterMageOrc
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 90, sDist, lPan);
 							break;
 
 						case 59://Ettin
 						case 88: // Snoopy: Barbarian
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 94, sDist, lPan);
 							break;
 
 						case 83: // Snoopy: ATK
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 141, sDist, lPan);
 							break;
 
 						case 85: // Snoopy: DSK
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 146, sDist, lPan);
 							break;
 
 						case 61://Rudolph
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 65, sDist, lPan);
 							break;
 
 						case 62://DireBoar
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 94, sDist, lPan);
 							break;
 
 						case 66: // Wyvern
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('E', 7, sDist, lPan);
 							break;
 
 						case 70: // Snoopy: Dragon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 129, sDist, lPan);
 							break;
 
 						case 71: // Snoopy: Centaur
 						case 82: // Snoopy: Sorceress
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 129, sDist, lPan);
 							break;
 
 						case 72: // Snoopy: ClawTurtle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 113, sDist, lPan);
 							break;
 
 						case 73: // Snoopy: FireWyvern
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 105, sDist, lPan);
 							break;
 
 
 						case 60: // Cannibal Plant
 						case 74: // Snoopy: GiantGrayFish
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 98, sDist, lPan);
 							break;
 
 						case 75: //Snoopy:
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 125, sDist, lPan);
 							break;
 
 						case 76: // Snoopy:
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 121, sDist, lPan);
 							break;
 
 						case 78: // Snoopy:
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 103, sDist, lPan);
 							break;
 
 						case 79: // Snoopy:
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 133, sDist, lPan);
 							break;
 
 						case 80: //Snoopy: Tentocle
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 109, sDist, lPan);
 							break;
 
 						case 81: // Snoopy: Abaddon
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 139, sDist, lPan);
 							break;
 
 						case 84: // Snoopy: MasterElf
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 150, sDist, lPan);
 							break;
 
 						case 86: // Snoopy: HBT
-							if ( (m_pData[dX][dY].m_cOwnerFrame == 1) )
+							if ( (m_Data[dX][dY].m_cOwnerFrame == 1) )
 								m_pGame->PlaySound('M', 152, sDist, lPan);
 							break;
 
 						default:
-							if (m_pData[dX][dY].m_cOwnerFrame == 5)
+							if (m_Data[dX][dY].m_cOwnerFrame == 5)
 								m_pGame->PlaySound('C', 15, sDist, lPan);
 							break;
 
@@ -3826,17 +3826,17 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 BOOL CMapData::bSetItem(short sX, short sY, short sItemSpr, short sItemSprFrame, char cItemColor, BOOL bDropEffect)
 {int dX, dY;
  int sAbsX, sAbsY, sDist;
-	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY >= m_sPivotY + MAPDATASIZEY))
+	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY >= m_sPivotY + MapDataSIZEY))
 	{	return FALSE;
 	}
 
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	m_pData[dX][dY].m_sItemSprite      = sItemSpr;
-	m_pData[dX][dY].m_sItemSpriteFrame = sItemSprFrame;
-	m_pData[dX][dY].m_cItemColor       = cItemColor;
+	m_Data[dX][dY].m_sItemSprite      = sItemSpr;
+	m_Data[dX][dY].m_sItemSpriteFrame = sItemSprFrame;
+	m_Data[dX][dY].m_cItemColor       = cItemColor;
 
 	sAbsX = abs(((m_pGame->m_sViewPointX / 32) + 10) - sX);
 	sAbsY = abs(((m_pGame->m_sViewPointY / 32) + 7)  - sY);
@@ -3863,13 +3863,13 @@ BOOL __fastcall CMapData::bSetDeadOwner(WORD wObjectID, short sX, short sY, shor
 
 	ZeroMemory(pTmpName, sizeof(pTmpName));
 	if (pName != NULL) strcpy(pTmpName, pName);
-	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY >= m_sPivotY + MAPDATASIZEY))
-	{	for (dX = 0; dX < MAPDATASIZEX; dX++)
-		for (dY = 0; dY < MAPDATASIZEY; dY++)
-		{	if (memcmp(m_pData[dX][dY].m_cDeadOwnerName, pTmpName, 10) == 0)
-			{	m_pData[dX][dY].m_sDeadOwnerType = NULL;
-				ZeroMemory(m_pData[dX][dY].m_cDeadOwnerName, sizeof(m_pData[dX][dY].m_cDeadOwnerName));
+	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY >= m_sPivotY + MapDataSIZEY))
+	{	for (dX = 0; dX < MapDataSIZEX; dX++)
+		for (dY = 0; dY < MapDataSIZEY; dY++)
+		{	if (memcmp(m_Data[dX][dY].m_cDeadOwnerName, pTmpName, 10) == 0)
+			{	m_Data[dX][dY].m_sDeadOwnerType = NULL;
+				ZeroMemory(m_Data[dX][dY].m_cDeadOwnerName, sizeof(m_Data[dX][dY].m_cDeadOwnerName));
 		}	}
 		return FALSE;
 	}
@@ -3878,24 +3878,24 @@ BOOL __fastcall CMapData::bSetDeadOwner(WORD wObjectID, short sX, short sY, shor
 	for (dY = sY - 2; dY <= sY + 2; dY++)
 	{	if (dX < m_sPivotX) break;
 		else
-		if (dX > m_sPivotX + MAPDATASIZEX) break;
+		if (dX > m_sPivotX + MapDataSIZEX) break;
 		if (dY < m_sPivotY) break;
 		else
-		if (dY > m_sPivotY + MAPDATASIZEY) break;
+		if (dY > m_sPivotY + MapDataSIZEY) break;
 
-		if (memcmp(m_pData[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName, pTmpName, 10) == 0)
-		{	m_pData[dX - m_sPivotX][dY - m_sPivotY].m_sDeadOwnerType = NULL;
-			ZeroMemory(m_pData[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName, sizeof(m_pData[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName));
+		if (memcmp(m_Data[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName, pTmpName, 10) == 0)
+		{	m_Data[dX - m_sPivotX][dY - m_sPivotY].m_sDeadOwnerType = NULL;
+			ZeroMemory(m_Data[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName, sizeof(m_Data[dX - m_sPivotX][dY - m_sPivotY].m_cDeadOwnerName));
 			bEraseFlag = TRUE;
 	}	}
 
 	if (bEraseFlag != TRUE) {
-		for (dX = 0; dX < MAPDATASIZEX; dX++)
-		for (dY = 0; dY < MAPDATASIZEY; dY++) {
+		for (dX = 0; dX < MapDataSIZEX; dX++)
+		for (dY = 0; dY < MapDataSIZEY; dY++) {
 
-			if (memcmp(m_pData[dX][dY].m_cDeadOwnerName, pTmpName, 10) == 0) {
-				m_pData[dX][dY].m_sDeadOwnerType = NULL;
-				ZeroMemory(m_pData[dX][dY].m_cDeadOwnerName, sizeof(m_pData[dX][dY].m_cDeadOwnerName));
+			if (memcmp(m_Data[dX][dY].m_cDeadOwnerName, pTmpName, 10) == 0) {
+				m_Data[dX][dY].m_sDeadOwnerType = NULL;
+				ZeroMemory(m_Data[dX][dY].m_cDeadOwnerName, sizeof(m_Data[dX][dY].m_cDeadOwnerName));
 			}
 
 		}
@@ -3904,17 +3904,17 @@ BOOL __fastcall CMapData::bSetDeadOwner(WORD wObjectID, short sX, short sY, shor
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	m_pData[dX][dY].m_wDeadObjectID   = wObjectID;
-	m_pData[dX][dY].m_sDeadOwnerType  = sType;
-	m_pData[dX][dY].m_cDeadDir        = cDir;
-	m_pData[dX][dY].m_sDeadAppr1      = sAppr1;
-	m_pData[dX][dY].m_sDeadAppr2      = sAppr2;
-	m_pData[dX][dY].m_sDeadAppr3      = sAppr3;
-	m_pData[dX][dY].m_sDeadAppr4      = sAppr4;
-	m_pData[dX][dY].m_iDeadApprColor  = iApprColor;
-	m_pData[dX][dY].m_iDeadStatus     = iStatus;
-	m_pData[dX][dY].m_cDeadOwnerFrame = -1;
-	strcpy(m_pData[dX][dY].m_cDeadOwnerName, pTmpName);
+	m_Data[dX][dY].m_wDeadObjectID   = wObjectID;
+	m_Data[dX][dY].m_sDeadOwnerType  = sType;
+	m_Data[dX][dY].m_cDeadDir        = cDir;
+	m_Data[dX][dY].m_sDeadAppr1      = sAppr1;
+	m_Data[dX][dY].m_sDeadAppr2      = sAppr2;
+	m_Data[dX][dY].m_sDeadAppr3      = sAppr3;
+	m_Data[dX][dY].m_sDeadAppr4      = sAppr4;
+	m_Data[dX][dY].m_iDeadApprColor  = iApprColor;
+	m_Data[dX][dY].m_iDeadStatus     = iStatus;
+	m_Data[dX][dY].m_cDeadOwnerFrame = -1;
+	strcpy(m_Data[dX][dY].m_cDeadOwnerName, pTmpName);
 
 	m_iObjectIDcacheLocX[wObjectID] = -1*sX; //dX;
 	m_iObjectIDcacheLocY[wObjectID] = -1*sY; //dY;
@@ -3928,40 +3928,40 @@ BOOL __fastcall CMapData::bSetChatMsgOwner(WORD wObjectID, short sX, short sY, i
 
 	if ((sX == -10) && (sY == -10)) goto SCMO_FULL_SEARCH;
 
-	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY >= m_sPivotY + MAPDATASIZEY))
+	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY >= m_sPivotY + MapDataSIZEY))
 	{	return FALSE;
 	}
 	for (dX = sX - 4; dX <= sX + 4; dX++)
 	for (dY = sY - 4; dY <= sY + 4; dY++)
 	{	if (dX < m_sPivotX) break;
 		else
-		if (dX > m_sPivotX + MAPDATASIZEX) break;
+		if (dX > m_sPivotX + MapDataSIZEX) break;
 		if (dY < m_sPivotY) break;
 		else
-		if (dY > m_sPivotY + MAPDATASIZEY) break;
+		if (dY > m_sPivotY + MapDataSIZEY) break;
 
-		if (m_pData[dX - m_sPivotX][dY - m_sPivotY].m_wObjectID == wObjectID) {
-			m_pData[dX - m_sPivotX][dY - m_sPivotY].m_iChatMsg = iIndex;
+		if (m_Data[dX - m_sPivotX][dY - m_sPivotY].m_wObjectID == wObjectID) {
+			m_Data[dX - m_sPivotX][dY - m_sPivotY].m_iChatMsg = iIndex;
 			return TRUE;
 		}
-		if (m_pData[dX - m_sPivotX][dY - m_sPivotY].m_wDeadObjectID == wObjectID) {
-			m_pData[dX - m_sPivotX][dY - m_sPivotY].m_iDeadChatMsg = iIndex;
+		if (m_Data[dX - m_sPivotX][dY - m_sPivotY].m_wDeadObjectID == wObjectID) {
+			m_Data[dX - m_sPivotX][dY - m_sPivotY].m_iDeadChatMsg = iIndex;
 			return TRUE;
 		}
 	}
 
 SCMO_FULL_SEARCH:;
 
-	for (dX = 0; dX < MAPDATASIZEX; dX++)
-	for (dY = 0; dY < MAPDATASIZEY; dY++) {
+	for (dX = 0; dX < MapDataSIZEX; dX++)
+	for (dY = 0; dY < MapDataSIZEY; dY++) {
 
-		if (m_pData[dX][dY].m_wObjectID == wObjectID) {
-			m_pData[dX][dY].m_iChatMsg = iIndex;
+		if (m_Data[dX][dY].m_wObjectID == wObjectID) {
+			m_Data[dX][dY].m_iChatMsg = iIndex;
 			return TRUE;
 		}
-		if (m_pData[dX][dY].m_wDeadObjectID == wObjectID) {
-			m_pData[dX][dY].m_iDeadChatMsg = iIndex;
+		if (m_Data[dX][dY].m_wDeadObjectID == wObjectID) {
+			m_Data[dX][dY].m_iDeadChatMsg = iIndex;
 			return TRUE;
 		}
 	}
@@ -3972,25 +3972,25 @@ SCMO_FULL_SEARCH:;
 void CMapData::ClearChatMsg(short sX, short sY)
 {
 	// v1.411
-	if (m_pGame->m_pChatMsgList[m_pData[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg] != NULL) {
-		delete m_pGame->m_pChatMsgList[m_pData[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg];
-		m_pGame->m_pChatMsgList[m_pData[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg] = NULL;
+	if (m_pGame->m_pChatMsgList[m_Data[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg] != NULL) {
+		delete m_pGame->m_pChatMsgList[m_Data[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg];
+		m_pGame->m_pChatMsgList[m_Data[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg] = NULL;
 	}
 
-	m_pData[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg = NULL;
+	m_Data[sX - m_sPivotX][sY - m_sPivotY].m_iChatMsg = NULL;
 }
 
 void CMapData::ClearDeadChatMsg(short sX, short sY)
 {
-	m_pData[sX - m_sPivotX][sY - m_sPivotY].m_iDeadChatMsg = NULL;
+	m_Data[sX - m_sPivotX][sY - m_sPivotY].m_iDeadChatMsg = NULL;
 }
 
 BOOL __fastcall CMapData::bGetOwner(short sX, short sY, char * pName, short * pOwnerType, int * pOwnerStatus, WORD * pObjectID, short * dynObjectType)
 {
  int dX, dY;
 
-	if ((sX < m_sPivotX) || (sX > m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY > m_sPivotY + MAPDATASIZEY)) {
+	if ((sX < m_sPivotX) || (sX > m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY > m_sPivotY + MapDataSIZEY)) {
 		ZeroMemory(pName, sizeof(pName));
 		return FALSE;
 	}
@@ -3998,12 +3998,12 @@ BOOL __fastcall CMapData::bGetOwner(short sX, short sY, char * pName, short * pO
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	*pOwnerType = m_pData[dX][dY].m_sOwnerType;
-	strcpy(pName, m_pData[dX][dY].m_cOwnerName);
-	*pOwnerStatus = m_pData[dX][dY].m_iStatus;
-	*pObjectID    = m_pData[dX][dY].m_wObjectID;
+	*pOwnerType = m_Data[dX][dY].m_sOwnerType;
+	strcpy(pName, m_Data[dX][dY].m_cOwnerName);
+	*pOwnerStatus = m_Data[dX][dY].m_iStatus;
+	*pObjectID    = m_Data[dX][dY].m_wObjectID;
 	if (dynObjectType) 
-		*dynObjectType = m_pData[dX][dY].m_sDynamicObjectType;
+		*dynObjectType = m_Data[dX][dY].m_sDynamicObjectType;
 
 	return TRUE;
 }
@@ -4012,24 +4012,24 @@ BOOL CMapData::bSetDynamicObject(short sX, short sY, WORD wID, short sType, BOOL
 {
  int dX, dY, sPrevType;
 
-	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MAPDATASIZEX) ||
-		(sY < m_sPivotY) || (sY >= m_sPivotY + MAPDATASIZEY))
+	if ((sX < m_sPivotX) || (sX >= m_sPivotX + MapDataSIZEX) ||
+		(sY < m_sPivotY) || (sY >= m_sPivotY + MapDataSIZEY))
 	{	return FALSE;
 	}
 
 	dX = sX - m_sPivotX;
 	dY = sY - m_sPivotY;
 
-	sPrevType = m_pData[dX][dY].m_sDynamicObjectType;
+	sPrevType = m_Data[dX][dY].m_sDynamicObjectType;
 
-	m_pData[dX][dY].m_sDynamicObjectType  = sType;
-	m_pData[dX][dY].m_cDynamicObjectFrame = rand() % 5;
-	m_pData[dX][dY].m_dwDynamicObjectTime = timeGetTime();
+	m_Data[dX][dY].m_sDynamicObjectType  = sType;
+	m_Data[dX][dY].m_cDynamicObjectFrame = rand() % 5;
+	m_Data[dX][dY].m_dwDynamicObjectTime = timeGetTime();
 
-	m_pData[dX][dY].m_cDynamicObjectData1 = 0;
-	m_pData[dX][dY].m_cDynamicObjectData2 = 0;
-	m_pData[dX][dY].m_cDynamicObjectData3 = 0;
-	m_pData[dX][dY].m_cDynamicObjectData4 = 0;
+	m_Data[dX][dY].m_cDynamicObjectData1 = 0;
+	m_Data[dX][dY].m_cDynamicObjectData2 = 0;
+	m_Data[dX][dY].m_cDynamicObjectData3 = 0;
+	m_Data[dX][dY].m_cDynamicObjectData4 = 0;
 
 	switch (sType) {
 	case NULL:
@@ -4039,32 +4039,32 @@ BOOL CMapData::bSetDynamicObject(short sX, short sY, WORD wID, short sType, BOOL
 			m_pGame->bAddNewEffect(15, (m_sPivotX+dX)*32 +(10-(rand()%20)), (m_sPivotY+dY)*32  +(20-(rand()%40)), NULL, NULL, 0, 0);
 			m_pGame->bAddNewEffect(15, (m_sPivotX+dX)*32 +(10-(rand()%20)), (m_sPivotY+dY)*32  +(20-(rand()%40)), NULL, NULL, 0, 0);
 		}else if ((sPrevType == DYNAMICOBJECT_PCLOUD_BEGIN) || (sPrevType == DYNAMICOBJECT_PCLOUD_LOOP)) 
-		{	m_pData[dX][dY].m_sDynamicObjectType  = DYNAMICOBJECT_PCLOUD_END;
-			m_pData[dX][dY].m_cDynamicObjectFrame = 0;
-			m_pData[dX][dY].m_dwDynamicObjectTime = timeGetTime();
+		{	m_Data[dX][dY].m_sDynamicObjectType  = DYNAMICOBJECT_PCLOUD_END;
+			m_Data[dX][dY].m_cDynamicObjectFrame = 0;
+			m_Data[dX][dY].m_dwDynamicObjectTime = timeGetTime();
 		}
 		break;
 
 	case DYNAMICOBJECT_FISH:
-		m_pData[dX][dY].m_cDynamicObjectData1 = (rand() % 40) - 20;
-		m_pData[dX][dY].m_cDynamicObjectData2 = (rand() % 40) - 20;
-		m_pData[dX][dY].m_cDynamicObjectData3 = (rand() % 10) - 5;
-		m_pData[dX][dY].m_cDynamicObjectData4 = (rand() % 10) - 5;
+		m_Data[dX][dY].m_cDynamicObjectData1 = (rand() % 40) - 20;
+		m_Data[dX][dY].m_cDynamicObjectData2 = (rand() % 40) - 20;
+		m_Data[dX][dY].m_cDynamicObjectData3 = (rand() % 10) - 5;
+		m_Data[dX][dY].m_cDynamicObjectData4 = (rand() % 10) - 5;
 		break;
 
 	case DYNAMICOBJECT_PCLOUD_BEGIN:
 		if (bIsEvent == FALSE)
-		{	m_pData[dX][dY].m_sDynamicObjectType = DYNAMICOBJECT_PCLOUD_LOOP;
-			m_pData[dX][dY].m_cDynamicObjectFrame = rand() % 8;
-		}else m_pData[dX][dY].m_cDynamicObjectFrame = -1*(rand() % 8);
+		{	m_Data[dX][dY].m_sDynamicObjectType = DYNAMICOBJECT_PCLOUD_LOOP;
+			m_Data[dX][dY].m_cDynamicObjectFrame = rand() % 8;
+		}else m_Data[dX][dY].m_cDynamicObjectFrame = -1*(rand() % 8);
 		break;
 
 	case DYNAMICOBJECT_ARESDENFLAG:
-		m_pData[dX][dY].m_cDynamicObjectFrame = (rand() % 4);
+		m_Data[dX][dY].m_cDynamicObjectFrame = (rand() % 4);
 		break;
 
 	case DYNAMICOBJECT_ELVINEFLAG:
-		m_pData[dX][dY].m_cDynamicObjectFrame = 4+ (rand() % 4);
+		m_Data[dX][dY].m_cDynamicObjectFrame = 4+ (rand() % 4);
 		break;
 	}
 	return TRUE;
@@ -4072,18 +4072,18 @@ BOOL CMapData::bSetDynamicObject(short sX, short sY, WORD wID, short sType, BOOL
 
 void CMapData::GetOwnerStatusByObjectID(WORD wObjectID, char *pOwnerType, char *pDir, short *pAppr1, short *pAppr2, short *pAppr3, short *pAppr4, int * pStatus, int * pColor, char * pName)
 { int iX, iY;
-	for (iX = 0; iX < MAPDATASIZEX; iX++)
-	for (iY = 0; iY < MAPDATASIZEY; iY++)
-	if (m_pData[iX][iY].m_wObjectID == wObjectID)
-	{	*pOwnerType = (char)m_pData[iX][iY].m_sOwnerType;
-		*pDir       = m_pData[iX][iY].m_cDir;
-		*pAppr1     = m_pData[iX][iY].m_sAppr1;
-		*pAppr2     = m_pData[iX][iY].m_sAppr2;
-		*pAppr3     = m_pData[iX][iY].m_sAppr3;
-		*pAppr4     = m_pData[iX][iY].m_sAppr4;
-		*pStatus    = m_pData[iX][iY].m_iStatus;
-		*pColor     = m_pData[iX][iY].m_iApprColor;
-		strcpy(pName, m_pData[iX][iY].m_cOwnerName);
+	for (iX = 0; iX < MapDataSIZEX; iX++)
+	for (iY = 0; iY < MapDataSIZEY; iY++)
+	if (m_Data[iX][iY].m_wObjectID == wObjectID)
+	{	*pOwnerType = (char)m_Data[iX][iY].m_sOwnerType;
+		*pDir       = m_Data[iX][iY].m_cDir;
+		*pAppr1     = m_Data[iX][iY].m_sAppr1;
+		*pAppr2     = m_Data[iX][iY].m_sAppr2;
+		*pAppr3     = m_Data[iX][iY].m_sAppr3;
+		*pAppr4     = m_Data[iX][iY].m_sAppr4;
+		*pStatus    = m_Data[iX][iY].m_iStatus;
+		*pColor     = m_Data[iX][iY].m_iApprColor;
+		strcpy(pName, m_Data[iX][iY].m_cOwnerName);
 		return;
 	}
 }

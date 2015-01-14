@@ -231,13 +231,13 @@ int XSocket::_iOnRead()
 	return XSOCKEVENT_READCOMPLETE;
 }
 //=============================================================================
-int XSocket::_iSend(char * cData, int iSize, BOOL bSaveFlag)
+int XSocket::_iSend(char * Data, int iSize, BOOL bSaveFlag)
 {
  int  iOutLen, iRet, WSAErr;
 
 	if (m_pUnsentDataList[m_sHead] != NULL) {
 		if (bSaveFlag == TRUE) {
-			iRet = _iRegisterUnsentData(cData, iSize);
+			iRet = _iRegisterUnsentData(Data, iSize);
 			switch (iRet) {
 			case -1:
 				return XSOCKEVENT_CRITICALERROR;
@@ -254,7 +254,7 @@ int XSocket::_iSend(char * cData, int iSize, BOOL bSaveFlag)
 	iOutLen = 0;
 	while (iOutLen < iSize) {
 		
-		iRet = send(m_Sock, (cData + iOutLen), iSize - iOutLen, 0);
+		iRet = send(m_Sock, (Data + iOutLen), iSize - iOutLen, 0);
 
 		if (iRet == SOCKET_ERROR) {
 			WSAErr = WSAGetLastError();
@@ -264,7 +264,7 @@ int XSocket::_iSend(char * cData, int iSize, BOOL bSaveFlag)
 			}
 			else {
 				if (bSaveFlag == TRUE) {
-					iRet = _iRegisterUnsentData((cData + iOutLen), (iSize - iOutLen));
+					iRet = _iRegisterUnsentData((Data + iOutLen), (iSize - iOutLen));
 					switch (iRet) {
 					case -1:
 						return XSOCKEVENT_CRITICALERROR;
@@ -285,14 +285,14 @@ int XSocket::_iSend(char * cData, int iSize, BOOL bSaveFlag)
 	return iOutLen;
 }
 //=============================================================================
-int XSocket::_iSend_ForInternalUse(char * cData, int iSize)
+int XSocket::_iSend_ForInternalUse(char * Data, int iSize)
 {
  int  iOutLen, iRet, WSAErr;
 
 	iOutLen = 0;
 	while (iOutLen < iSize) {
 
-		iRet = send(m_Sock, (cData + iOutLen), iSize - iOutLen, 0);
+		iRet = send(m_Sock, (Data + iOutLen), iSize - iOutLen, 0);
 
 		if (iRet == SOCKET_ERROR) {
 			WSAErr = WSAGetLastError();
@@ -309,14 +309,14 @@ int XSocket::_iSend_ForInternalUse(char * cData, int iSize)
 	return iOutLen;
 }
 //=============================================================================
-int XSocket::_iRegisterUnsentData(char * cData, int iSize)
+int XSocket::_iRegisterUnsentData(char * Data, int iSize)
 {
 	if (m_pUnsentDataList[m_sTail] != NULL) return 0;
 
 	m_pUnsentDataList[m_sTail] = new char[iSize];
 	if (m_pUnsentDataList[m_sTail] == NULL) return -1;
 
-	memcpy(m_pUnsentDataList[m_sTail], cData, iSize);
+	memcpy(m_pUnsentDataList[m_sTail], Data, iSize);
 	m_iUnsentDataSize[m_sTail] = iSize;
 
 	m_sTail++;
@@ -357,7 +357,7 @@ int XSocket::_iSendUnsentData()
 	return XSOCKEVENT_UNSENTDATASENDCOMPLETE;
 }
 //=============================================================================
-int XSocket::iSendMsg(char * cData, DWORD dwSize, char cKey, BOOL log)
+int XSocket::iSendMsg(char * Data, DWORD dwSize, char cKey, BOOL log)
 {
  WORD * wp;
  int    iRet;
@@ -373,12 +373,12 @@ int XSocket::iSendMsg(char * cData, DWORD dwSize, char cKey, BOOL log)
 	wp  = (WORD *)(m_pSndBuffer + 1);
 	*wp = (WORD)(dwSize + 3);
 
-	memcpy((char *)(m_pSndBuffer + 3), cData, dwSize);
+	memcpy((char *)(m_pSndBuffer + 3), Data, dwSize);
 	if(log){
         ZeroMemory(m_msgBuff, sizeof(m_msgBuff));
         ZeroMemory(dataBuff, sizeof(dataBuff));
         wsprintf(m_msgBuff,"Msg [%lu] was sent = ", dwSize);
-        memcpy(dataBuff, cData, dwSize);
+        memcpy(dataBuff, Data, dwSize);
 
         for(i = 0; i < dwSize; i++) if(dataBuff[i] == NULL) dataBuff[i] = ' ';
         strcat(m_msgBuff, dataBuff);

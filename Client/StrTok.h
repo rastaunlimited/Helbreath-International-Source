@@ -14,12 +14,12 @@
 class CStrTok  
 {
 public:
-	CStrTok(char * pData, char * pSeps);
+	CStrTok(char * Data, char * pSeps);
 	virtual ~CStrTok();
 	char * pGet();
-	bool _bIsSeperator(char cData, char cNextData);
+	bool _bIsSeperator(char Data, char cNextData);
 
-	char * m_pData, * m_pSeps, m_cToken[256];
+	char * m_Data, * m_pSeps, m_cToken[256];
 	int    m_iDataLength, m_iCurLoc;
 };
 

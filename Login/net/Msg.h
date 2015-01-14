@@ -11,12 +11,12 @@
 class CMsg
 {
 public:
-	void Get(char * pData, DWORD * pSize, int * pIndex, char * pKey);
-	BOOL bPut(char * pData, DWORD dwSize, int iIndex, char cKey);
+	void Get(char * Data, DWORD * pSize, int * pIndex, char * pKey);
+	BOOL bPut(char * Data, DWORD dwSize, int iIndex, char cKey);
 	CMsg();
 	virtual ~CMsg();
 
-	char * m_pData;
+	char * m_Data;
 	DWORD  m_dwSize;
 
 	int    m_iIndex;

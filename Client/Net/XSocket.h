@@ -65,7 +65,7 @@ public:
 	BOOL bAccept(class XSocket * pXSock, unsigned int uiMsg);
 	BOOL bListen(char * pAddr, int iPort, unsigned int uiMsg);
 	
-	int iSendMsg(char * cData, DWORD dwSize, char cKey = NULL);
+	int iSendMsg(char * Data, DWORD dwSize, char cKey = NULL);
 	BOOL bConnect(char * pAddr, int iPort, unsigned int uiMsg);
 	BOOL bBlockConnect(char * pAddr, int iPort, unsigned int uiMsg);
 	int  iOnSocketEvent(WPARAM wParam, LPARAM lParam);
@@ -80,9 +80,9 @@ public:
 	void _CloseConn();
 	
 	int _iSendUnsentData();
-	int _iRegisterUnsentData(char * cData, int iSize);
-	int _iSend(char * cData, int iSize, BOOL bSaveFlag);
-	int _iSend_ForInternalUse(char * cData, int iSize);
+	int _iRegisterUnsentData(char * Data, int iSize);
+	int _iSend(char * Data, int iSize, BOOL bSaveFlag);
+	int _iSend_ForInternalUse(char * Data, int iSize);
 	int _iOnRead();
 	
 	char   m_cType;
