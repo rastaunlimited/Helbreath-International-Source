@@ -154,6 +154,19 @@ CGame::CGame(HWND hWnd) : m_hWnd(hWnd)
 			m_stCityStatus[i].iWins   = 0;
 		}
 		m_sSlateSuccessRate		= 0;
+		m_iPrimaryDropRate		= 0;
+		m_iSecondaryDropRate	= 0;
+		m_iEnemyKillAdjust      = 1; 
+		m_sRaidTimeMonday		= 0; 
+		m_sRaidTimeTuesday      = 0; 
+		m_sRaidTimeWednesday	= 0; 
+		m_sRaidTimeThursday     = 0; 
+		m_sRaidTimeFriday		= 0; 
+		m_sRaidTimeSaturday     = 0; 
+		m_sRaidTimeSunday		= 0;
+		m_sCharPointLimit		= 0;
+		m_sExpModifier		= 0;
+		m_sCharSkillLimit		= 0;
 
 		m_iAutoRebootingCount = 0;
 
@@ -174,6 +187,7 @@ bool CGame::bAccept(class XSocket * pXSock)
 	class XSocket * pTmpSock;
 	char  cTxt[80];
 	bool valid = FALSE;
+	int iTotalip;
 
 	pTmpSock = new class XSocket(m_hWnd, CLIENTSOCKETBLOCKLIMIT);
 
@@ -194,13 +208,15 @@ bool CGame::bAccept(class XSocket * pXSock)
 			ZeroMemory(cTxt, sizeof(cTxt));
 			pTmpSock->iGetPeerAddress(cTxt);
 
+
+
 			for(std::list<ConfirmedIP>::iterator it = confirmedIPs.begin(); it != confirmedIPs.end(); ++it)
 				if(strcmp(it->ip, cTxt) == 0){
 					valid = TRUE;
 					confirmedIPs.erase(it);
 					break;
 				}
-			
+		
 			/*if(!valid) 
 			{
 				wsprintf(g_cTxt,"(!!) Non-permitted client: %s", cTxt);
@@ -211,6 +227,19 @@ bool CGame::bAccept(class XSocket * pXSock)
 
 			m_pClientList[i] = new class CClient(m_hWnd, i);
 			m_pClientList[i]->m_pXSock = pTmpSock;
+
+
+			ZeroMemory(m_pClientList[i]->m_cIPaddress, sizeof(m_pClientList[i]->m_cIPaddress));
+			m_pClientList[i]->m_pXSock->iGetPeerAddress(m_pClientList[i]->m_cIPaddress);
+			for (int x = 1; x < MAXCLIENTS; x++)
+				if(m_pClientList[x] != NULL) {
+					if(strcmp(m_pClientList[x]->m_cIPaddress, m_pClientList[i]->m_cIPaddress) == 0) iTotalip++;
+				}
+				if(iTotalip > 2) {
+					delete m_pClientList[i];
+					m_pClientList[i] = NULL;
+					return FALSE;
+				}
 
 			bAddClientShortCut(i);
 
@@ -302,7 +331,7 @@ bool CGame::bInit()
 
 	//m_Misc.Temp();
 
-	PutLogList("(!) INITIALIZING GAME SERVER...");
+	PutLogList("(*) INITIALIZING GAME SERVER...");
 	//
 
 	for (i = 0; i < MAXCLIENTS+1; i++)
@@ -361,7 +390,7 @@ bool CGame::bInit()
 
 	for (i = 0; i < MAXPOTIONTYPES; i++)
 		if (m_pPotionConfigList[i] != NULL) delete m_pPotionConfigList[i];
-
+	//
 	for (i = 0; i < MAXCRAFTING; i++)
 		if (m_pCraftingConfigList[i] != NULL) delete m_pCraftingConfigList[i]; 
 
@@ -560,11 +589,11 @@ bool CGame::bInit()
 	ZeroMemory(m_websiteAddr,sizeof(m_websiteAddr));
 	m_websitePort = 0;
 
-	for (i = 1; i < 300; i++) {
+	for (i = 1; i < 900; i++) {
 		m_iLevelExpTable[i] = iGetLevelExp(i);
 			//testcode
-			//wsprintf(g_cTxt, "Level:%d --- Exp:%d", i, m_iLevelExpTable[i]);
-			//PutLogFileList(g_cTxt);
+			wsprintf(g_cTxt, "Level:%d --- Exp:%d", i, m_iLevelExpTable[i]);
+			PutLogFileList(g_cTxt);
 	}
 
 	m_iLimitedUserExp = m_iLevelExpTable[LEVELLIMIT+1]; 
@@ -581,7 +610,11 @@ bool CGame::bInit()
 		PutLogList("(!!!) CRITICAL ERROR! Cannot execute server! config file contents error!");
 		return FALSE;
 	}
-
+	if (bReadSettingsConfigFile("Settings.cfg") == FALSE) {;
+		PutLogList(" ");
+		PutLogList("(!!!) CRITICAL ERROR! Cannot execute server! Settings.cfg file contents error!");
+		return FALSE;
+	}
 	srand( (unsigned)time( NULL ) );   
 
 	m_bF1pressed = m_bF4pressed = m_bF12pressed = FALSE;
@@ -672,13 +705,13 @@ void CGame::DisplayInfo(HDC hdc)
 {
 	char cTxt[80];
 	int  i, iLine;
-
+	//GOBACK
 	SelectObject(hdc, GetStockObject(ANSI_VAR_FONT));
 	SetTextColor(hdc, clBlack);
 	wsprintf(cTxt, "Server-Name: %s", m_cServerName);
 	TextOut(hdc, 610, 5, cTxt, strlen(cTxt));
 	ZeroMemory(cTxt, sizeof(cTxt));
-	wsprintf(cTxt, "Max.Level: %d", PLAYERMAXLEVEL);
+	wsprintf(cTxt, "Max.Level: %d", m_sMaxPlayerLevel);
 	TextOut(hdc, 610, 19, cTxt, strlen(cTxt));
 	ZeroMemory(cTxt, sizeof(cTxt));
 	wsprintf(cTxt, "P: %d/%d - %d/%d + %d", m_iTotalClients, m_iMaxClients, m_iTotalGameServerClients, m_iTotalGameServerMaxClients, m_onlineCntAdd);
@@ -2302,9 +2335,9 @@ void CGame::OnTimer(char cType)
 			(m_iSubLogSockActiveCount == MAXSUBLOGSOCK)
 			) 
 		{
-			PutLogList("Initializing drops list...");
-			m_drops.InitDrops();
-			PutLogList("Sending start message...");
+			//PutLogList("Initializing drops list...");
+			//m_drops.InitDrops();
+		//	PutLogList("Sending start message...");
 			SendMessage(m_hWnd, WM_USER_STARTGAMESIGNAL, NULL, NULL);
 			m_bIsGameStarted = TRUE;
 		}
@@ -2336,16 +2369,16 @@ void CGame::OnTimer(char cType)
 			m_pSubLogSock[0] = new XSocket(m_hWnd, SERVERSOCKETBLOCKLIMIT);
 			m_pSubLogSock[0]->bConnect(m_cLogServerAddr, m_iGateServerPort, (WM_ONLOGSOCKETEVENT + 1));
 			m_pSubLogSock[0]->bInitBufferSize(MSGBUFFERSIZE);
-			wsprintf(g_cTxt, "(!) Try to connect sub-log-socket(0)... Addr:%s  Port:%d", m_cLogServerAddr, m_iGateServerPort);
-			PutLogList(g_cTxt);
+			//wsprintf(g_cTxt, "(*) Try to connect sub-log-socket(0)... Addr:%s  Port:%d", m_cLogServerAddr, m_iGateServerPort);
+			//PutLogList(g_cTxt);
 		}
 		else if(m_bIsGameServerRegistered) for (b = 1; b < MAXSUBLOGSOCK; b++){
 			if(m_pSubLogSock[b] == NULL && !m_bIsSocketConnected[b] && m_bIsSocketConnected[b-1]){
 				m_pSubLogSock[b] = new XSocket(m_hWnd, SERVERSOCKETBLOCKLIMIT);
 				m_pSubLogSock[b]->bConnect(m_cLogServerAddr, m_iGateServerPort, (WM_ONLOGSOCKETEVENT + b + 1));
 				m_pSubLogSock[b]->bInitBufferSize(MSGBUFFERSIZE);
-				wsprintf(g_cTxt, "(!) Try to connect sub-log-socket(%d)... Addr:%s  Port:%d", b, m_cLogServerAddr, m_iGateServerPort);
-				PutLogList(g_cTxt);
+				//wsprintf(g_cTxt, "(*) Try to connect sub-log-socket(%d)... Addr:%s  Port:%d", b, m_cLogServerAddr, m_iGateServerPort);
+				//PutLogList(g_cTxt);
 			}		 
 		}
 
@@ -2438,13 +2471,13 @@ void CGame::OnTimer(char cType)
 
 	if ((m_bIsServerShutdowned == FALSE) && (m_bOnExitProcess == TRUE) && ((dwTime - m_dwExitProcessTime) > 1000*2)) {
 		if (_iForcePlayerDisconect(15) == 0) {
-			PutLogList("(!) GAME SERVER SHUTDOWN PROCESS COMPLETED! All players are disconnected.");
+			PutLogList("(!!!) GAME SERVER SHUTDOWN PROCESS COMPLETED! All players are disconnected.");
 			m_bIsServerShutdowned = TRUE;
 
 			if ((m_cShutDownCode == 3) || (m_cShutDownCode == 4)) {
 				PutLogFileList("(!!!) AUTO-SERVER-REBOOTING!");
 				bInit();
-				m_iAutoRebootingCount++;
+//				m_iAutoRebootingCount++;
 			}
 			else {
 				if (m_iFinalShutdownCount == 0)	m_iFinalShutdownCount = 20;
@@ -2921,7 +2954,7 @@ bool CGame::bSendMsgToLS(DWORD dwMsg, int iClientH, bool bFlag,char * pData)
 		*ip = m_pClientList[iClientH]->m_iLevel;
 		cp += 4;
 
-		wsprintf(g_cTxt, "Enter Game: %s(%d)", m_pClientList[iClientH]->m_cCharName, m_pClientList[iClientH]->m_iLevel);
+		wsprintf(g_cTxt, "(Client Login) Enter Game: %s(%d)", m_pClientList[iClientH]->m_cCharName, m_pClientList[iClientH]->m_iLevel);
 		PutLogList(g_cTxt);
 
 		iRet = m_pSubLogSock[m_iCurSubLogSockIndex]->iSendMsg(G_cData50000, 56);
@@ -2930,8 +2963,8 @@ bool CGame::bSendMsgToLS(DWORD dwMsg, int iClientH, bool bFlag,char * pData)
 
 	case MSGID_REQUEST_REGISTERGAMESERVER:
 
-		wsprintf(cTxt, "(!) Try to register game server(%s)", m_cServerName);
-		PutLogList(cTxt);
+		//wsprintf(cTxt, "(!) Try to register game server(%s)", m_cServerName);
+		//PutLogList(cTxt);
 
 		dwp  = (DWORD *)(G_cData50000 + INDEX4_MSGID);
 		*dwp = MSGID_REQUEST_REGISTERGAMESERVER;
@@ -2981,8 +3014,8 @@ bool CGame::bSendMsgToLS(DWORD dwMsg, int iClientH, bool bFlag,char * pData)
 		wp  = (WORD *)(G_cData50000 + 4);
 		*wp = GSID;
 		m_pSubLogSock[m_iCurSubLogSockIndex]->iSendMsg(G_cData50000, 6);
-		wsprintf(cTxt, "(!) Try to register game server socket(%d) on ID[%u]",m_iCurSubLogSockIndex, GSID);
-		PutLogList(cTxt);
+		//wsprintf(cTxt, "(!) Try to register game server socket(%d) on ID[%u]",m_iCurSubLogSockIndex, GSID);
+		//PutLogList(cTxt);
 		return TRUE;
 
 	case MSGID_REQUEST_PLAYERDATA:
@@ -3463,13 +3496,24 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 
 	//***************************************************************************
 
-	if(!player->IsGM() && player->m_iLevel > PLAYERMAXLEVEL) {
-		wsprintf(g_cTxt, "Hack: (%s) Player: (%s) High level hack (%i)", player->m_cIPaddress, player->m_cCharName, player->m_iLevel);
+	if(!player->IsGM() && player->m_iLevel > m_sMaxPlayerLevel) {
+		wsprintf(g_cTxt, "(HACK) (%s) Player: (%s) High level hack (%i)", player->m_cIPaddress, player->m_cCharName, player->m_iLevel);
 		PutLogFileList(g_cTxt, HACK_LOGFILE);
 		PutLogList(g_cTxt);
 		DeleteClient(iClientH, FALSE, TRUE, TRUE, TRUE);
 		return;
 	}
+
+		int iTotalPoints = 0;
+	for (i = 0; i <	MAXSKILLTYPE; i++) 
+		iTotalPoints += m_pClientList[iClientH]->m_cSkillMastery[i];
+		if ((iTotalPoints-21 > m_sCharSkillLimit) && (m_pClientList[iClientH]->m_iAdminUserLevel == 0)) {
+		wsprintf(g_cTxt, "(HACK) Packet Editing: (%s) Player: (%s) - has more than allowed skill points (%d).", m_pClientList[iClientH]->m_cIPaddress, m_pClientList[iClientH]->m_cCharName, iTotalPoints);
+		PutLogFileList(g_cTxt);
+		DeleteClient(iClientH, FALSE, TRUE, TRUE, TRUE);
+		return;
+	}
+
 
 	if ((player->m_sX == -1) && (player->m_sY == -1)) {
 		GetMapInitialPoint(player->m_cMapIndex, &player->m_sX, &player->m_sY, player->m_cLocation);
@@ -3881,6 +3925,13 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 	char seps[] = "= \t\n", * urlDelimiter = "/";
 	int webLen;
 	
+		char szHostName[255];
+					gethostname(szHostName, 255);
+					struct hostent *host_entry;
+					host_entry=gethostbyname(szHostName);
+					char * szLocalIP;
+					int port = 5656;
+
 	cReadMode = 0;
 
 	hFile = CreateFile(cFn, GENERIC_READ, NULL, NULL, OPEN_EXISTING, NULL, NULL);
@@ -3889,11 +3940,11 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 
 	pFile = fopen(cFn, "rt");
 	if (pFile == NULL) {
-		PutLogList("(!) Cannot open configuration file.");
+		PutLogList("(ERROR) Cannot open configuration file.");
 		return FALSE;
 	}
 	else {
-		PutLogList("(!) Reading configuration file...");
+		//PutLogList("(*) Reading configuration file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -4011,6 +4062,13 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 					strcpy(m_cGameServerAddrExternal, token);
 					wsprintf(cTxt, "(*) Game server External IP : %s", m_cGameServerAddrExternal);
 					PutLogList(cTxt);
+
+				szLocalIP = inet_ntoa (*(struct in_addr *)*host_entry->h_addr_list);
+					strcpy(m_cGameServerAddr, szLocalIP);
+					m_iGateServerPort = port;
+
+					wsprintf(cTxt, "(*) Gate server port : %d",m_iGateServerPort);
+					PutLogList(cTxt);
 					cReadMode = 0;
 					break;
 
@@ -4063,22 +4121,223 @@ bool CGame::bReadProgramConfigFile(char * cFn)
 	}
 	if (pFile != NULL) fclose(pFile);
 
-	char szHostName[255];
-					gethostname(szHostName, 255);
-					struct hostent *host_entry;
-					host_entry=gethostbyname(szHostName);
-					char * szLocalIP;
-					int port = 5656;
-
-				szLocalIP = inet_ntoa (*(struct in_addr *)*host_entry->h_addr_list);
-					strcpy(m_cGameServerAddr, szLocalIP);
-					m_iGateServerPort = port;
-
-					wsprintf(cTxt, "(*) Gate server port : %d",m_iGateServerPort);
-					PutLogList(cTxt);
-
 	return TRUE;
 }
+BOOL CGame::bReadSettingsConfigFile(char * cFn) 
+{ 
+   FILE * pFile; 
+   HANDLE hFile; 
+   DWORD  dwFileSize; 
+   char * cp, * token, cReadMode, cTxt[120], cGSMode[16] = "", len; 
+   char seps[] = "= \t\n"; 
+   class CStrTok * pStrTok; 
+
+   cReadMode = 0; 
+
+   hFile = CreateFile(cFn, GENERIC_READ, NULL, NULL, OPEN_EXISTING, NULL, NULL); 
+   dwFileSize = GetFileSize(hFile, NULL); 
+   if (hFile != INVALID_HANDLE_VALUE) CloseHandle(hFile); 
+
+   pFile = fopen(cFn, "rt"); 
+   if (pFile == NULL) { 
+      // ¬∞√î√Ä√ì¬º¬≠¬π√∂√Ä√á √É√ä¬±√¢√à¬≠ √Ü√Ñ√Ä√è√Ä¬ª √Ä√ê√Ä¬ª ¬º√∂ ¬æ√∏¬¥√ô. 
+      //   PutLogList("(!) Cannot open configuration file."); 
+      return FALSE; 
+   } 
+   else { 
+     // PutLogList("(!) Reading settings file..."); 
+      cp = new char[dwFileSize+2]; 
+      ZeroMemory(cp, dwFileSize+2); 
+      fread(cp, dwFileSize, 1, pFile); 
+
+      pStrTok = new class CStrTok(cp, seps); 
+      token = pStrTok->pGet(); 
+      //token = strtok( cp, seps );    
+      while( token != NULL )   { 
+
+         if (cReadMode != 0) { 
+            switch (cReadMode) { 
+
+            case 1: 
+               if ((strlen(token) != 0) && (strlen(token) <= 10000) && (strlen(token) >= 1)) 
+               { 
+                  m_iPrimaryDropRate = atoi(token); 
+               } 
+               else 
+               { 
+                  wsprintf(cTxt, "(!!!) Primary drop rate(%s) invalid must be between 1 to 10000", token); 
+                  PutLogList(cTxt); 
+               } 
+               wsprintf(cTxt, "(*) Primary drop rate: (%d)", m_iPrimaryDropRate); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 2: 
+               if ((strlen(token) != 0) && (strlen(token) <= 10000) && (strlen(token) >= 1)) 
+               { 
+                  m_iSecondaryDropRate = atoi(token); 
+               } 
+               else 
+               { 
+                  wsprintf(cTxt, "(!!!) Secondary drop rate(%s) invalid must be between 1 to 10000", token); 
+                  PutLogList(cTxt); 
+               } 
+               wsprintf(cTxt, "(*) Secondary drop rate: (%d)", m_iSecondaryDropRate); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 3: 
+               if ((strlen(token) != 0) && (strlen(token) <= 100) && (strlen(token) >= 1)) 
+               { 
+                  m_iEnemyKillAdjust = atoi(token); 
+               } 
+               else 
+               { 
+                  wsprintf(cTxt, "(!!!) ENEMY-KILL-ADJUST: (%s) invalid must be between 1 to 100", token); 
+                  PutLogList(cTxt); 
+               } 
+               wsprintf(cTxt, "(*) Player gains (%d) EK per enemy kill.", m_iEnemyKillAdjust); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 4: 
+               m_sRaidTimeMonday = atoi(token); 
+               if (m_sRaidTimeMonday == 0) m_sRaidTimeMonday = 3; 
+               wsprintf(cTxt, "(*) Monday Raid Time : (%d) minutes", m_sRaidTimeMonday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 5: 
+               m_sRaidTimeTuesday = atoi(token); 
+               if (m_sRaidTimeTuesday == 0) m_sRaidTimeTuesday = 3; 
+               wsprintf(cTxt, "(*) Tuesday Raid Time : (%d) minutes", m_sRaidTimeTuesday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+			case 6: 
+               m_sRaidTimeWednesday = atoi(token); 
+               if (m_sRaidTimeWednesday == 0) m_sRaidTimeWednesday = 3; 
+               wsprintf(cTxt, "(*) Wednesday Raid Time : (%d) minutes", m_sRaidTimeWednesday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 7: 
+               m_sRaidTimeThursday = atoi(token); 
+               if (m_sRaidTimeThursday == 0) m_sRaidTimeThursday = 3; 
+               wsprintf(cTxt, "(*) Thursday Raid Time : (%d) minutes", m_sRaidTimeThursday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 8: 
+               m_sRaidTimeFriday = atoi(token); 
+               if (m_sRaidTimeFriday == 0) m_sRaidTimeFriday = 10; 
+               wsprintf(cTxt, "(*) Friday Raid Time : (%d) minutes", m_sRaidTimeFriday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 9: 
+               m_sRaidTimeSaturday = atoi(token); 
+               if (m_sRaidTimeSaturday == 0) m_sRaidTimeSaturday = 45; 
+               wsprintf(cTxt, "(*) Saturday Raid Time : (%d) minutes", m_sRaidTimeSaturday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+
+            case 10: 
+               m_sRaidTimeSunday = atoi(token); 
+               if (m_sRaidTimeSunday == 0) m_sRaidTimeSunday = 60; 
+               wsprintf(cTxt, "(*) Sunday Raid Time : (%d) minutes", m_sRaidTimeSunday); 
+               PutLogList(cTxt); 
+               cReadMode = 0; 
+               break; 
+	
+
+ 
+			case 11: 
+               m_sSlateSuccessRate = atoi(token); 
+               wsprintf(cTxt, "(*) Slate Success Rate (%d) percent", m_sSlateSuccessRate); 
+               PutLogList(cTxt); 
+			   if (m_sSlateSuccessRate == 0) m_sSlateSuccessRate = 14; 
+               cReadMode = 0; 
+               break;
+
+			case 12: 
+               m_sCharStatLimit = atoi(token); 
+               if (m_sCharStatLimit == 0) m_sCharStatLimit = 200; 
+               cReadMode = 0;
+               break;
+
+			case 13: 
+               m_sCharSkillLimit = atoi(token); 
+               if (m_sCharSkillLimit == 0) m_sCharSkillLimit = 700; 
+               cReadMode = 0;
+               break;
+
+			case 14: 
+               m_cRepDropModifier = atoi(token); 
+               wsprintf(cTxt, "(*) Rep<->Drop modifier: (%d)", m_cRepDropModifier); 
+               PutLogList(cTxt); 
+               if (m_cRepDropModifier < 0) m_cRepDropModifier = 0;
+               cReadMode = 0; 
+               break;
+
+			
+			case 15: 
+               m_sMaxPlayerLevel = atoi(token); 
+			if (m_sMaxPlayerLevel >= 801) m_sMaxPlayerLevel = 800; 
+               if (m_sMaxPlayerLevel == 0) m_sMaxPlayerLevel = 180; 
+               cReadMode = 0;
+               break;
+
+		 case 16: 
+               m_sExpModifier = atoi(token); 
+               wsprintf(cTxt, "(*) Exp modifier: (%d)", m_sExpModifier); 
+               PutLogList(cTxt); 
+               if (m_sExpModifier < 0) m_sExpModifier = 0;
+               cReadMode = 0; 
+               break;
+			
+			}
+         } 
+         else { 
+            if (memcmp(token, "primary-drop-rate"      , 17) == 0)   cReadMode = 1; 
+            if (memcmp(token, "secondary-drop-rate"      , 19) == 0)   cReadMode = 2; 
+             if (memcmp(token, "enemy-kill-adjust"      , 17) == 0)   cReadMode = 3; 
+             if (memcmp(token, "monday-raid-time"      , 16) == 0)   cReadMode = 4; 
+            if (memcmp(token, "tuesday-raid-time"      , 17) == 0)   cReadMode = 5; 
+            if (memcmp(token, "wednesday-raid-time"      , 19) == 0)   cReadMode = 6; 
+            if (memcmp(token, "thursday-raid-time"      , 18) == 0)   cReadMode = 7; 
+            if (memcmp(token, "friday-raid-time"      , 16) == 0)   cReadMode = 8; 
+            if (memcmp(token, "saturday-raid-time"      , 18) == 0)   cReadMode = 9; 
+            if (memcmp(token, "sunday-raid-time"      , 16) == 0)   cReadMode = 10; 
+			if (memcmp(token, "slate-success-rate", 18) == 0)		cReadMode = 11;
+			if (memcmp(token, "character-stat-limit", 20) == 0)		cReadMode = 12;
+			if (memcmp(token, "character-skill-limit", 21) == 0)		cReadMode = 13;
+			if (memcmp(token, "rep-drop-modifier", 17) == 0)		cReadMode = 14;
+			if (memcmp(token, "max-player-level", 16) == 0)		cReadMode = 15;
+			if (memcmp(token, "exp-modifier", 12) == 0)		cReadMode = 16;
+			
+         } 
+
+         token = pStrTok->pGet(); 
+         //token = strtok( NULL, seps ); 
+      } 
+
+      delete pStrTok; 
+      delete cp; 
+   } 
+   if (pFile != NULL) fclose(pFile); 
+
+   return TRUE; 
+} 
 
 bool CGame::bReadCrusadeStructureConfigFile(char * cFn)
 {
@@ -4098,11 +4357,11 @@ bool CGame::bReadCrusadeStructureConfigFile(char * cFn)
 
 	pFile = fopen(cFn, "rt");
 	if (pFile == NULL) {
-		PutLogList("(!) Cannot open Crusade Schedule file.");
+		PutLogList("(ERROR) Cannot open Crusade Schedule file.");
 		return FALSE;
 	}
 	else {
-		PutLogList("(!) Reading Crusade configuration file...");
+		//PutLogList("(*) Reading Crusade configuration file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -4216,7 +4475,7 @@ bool CGame::_bRegisterMap(char * pName)
 	strcpy(cTmpName, pName);
 	for (i = 0; i < MAXMAPS; i++)
 		if ((m_pMapList[i] != NULL) && (memcmp(m_pMapList[i]->m_cName, cTmpName, 10) == 0)) {
-			wsprintf(cTxt, "(!!!) CRITICAL ERROR! Map (%s) is already installed! cannot add.", cTmpName);
+			wsprintf(cTxt, "(ERROR) CRITICAL ERROR! Map (%s) is already installed! cannot add.", cTmpName);
 			PutLogList(cTxt);
 			return FALSE;
 		}
@@ -4224,10 +4483,10 @@ bool CGame::_bRegisterMap(char * pName)
 	for (i = 0; i < MAXMAPS; i++)
 		if (m_pMapList[i] == NULL) {
 			m_pMapList[i] = (class CMap *)new class CMap(this);
-			wsprintf(cTxt, "(*) Add map (%s)   - Loading map info files...", pName);
-			PutLogList(cTxt);
+			//wsprintf(cTxt, "(*) Loading Map (%s)", pName);
+			//PutLogList(cTxt);
 			if (m_pMapList[i]->bInit(pName) == FALSE) {
-				wsprintf(cTxt, "(!!!) Data file loading fail!", pName);
+				wsprintf(cTxt, "(ERROR) Data file %s loading fail!", pName);
 				PutLogList(cTxt);
 				return FALSE;
 			}
@@ -4561,13 +4820,13 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 		
 		if(!m_pClientList[iClientH]->IsGM())
 		{
-			//if((m_pClientList[iClientH]->m_iLU_Pool < 0) || (m_pClientList[iClientH]->m_iLU_Pool > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseStr() < 10) || (m_pClientList[iClientH]->GetBaseStr() > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseDex() < 10) || (m_pClientList[iClientH]->GetBaseDex() > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->m_iVit < 10) || (m_pClientList[iClientH]->m_iVit > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseInt() < 10) || (m_pClientList[iClientH]->GetBaseInt() > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseMag() < 10) || (m_pClientList[iClientH]->GetBaseMag() > CHARPOINTLIMIT)) return FALSE;
-			if((m_pClientList[iClientH]->m_iCharisma < 10) || (m_pClientList[iClientH]->m_iCharisma > CHARPOINTLIMIT)) return FALSE;
+			//if((m_pClientList[iClientH]->m_iLU_Pool < 0) || (m_pClientList[iClientH]->m_iLU_Pool > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->GetBaseStr() < 10) || (m_pClientList[iClientH]->GetBaseStr() > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->GetBaseDex() < 10) || (m_pClientList[iClientH]->GetBaseDex() > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->m_iVit < 10) || (m_pClientList[iClientH]->m_iVit > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->GetBaseInt() < 10) || (m_pClientList[iClientH]->GetBaseInt() > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->GetBaseMag() < 10) || (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->m_iCharisma < 10) || (m_pClientList[iClientH]->m_iCharisma > m_sCharStatLimit)) return FALSE;
 			//if((m_pClientList[iClientH]->m_cAccountStatus != 2) && (m_pClientList[iClientH]->m_iLevel > LEVELLIMIT)) return FALSE;
 		}
 		if((m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cCharName) == FALSE) || (m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cAccountName) == FALSE)) return FALSE;
@@ -5151,12 +5410,12 @@ DICFC_STOPDECODING:;
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! ITEM configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! ITEM configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) ITEM(Total:%d) configuration - success!", iItemConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) ITEM(Total:%d) configuration - success!", iItemConfigListIndex);
+	//PutLogList(cTxt);
 
 	// 2002-09-09 #1
 	m_bReceivedItemList = true;
@@ -7424,13 +7683,13 @@ OUTDATED_PROUVED:
 				case MSGTYPE_CONFIRM:
 					GSID = bGetOffsetValue(pData, 6);
 					ZeroMemory(cGSReg, sizeof(cGSReg));
-					wsprintf(cGSReg,"(!) Game Server registration to Log Server - Success! GSID[%u]",GSID);
-					PutLogList(cGSReg);
+					//wsprintf(cGSReg,"(*) Game Server registration to Log Server - Success! GSID[%u]",GSID);
+					//PutLogList(cGSReg);
 					m_bIsGameServerRegistered = TRUE;
 					break;
 
 				case MSGTYPE_REJECT:
-					PutLogList("(!) Game Server registration to Log Server - Fail!");
+					PutLogList("(ERROR) Game Server registration to Log Server - Fail!");
 					break;
 				}
 				if(ReceivedAllConfig) break;
@@ -7442,32 +7701,32 @@ OUTDATED_PROUVED:
 
 				if (m_bIsItemAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! Item configuration error.");
+					PutLogList("(ERROR) STOPPED! Item configuration error.");
 				}
 
 				if (m_bIsNpcAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! Npc configuration error.");
+					PutLogList("(ERROR) STOPPED! Npc configuration error.");
 				}
 
 				if (m_bIsMagicAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! MAGIC configuration error.");
+					PutLogList("(ERROR) STOPPED! MAGIC configuration error.");
 				}
 
 				if (m_bIsSkillAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! SKILL configuration error.");
+					PutLogList("(ERROR) STOPPED! SKILL configuration error.");
 				}
 
 				if (m_bIsQuestAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! QUEST configuration error.");
+					PutLogList("(ERROR) STOPPED! QUEST configuration error.");
 				}
 
 				if (m_bIsPotionAvailable == FALSE) {
 					PutLogList(" ");
-					PutLogList("(!!!) STOPPED! POTION configuration error.");
+					PutLogList("(ERROR) STOPPED! POTION configuration error.");
 				}
 
 				ReceivedAllConfig = TRUE;
@@ -7479,48 +7738,47 @@ OUTDATED_PROUVED:
 
 			case MSGID_BUILDITEMCONFIGURATIONCONTENTS:
 				// Build Item contents
-				PutLogList("(!) BUILD-ITEM configuration contents received. Now decoding...");
+				//PutLogList("(!) BUILD-ITEM configuration contents received. Now decoding...");
 				m_bIsBuildItemAvailable = _bDecodeBuildItemConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_ITEMCONFIGURATIONCONTENTS:
-				PutLogList("(!) ITEM configuration contents received. Now decoding...");
+				//PutLogList("(!) ITEM configuration contents received. Now decoding...");
 				m_bIsItemAvailable = _bDecodeItemConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_NPCCONFIGURATIONCONTENTS:
-
-				PutLogList("(!) NPC configuration contents received. Now decoding...");
+				//PutLogList("(!) NPC configuration contents received. Now decoding...");
 				m_bIsNpcAvailable = _bDecodeNpcConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_MAGICCONFIGURATIONCONTENTS:
-				PutLogList("(!) MAGIC configuration contents received. Now decoding...");
+				//PutLogList("(!) MAGIC configuration contents received. Now decoding...");
 				m_bIsMagicAvailable = _bDecodeMagicConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_SKILLCONFIGURATIONCONTENTS:
-				PutLogList("(!) SKILL configuration contents received. Now decoding...");
+				//PutLogList("(!) SKILL configuration contents received. Now decoding...");
 				m_bIsSkillAvailable = _bDecodeSkillConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_QUESTCONFIGURATIONCONTENTS:
-				PutLogList("(!) QUEST configuration contents received. Now decoding...");
+				//PutLogList("(!) QUEST configuration contents received. Now decoding...");
 				m_bIsQuestAvailable = _bDecodeQuestConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_POTIONCONFIGURATIONCONTENTS:
-				PutLogList("(!) POTION configuration contents received. Now decoding...");
+				//PutLogList("(!) POTION configuration contents received. Now decoding...");
 				m_bIsPotionAvailable = _bDecodePotionConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_DUPITEMIDFILECONTENTS:
-				PutLogList("(!) DupItemID file contents received. Now decoding...");
+				//PutLogList("(!) DupItemID file contents received. Now decoding...");
 				_bDecodeDupItemIDFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
 			case MSGID_NOTICEMENTFILECONTENTS:
-				PutLogList("(!) Noticement file contents received. Now decoding...");
+				//PutLogList("(!) Noticement file contents received. Now decoding...");
 				_bDecodeNoticementFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
@@ -7529,7 +7787,7 @@ OUTDATED_PROUVED:
 				break; 
 
 			case MSGID_TELEPORTLISTCONTENTS:
-				PutLogList("(!) TeleportListConfig file contents received. Now decoding...");
+				//PutLogList("(!) TeleportListConfig file contents received. Now decoding...");
 				_bDecodeTeleportListConfigFileContents((char *)(pData + INDEX2_MSGTYPE + 2), dwMsgSize);
 				break;
 
@@ -11503,7 +11761,7 @@ bool CGame::_bDecodeNpcConfigFileContents(char * pData, DWORD dwMsgSize)
 					delete[] pContents;
 					return FALSE;
 				}
-				m_npcConfigList[iNpcConfigListIndex]->m_iExpDice = atoi(token) * EXPMULTIPLIER;
+				m_npcConfigList[iNpcConfigListIndex]->m_iExpDice = atoi(token) * 100000;
 				cReadModeB++;
 				break;
 
@@ -11743,12 +12001,12 @@ bool CGame::_bDecodeNpcConfigFileContents(char * pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! NPC configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! NPC configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) NPC(Total:%d) configuration - success!", iNpcConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) NPC(Total:%d) configuration - success!", iNpcConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -11762,14 +12020,14 @@ void CGame::OnStartGameSignal()
 			_bReadMapInfoFiles(i);
 
 
-	bReadCrusadeStructureConfigFile("Crusade.cfg");
+	bReadCrusadeStructureConfigFile("..\\configs\\Crusade.cfg");
 
 	_LinkStrikePointMapIndex();
 
 	bReadCrusadeGUIDFile("GameData\\CrusadeGUID.txt");
 	bReadHeldenianGUIDFile("GameData\\HeldenianGUID.txt");	
 	
-	bReadSchedulerConfigFile("Scheduler.cfg");
+	bReadSchedulerConfigFile("..\\configs\\Schedule.cfg");
 
 	PutLogList("");
 	PutLogList("(!) Game Server Activated.");
@@ -14469,12 +14727,12 @@ bool CGame::_bDecodeMagicConfigFileContents(char * pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! MAGIC configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! MAGIC configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) MAGIC(Total:%d) configuration - success!", iMagicConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) MAGIC(Total:%d) configuration - success!", iMagicConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 
@@ -14623,12 +14881,12 @@ bool CGame::_bDecodeSkillConfigFileContents(char * pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! SKILL configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! SKILL configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) SKILL(Total:%d) configuration - success!", iSkillConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) SKILL(Total:%d) configuration - success!", iSkillConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -14814,12 +15072,12 @@ bool CGame::_bDecodeTeleportListConfigFileContents(char * pData, DWORD dwMsgSize
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! TELEPORT-LIST configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! TELEPORT-LIST configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) TELEPORT-LIST(Total:%d) configuration - success!", count);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) TELEPORT-LIST(Total:%d) configuration - success!", count);
+	//PutLogList(cTxt);
 
 	return TRUE;
 } // _bDecodeTeleportListConfigFileContents
@@ -15158,12 +15416,12 @@ bool CGame::_bReadMapInfoFiles(int iMapIndex)
 
 	pFile = fopen(cFn, "rt");
 	if (pFile == NULL) {
-		wsprintf(cTxt, "(!) Cannot open file : %s", cFn);
+		wsprintf(cTxt, "(ERROR) Cannot open file : %s", cFn);
 		PutLogList(cTxt);
 		return FALSE;
 	}
 	else {
-		//wsprintf(cTxt, "(!) Reading Map info file : %s", cFn);
+		//wsprintf(cTxt, "(*) Reading Map info file : %s", cFn);
 		//PutLogList(cTxt);
 		dwReadSize = fread(pContents, dwFileSize, 1, pFile);
 		fclose(pFile);
@@ -16868,12 +17126,12 @@ RMI_SKIPDECODING:;
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! map info file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! map info file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) Map info file decoding(%s) - success! TL(%d) WP(%d) LNPC(%d) MXO(%d) RMG(%d / %d)", cFn, iTeleportLocIndex, iWayPointCfgIndex, iTotalNpcSetting, m_pMapList[iMapIndex]->m_iMaximumObject, m_pMapList[iMapIndex]->m_bRandomMobGenerator, m_pMapList[iMapIndex]->m_cRandomMobGeneratorLevel);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) Map info file decoding(%s) - success! TL(%d) WP(%d) LNPC(%d) MXO(%d) RMG(%d / %d)", cFn, iTeleportLocIndex, iWayPointCfgIndex, iTotalNpcSetting, m_pMapList[iMapIndex]->m_iMaximumObject, m_pMapList[iMapIndex]->m_bRandomMobGenerator, m_pMapList[iMapIndex]->m_cRandomMobGeneratorLevel);
+	//PutLogList(cTxt);
 
 	m_pMapList[iMapIndex]->_SetupNoAttackArea();
 
@@ -16927,7 +17185,7 @@ void CGame::Quit()
 		if (m_pNoticeMsgList[i] != NULL) delete m_pNoticeMsgList[i];
 
 	for (i = 0; i < MAXFISHS; i++)
-		if (m_pFish[i] != NULL) delete m_pFish[i];
+//		if (m_pFish[i] != NULL) delete m_pFish[i];
 
 	for (i = 0; i < MAXMINERALS; i++)
 		if (m_pMineral[i] != NULL) delete m_pMineral[i];
@@ -16950,12 +17208,14 @@ void CGame::Quit()
 
 }
 
-int CGame::iGetLevelExp(int iLevel)
+ int CGame::iGetLevelExp(int iLevel)
 {
-	int iRet;
+     __int64 iRet;
 
 	if (iLevel == 0) return 0;
-	iRet = iGetLevelExp(iLevel - 1) + iLevel * ( 50 + (iLevel * (iLevel / 17) * (iLevel / 17) ) );
+	//iRet = iGetLevelExp
+		
+iRet = (iLevel * iLevel) + iLevel * ( 50 + (iLevel * (iLevel / 17) * (iLevel / 17) ) );
 
 	return iRet;
 }
@@ -16966,12 +17226,12 @@ int CGame::_iCalcSkillSSNpoint(int iLevel)
 
 	if (iLevel < 1) return 1;
 
-	//if (iLevel <= 50) 
-	//	iRet = iLevel;
-//	else if (iLevel > 50) {
+	if (iLevel <= 50) 
+	iRet = iLevel;
+	else if (iLevel > 50) {
 		//iRet = ( iLevel * iLevel / 5 ); // / 10;
-iRet = ( iLevel * iLevel / 9);
-	//}
+iRet = ( iLevel * iLevel / 10);
+	}
 
 	return iRet;
 }
@@ -16984,10 +17244,10 @@ bool CGame::bCheckLevelUp(int iClientH)
 
 	if (m_pClientList[iClientH] == NULL) return FALSE;
 
-	if (m_pClientList[iClientH]->m_iLevel >= PLAYERMAXLEVEL) {
-		while(m_pClientList[iClientH]->m_iExp >= m_iLevelExpTable[PLAYERMAXLEVEL + 1])
+	if (m_pClientList[iClientH]->m_iLevel >= m_sMaxPlayerLevel) {
+		while(m_pClientList[iClientH]->m_iExp >= m_iLevelExpTable[m_sMaxPlayerLevel + 1])
 		{
-				m_pClientList[iClientH]->m_iExp -= (m_iLevelExpTable[PLAYERMAXLEVEL+1] - m_iLevelExpTable[PLAYERMAXLEVEL]);
+				m_pClientList[iClientH]->m_iExp -= (m_iLevelExpTable[m_sMaxPlayerLevel+1] - m_iLevelExpTable[m_sMaxPlayerLevel]);
 				SendNotifyMsg(NULL, iClientH, NOTIFY_EXP, NULL, NULL, NULL, NULL);
 				m_pClientList[iClientH]->m_iGizonItemUpgradeLeft++;
 				SendNotifyMsg(NULL, iClientH, NOTIFY_GIZONITEMUPGRADELEFT, m_pClientList[iClientH]->m_iGizonItemUpgradeLeft, 1, NULL, NULL);
@@ -17001,10 +17261,10 @@ bool CGame::bCheckLevelUp(int iClientH)
 	while (1) {
 		if (cLoopCnt++ > 100) return FALSE; 		
 		if (m_pClientList[iClientH]->m_iExp >= m_pClientList[iClientH]->m_iNextLevelExp) {
-			if (m_pClientList[iClientH]->m_iLevel >= PLAYERMAXLEVEL) {
-				while(m_pClientList[iClientH]->m_iExp >= m_iLevelExpTable[PLAYERMAXLEVEL + 1])
+			if (m_pClientList[iClientH]->m_iLevel >= m_sMaxPlayerLevel) {
+				while(m_pClientList[iClientH]->m_iExp >= m_iLevelExpTable[m_sMaxPlayerLevel + 1])
 				{
-					m_pClientList[iClientH]->m_iExp -= (m_iLevelExpTable[PLAYERMAXLEVEL+1] - m_iLevelExpTable[PLAYERMAXLEVEL]);
+					m_pClientList[iClientH]->m_iExp -= (m_iLevelExpTable[m_sMaxPlayerLevel+1] - m_iLevelExpTable[m_sMaxPlayerLevel]);
 					SendNotifyMsg(NULL, iClientH, NOTIFY_EXP, NULL, NULL, NULL, NULL);
 					m_pClientList[iClientH]->m_iGizonItemUpgradeLeft++;
 					SendNotifyMsg(NULL, iClientH, NOTIFY_GIZONITEMUPGRADELEFT, m_pClientList[iClientH]->m_iGizonItemUpgradeLeft, 1, NULL, NULL);
@@ -17021,17 +17281,17 @@ bool CGame::bCheckLevelUp(int iClientH)
 				bAddItem(iClientH, pItem);
 			}
 
-			if (m_pClientList[iClientH]->GetBaseStr() > CHARPOINTLIMIT)      
-				m_pClientList[iClientH]->SetStr(CHARPOINTLIMIT);
-			if (m_pClientList[iClientH]->GetBaseDex() > CHARPOINTLIMIT) 
-				m_pClientList[iClientH]->SetDex(CHARPOINTLIMIT);
-			if (m_pClientList[iClientH]->m_iVit > CHARPOINTLIMIT)
-				m_pClientList[iClientH]->m_iVit = CHARPOINTLIMIT;
-			if (m_pClientList[iClientH]->GetBaseInt() > CHARPOINTLIMIT)
-				m_pClientList[iClientH]->SetInt(CHARPOINTLIMIT);
-			if (m_pClientList[iClientH]->GetBaseMag() > CHARPOINTLIMIT)
-				m_pClientList[iClientH]->SetMag(CHARPOINTLIMIT);
-			if (m_pClientList[iClientH]->m_iCharisma > CHARPOINTLIMIT) m_pClientList[iClientH]->m_iCharisma = CHARPOINTLIMIT;
+			if (m_pClientList[iClientH]->GetBaseStr() > m_sCharStatLimit)      
+				m_pClientList[iClientH]->SetStr(m_sCharStatLimit);
+			if (m_pClientList[iClientH]->GetBaseDex() > m_sCharStatLimit) 
+				m_pClientList[iClientH]->SetDex(m_sCharStatLimit);
+			if (m_pClientList[iClientH]->m_iVit > m_sCharStatLimit)
+				m_pClientList[iClientH]->m_iVit = m_sCharStatLimit;
+			if (m_pClientList[iClientH]->GetBaseInt() > m_sCharStatLimit)
+				m_pClientList[iClientH]->SetInt(m_sCharStatLimit);
+			if (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)
+				m_pClientList[iClientH]->SetMag(m_sCharStatLimit);
+			if (m_pClientList[iClientH]->m_iCharisma > m_sCharStatLimit) m_pClientList[iClientH]->m_iCharisma = m_sCharStatLimit;
 
 			SendNotifyMsg(NULL, iClientH, NOTIFY_LEVELUP, NULL, NULL, NULL, NULL);
 			
@@ -17046,7 +17306,7 @@ bool CGame::bCheckLevelUp(int iClientH)
 
 			CalcTotalItemEffect(iClientH, -1, FALSE);
 
-			if (m_pClientList[iClientH]->m_iLevel > PLAYERMAXLEVEL) {
+			if (m_pClientList[iClientH]->m_iLevel > m_iPlayerMaxLevel) {
 				wsprintf(g_cTxt, "(!) Player(%s) above max level!", m_pClientList[iClientH]->m_cCharName);
 				PutLogFileList(g_cTxt);
 			}
@@ -17103,25 +17363,25 @@ void CGame::LevelUpSettingsHandler(int iClientH, char * pData, DWORD dwMsgSize)
 	}
 
 	if ((m_pClientList[iClientH]->GetBaseStr() + cStr > 
-		CHARPOINTLIMIT) || (cStr < 0)) 
+		m_sCharStatLimit) || (cStr < 0)) 
 		return;
 
 	if ((m_pClientList[iClientH]->GetBaseDex() + cDex > 
-		CHARPOINTLIMIT) || (cDex < 0)) 
+		m_sCharStatLimit) || (cDex < 0)) 
 		return;
 
 	if ((m_pClientList[iClientH]->GetBaseInt() + cInt > 
-		CHARPOINTLIMIT) || (cInt < 0)) 
+		m_sCharStatLimit) || (cInt < 0)) 
 		return;
 
-	if ((m_pClientList[iClientH]->m_iVit + cVit > CHARPOINTLIMIT) || (cVit < 0)) 
+	if ((m_pClientList[iClientH]->m_iVit + cVit > m_sCharStatLimit) || (cVit < 0)) 
 		return;
 
 	if ((m_pClientList[iClientH]->GetBaseMag() + cMag > 
-		CHARPOINTLIMIT) || (cMag < 0)) 
+		m_sCharStatLimit) || (cMag < 0)) 
 		return;
 
-	if ((m_pClientList[iClientH]->m_iCharisma + cChr > CHARPOINTLIMIT) || (cChr < 0)) 
+	if ((m_pClientList[iClientH]->m_iCharisma + cChr > m_sCharStatLimit) || (cChr < 0)) 
 		return;
 
 	iTotalSetting = m_pClientList[iClientH]->GetBaseStr() + m_pClientList[iClientH]->GetBaseDex() + m_pClientList[iClientH]->m_iVit + 
@@ -17259,7 +17519,8 @@ bool CGame::bCheckLimitedUser(int iClientH)
 	if (m_pClientList[iClientH] == NULL) return FALSE;
 
 	if (m_pClientList[iClientH]->IsNeutral() && 
-		(m_pClientList[iClientH]->m_iExp >= m_iLevelExp51 ) ) {
+		(m_pClientList[iClientH]->m_iExp >= m_iLevelExp51) &&
+		!m_pClientList[iClientH]->IsGM()) {
 
 			m_pClientList[iClientH]->m_iExp = m_iLevelExp51 - 1;
 			SendNotifyMsg(NULL, iClientH, NOTIFY_TRAVELERLIMITEDLEVEL, NULL, NULL, NULL, NULL);
@@ -17650,7 +17911,7 @@ void CGame::EnemyKillRewardHandler(int iAttackerH, int iClientH)
 				SendNotifyMsg(NULL, iAttackerH, NOTIFY_CONSTRUCTIONPOINT, m_pClientList[iAttackerH]->m_iConstructionPoint, m_pClientList[iAttackerH]->m_iWarContribution, NULL, NULL);
 
 				if (iGetExpLevel(m_pClientList[iClientH]->m_iExp) >= iEK_Level) {
-					m_pClientList[iAttackerH]->m_iEnemyKillCount++;
+					m_pClientList[iAttackerH]->m_iEnemyKillCount + m_iEnemyKillAdjust;
 					m_pClientList[iAttackerH]->ApplyElo(m_pClientList[iClientH]);
 				}
 
@@ -17665,7 +17926,7 @@ void CGame::EnemyKillRewardHandler(int iAttackerH, int iClientH)
 
 
 				if (iGetExpLevel(m_pClientList[iClientH]->m_iExp) >= iEK_Level) {
-					m_pClientList[iAttackerH]->m_iEnemyKillCount++;
+					m_pClientList[iAttackerH]->m_iEnemyKillCount + m_iEnemyKillAdjust;
 					m_pClientList[iAttackerH]->ApplyElo(m_pClientList[iClientH]);
 				}
 
@@ -17695,7 +17956,7 @@ void CGame::EnemyKillRewardHandler(int iAttackerH, int iClientH)
 				SendNotifyMsg(NULL, iAttackerH, NOTIFY_CONSTRUCTIONPOINT, m_pClientList[iAttackerH]->m_iConstructionPoint, m_pClientList[iAttackerH]->m_iWarContribution, NULL, NULL);
 
 				if (iGetExpLevel(m_pClientList[iClientH]->m_iExp) >= iEK_Level) {
-					m_pClientList[iAttackerH]->m_iEnemyKillCount++;
+					m_pClientList[iAttackerH]->m_iEnemyKillCount + m_iEnemyKillAdjust;
 					m_pClientList[iAttackerH]->ApplyElo(m_pClientList[iClientH]);
 				}
 
@@ -17709,7 +17970,7 @@ void CGame::EnemyKillRewardHandler(int iAttackerH, int iClientH)
 				m_pClientList[iAttackerH]->m_iExp += iRewardExp;
 
 				if (iGetExpLevel(m_pClientList[iClientH]->m_iExp) >= iEK_Level) {
-					m_pClientList[iAttackerH]->m_iEnemyKillCount++;
+					m_pClientList[iAttackerH]->m_iEnemyKillCount + m_iEnemyKillAdjust;
 					m_pClientList[iAttackerH]->ApplyElo(m_pClientList[iClientH]);
 				}
 
@@ -22749,7 +23010,7 @@ void CGame::CalcTotalItemEffect(int iClientH, int iEquipItemID, bool bNotify)
 	player->m_cAttackBonus_L      = 0;
 
 	player->m_iHitRatio = 0;
-	player->m_iDefenseRatio = player->GetDex() * 2;
+	player->m_iDefenseRatio = player->GetDex() * 10;
 	player->m_iDamageAbsorption_Shield = 0;
 
 	for (i = 0; i < MAXITEMEQUIPPOS; i++)
@@ -22895,9 +23156,9 @@ void CGame::CalcTotalItemEffect(int iClientH, int iEquipItemID, bool bNotify)
 			case ITEMEFFECTTYPE_ATTACK_MANASAVE:
 			case ITEMEFFECTTYPE_ATTACK_MAXHPDOWN:
 			case ITEMEFFECTTYPE_ATTACK:
-				player->m_cAttackDiceThrow_SM = item->m_sItemEffectValue1;
-				player->m_cAttackDiceRange_SM = item->m_sItemEffectValue2;
-				player->m_cAttackBonus_SM     = item->m_sItemEffectValue3;
+				player->m_cAttackDiceThrow_SM = item->m_sItemEffectValue1 * 100;
+				player->m_cAttackDiceRange_SM = item->m_sItemEffectValue2 * 100;
+				player->m_cAttackBonus_SM     = item->m_sItemEffectValue3*100;
 				if(item->m_sItemEffectType == ITEMEFFECTTYPE_ATTACK_MANASAVE)
 				{	
 					player->m_cAttackDiceThrow_L  = player->m_cAttackDiceThrow_SM;
@@ -23722,7 +23983,7 @@ bool CGame::bReadNotifyMsgListFile(char * cFn)
 		return FALSE;
 	}
 	else {
-		PutLogList("(!) Reading Notify Message list file...");
+		//PutLogList("(*) Reading Notify Message list file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -23855,7 +24116,7 @@ void CGame::CalcExpStock(int iClientH)
 			delete pItem;
 			return;
 		}
-		else pItem->m_dwCount = (DWORD)300;
+		else pItem->m_dwCount = (DWORD)3000;
 		bAddItem(iClientH, pItem);
 	}
 
@@ -23863,9 +24124,9 @@ void CGame::CalcExpStock(int iClientH)
 
 int CGame::iGetExpLevel(int iExp)
 {
-	register int i;
+	unsigned int i;
 
-	for (i = 1; i < 300; i++) 
+	for (i = 1; i < 890; i++) 
 		if ((m_iLevelExpTable[i] <= iExp) && (m_iLevelExpTable[i+1] > iExp)) return i;
 
 	return 0;
@@ -25743,12 +26004,12 @@ bool CGame::_bDecodePotionConfigFileContents(char *pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! POTION configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! POTION configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) POTION(Total:%d) configuration - success!", iPotionConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) POTION(Total:%d) configuration - success!", iPotionConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -25798,7 +26059,7 @@ void CGame::LocalSavePlayerData(int iClientH)
 
 	pFile = fopen(cFn, "wt");
 	if (pFile == NULL) {
-		wsprintf(cTxt, "(!) Cannot create temporal player data file : Name(%s)", cFn);
+		wsprintf(cTxt, "(ERROR) Cannot create temporal player data file : Name(%s)", cFn);
 		PutLogList(cTxt);
 	}
 	else {
@@ -28377,12 +28638,12 @@ bool CGame::_bDecodeQuestConfigFileContents(char * pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! QUEST configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! QUEST configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) QUEST(Total:%d) configuration - success!", iQuestConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) QUEST(Total:%d) configuration - success!", iQuestConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -28773,16 +29034,16 @@ void CGame::OnSubLogSocketEvent(UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (iRet) {
 	case XSOCKEVENT_UNSENTDATASENDCOMPLETE:
-		wsprintf(g_cTxt, "(!!!) Log Socket Connection Established Log#(%d) Address:%s  Port:%d", iLogSockH, m_cLogServerAddr, m_iGateServerPort);
-		PutLogList(g_cTxt);
+		//wsprintf(g_cTxt, "(!!!) Log Socket Connection Established Log#(%d) Address:%s  Port:%d", iLogSockH, m_cLogServerAddr, m_iGateServerPort);
+		//PutLogList(g_cTxt);
 
 		m_bIsSubLogSockAvailable[iLogSockH] = TRUE;
 		if((m_iSubLogSockFailCount + m_iSubLogSockActiveCount) > MAXSUBLOGSOCK && m_iSubLogSockFailCount > 0) m_iSubLogSockFailCount--;
 		break;
 
 	case XSOCKEVENT_CONNECTIONESTABLISH:
-		wsprintf(g_cTxt, "(!!!) Sub-log-socket(%d) connected.", iLogSockH);
-		PutLogList(g_cTxt);
+		//wsprintf(g_cTxt, "(!!!) Sub-log-socket(%d) connected.", iLogSockH);
+		//PutLogList(g_cTxt);
 		m_iCurSubLogSockIndex = iLogSockH;
 		if(!m_bIsGameServerRegistered) bSendMsgToLS(MSGID_REQUEST_REGISTERGAMESERVER, NULL);
 		else bSendMsgToLS(MSGID_REQUEST_REGISTERGAMESERVERSOCKET, NULL);
@@ -28796,7 +29057,7 @@ void CGame::OnSubLogSocketEvent(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case XSOCKEVENT_BLOCK:
-		wsprintf(g_cTxt, "(!!!) Sub-log-socket(%d) BLOCKED!", iLogSockH);
+		wsprintf(g_cTxt, "(ERROR) Sub-log-socket(%d) BLOCKED!", iLogSockH);
 		PutLogList(g_cTxt);
 		break;
 
@@ -28812,7 +29073,7 @@ void CGame::OnSubLogSocketEvent(UINT message, WPARAM wParam, LPARAM lParam)
 		m_iSubLogSockActiveCount--;
 
 		if(m_iSubLogSockActiveCount == 0) m_bIsGameServerRegistered = FALSE;
-		wsprintf(g_cTxt, "(!!!) Sub-log-socket(%d) connection lost!", iLogSockH);
+		wsprintf(g_cTxt, "(ERROR) Sub-log-socket(%d) connection lost!", iLogSockH);
 		PutLogList(g_cTxt);
 		m_bIsSocketConnected[iLogSockH] = FALSE;
 		break;
@@ -28831,7 +29092,7 @@ void CGame::OnSubLogRead(int iIndex)
 	pData = m_pSubLogSock[iIndex]->pGetRcvDataPointer(&dwMsgSize, &cKey);
 
 	if (bPutMsgQuene(MSGFROM_LOGSERVER, pData, dwMsgSize, NULL, cKey) == FALSE) {
-		PutLogList("@@@@@@ CRITICAL ERROR in MsgQuene!!! @@@@@@");
+		PutLogList("(ERROR) CRITICAL ERROR in MsgQuene!!! @@@@@@");
 	}
 }
 #ifdef TAIWANLOG
@@ -29704,12 +29965,12 @@ bool CGame::_bDecodeBuildItemConfigFileContents(char *pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) CRITICAL ERROR! BuildItem configuration file contents error!");
+		PutLogList("(ERROR) CRITICAL ERROR! BuildItem configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) BuildItem(Total:%d) configuration - success!", iIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) BuildItem(Total:%d) configuration - success!", iIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -31064,7 +31325,9 @@ void CGame::NpcDeadItemGenerator(int iNpcH, short sAttackerH, char cAttackerType
 	if( NpcDeadItemGeneratorWithItemEvent(iNpcH, sAttackerH, cAttackerType) == TRUE)
 		return;
 
-	int iItemprobability = 5500;
+	int iItemprobability = m_iPrimaryDropRate;
+
+	iItemprobability += m_cRepDropModifier;
 
 	if ((m_pClientList[sAttackerH] != NULL) && (m_pClientList[sAttackerH]->m_iPartyStatus != PARTYSTATUS_PROCESSING))
 	{
@@ -31128,7 +31391,7 @@ void CGame::NpcDeadItemGenerator(int iNpcH, short sAttackerH, char cAttackerType
 					delete pItem;
 					return;
 				}
-			}else { //if (dice(1,10000) <= 8950) {
+			}else { if (dice(1,10000) <= m_iSecondaryDropRate + m_cRepDropModifier) {
 				// pots/zem/stones/etc...
 				iResult = dice(1,10000);  
 				if ((iResult >= 1) && (iResult <= 3000))          dwValue = 1;   
@@ -31200,7 +31463,7 @@ void CGame::NpcDeadItemGenerator(int iNpcH, short sAttackerH, char cAttackerType
 					delete pItem;
 					return;
 				}
-		//	}else{
+		}else{
 				iGenLevel = npc->GetGenLevel(); 
 
 				if (iGenLevel == 0) return;
@@ -31419,6 +31682,8 @@ void CGame::NpcDeadItemGenerator(int iNpcH, short sAttackerH, char cAttackerType
 
 					case 8:	iItemID = 402; break; 
 					}
+				}
+
 				}
 
 				if(!iItemID)
@@ -31746,12 +32011,12 @@ bool CGame::_bDecodeDupItemIDFileContents(char *pData, DWORD dwMsgSize)
 	delete[] pContents;
 
 	if ((cReadModeA != 0) || (cReadModeB != 0)) {
-		PutLogList("(!!!) ERROR! DupItemID configuration file contents error!");
+		PutLogList("(ERROR) DupItemID configuration file contents error!");
 		return FALSE;
 	}
 
-	wsprintf(cTxt, "(!) DupItemID(Total:%d) configuration - success!", iIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!) DupItemID(Total:%d) configuration - success!", iIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -31831,8 +32096,8 @@ void CGame::_bDecodeNoticementFileContents(char *pData, DWORD dwMsgSize)
 	memcpy(m_pNoticementData, cp, strlen(cp));
 	m_dwNoticementDataSize = strlen(cp);
 
-	wsprintf(g_cTxt, "(!) Noticement Data Size: %d", m_dwNoticementDataSize);
-	PutLogList(g_cTxt);
+	//wsprintf(g_cTxt, "(!) Noticement Data Size: %d", m_dwNoticementDataSize);
+	//PutLogList(g_cTxt);
 }
 
 void CGame::RequestCheckAccountPasswordHandler(char *pData, DWORD dwMsgSize)
@@ -35218,25 +35483,25 @@ void CGame::_CreateCrusadeGUID(DWORD dwCrusadeGUID, int m_iCrusadeWinnerSide)
 	pFile = fopen(cFn, "wt");
 	if (pFile == NULL) {
 
-		wsprintf(cTxt, "(!) Cannot create CrusadeGUID(%d) file", dwCrusadeGUID);
+		wsprintf(cTxt, "(ERROR) Cannot create CrusadeGUID(%d) file", dwCrusadeGUID);
 		PutLogList(cTxt);
 	}
 	else {
 		ZeroMemory(cTemp, sizeof(cTemp));
 
-		ZeroMemory(cTxt, sizeof(cTxt));
-		wsprintf(cTxt, "CrusadeGUID = %d\n", dwCrusadeGUID);
-		strcat(cTemp, cTxt);
+	///*	ZeroMemory(cTxt, sizeof(cTxt));
+	//	wsprintf(cTxt, "CrusadeGUID = %d\n", dwCrusadeGUID);
+	//	strcat(cTemp, cTxt);
 
-		ZeroMemory(cTxt, sizeof(cTxt));
-		wsprintf(cTxt, "winner-side = %d\n", m_iCrusadeWinnerSide);
-		strcat(cTemp, cTxt);
+	//	ZeroMemory(cTxt, sizeof(cTxt));
+	//	wsprintf(cTxt, "winner-side = %d\n", m_iCrusadeWinnerSide);
+	//	strcat(cTemp, cTxt);*/
 
 		cp = (char *)cTemp;
 		fwrite(cp, strlen(cp), 1, pFile);
 
-		wsprintf(cTxt, "(O) CrusadeGUID(%d) file created", dwCrusadeGUID);
-		PutLogList(cTxt);
+		//wsprintf(cTxt, "(O) CrusadeGUID(%d) file created", dwCrusadeGUID);
+		//PutLogList(cTxt);
 	}
 	if (pFile != NULL) fclose(pFile);
 }
@@ -35259,11 +35524,11 @@ bool CGame::bReadCrusadeGUIDFile(char * cFn)
 	pFile = fopen(cFn, "rt");
 	if (pFile == NULL) {
 
-		PutLogList("(!) Cannot open CrusadeGUID file.");
+		PutLogList("(ERROR) Cannot open CrusadeGUID file.");
 		return FALSE;
 	}
 	else {
-		PutLogList("(!) Reading CrusadeGUID file...");
+		//PutLogList("(*) Reading CrusadeGUID file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -35277,15 +35542,15 @@ bool CGame::bReadCrusadeGUIDFile(char * cFn)
 				switch (cReadMode) {
 				case 1:
 					m_dwCrusadeGUID = atoi(token);
-					wsprintf(g_cTxt, "CrusadeGUID = %d", m_dwCrusadeGUID);
-					PutLogList(g_cTxt);
+					//wsprintf(g_cTxt, "CrusadeGUID = %d", m_dwCrusadeGUID);
+					//PutLogList(g_cTxt);
 					cReadMode = 0;
 					break;
 
 				case 2:
 					m_iCrusadeWinnerSide = atoi(token);
-					wsprintf(g_cTxt, "CrusadeWinnerSide = %d", m_iCrusadeWinnerSide);
-					PutLogList(g_cTxt);
+					//wsprintf(g_cTxt, "CrusadeWinnerSide = %d", m_iCrusadeWinnerSide);
+					//PutLogList(g_cTxt);
 					cReadMode = 0;
 					break;
 				}
@@ -35536,11 +35801,11 @@ bool CGame::bReadSchedulerConfigFile(char *pFn)
 	pFile = fopen(pFn, "rt");
 	if (pFile == NULL) {
 
-		PutLogList("(!) Cannot open Scheduler file.");
+		PutLogList("(ERROR) Cannot open Scheduler file.");
 		return FALSE;
 	}
 	else {
-		PutLogList("(!) Reading Scheduler file...");
+		//PutLogList("(*) Reading Scheduler file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -36408,26 +36673,26 @@ void CGame::GetExp(int iClientH, int iExp, bool bIsAttackerOwn)
 					if ((m_pClientList[iH] != NULL) && (m_pClientList[iH]->m_iHP > 0))
 					{
 						if((m_pClientList[iH]->m_iStatus & STATUS_GREENSLATE) != 0) slateMulti = 3;
-						if(m_pClientList[iH]->m_iLevel == PLAYERMAXLEVEL)
+						if(m_pClientList[iH]->m_iLevel == m_sMaxPlayerLevel)
 							m_pClientList[iH]->m_iExpStock += (iUnitValue/3) * slateMulti;
 						else
 							m_pClientList[iH]->m_iExpStock += iUnitValue * slateMulti;
 					}
 				}
 				if((m_pClientList[iClientH]->m_iStatus & STATUS_GREENSLATE) != 0) iUnitValue *= 3;
-				if(m_pClientList[iClientH]->m_iLevel == PLAYERMAXLEVEL)
+				if(m_pClientList[iClientH]->m_iLevel == m_sMaxPlayerLevel)
 					iUnitValue /= 3;
 				if ((bIsAttackerOwn == TRUE) && (iPartyTotalMember > 1))
 					m_pClientList[iClientH]->m_iExpStock += (int)(iUnitValue/10);
 			} else {
 				if((m_pClientList[iClientH]->m_iStatus & STATUS_GREENSLATE) != 0) iExp *= 3;
-				if(m_pClientList[iClientH]->m_iLevel == PLAYERMAXLEVEL)
+				if(m_pClientList[iClientH]->m_iLevel == m_sMaxPlayerLevel)
 					iExp /= 3;
 				m_pClientList[iClientH]->m_iExpStock += iExp;
 			}
 	} else {
 		if((m_pClientList[iClientH]->m_iStatus & STATUS_GREENSLATE) != 0) iExp *= 3;
-		if(m_pClientList[iClientH]->m_iLevel == PLAYERMAXLEVEL)
+		if(m_pClientList[iClientH]->m_iLevel == m_sMaxPlayerLevel)
 			iExp /= 3;
 		m_pClientList[iClientH]->m_iExpStock += iExp;
 	}
@@ -37609,13 +37874,13 @@ void CGame::SetForceRecallTime(int iClientH)
 		else {
 			GetLocalTime(&SysTime);
 			switch (SysTime.wDayOfWeek) {
-			case 1:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 1*20; break;  
-			case 2:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 1*20; break;  
-			case 3:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 1*20; break;  
-			case 4:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 1*20; break;  
-			case 5:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 60*20; break; 
-			case 6:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 60*20; break; 
-			case 0:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 60*20; break; 
+			case 1:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeMonday; break;  //ø˘ø‰¿œ  3∫– 2002-09-10 #1
+			case 2:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeTuesday; break;  //»≠ø‰¿œ  3∫– 
+			case 3:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeWednesday; break;  //ºˆø‰¿œ  3∫– 
+			case 4:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeThursday; break;  //∏Òø‰¿œ  3∫– 
+			case 5:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeFriday; break; //±›ø‰¿œ 15∫–
+			case 6:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeSaturday; break; //≈‰ø‰¿œ 45∫– 
+			case 0:	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = 20*m_sRaidTimeSunday; break; //¿œø‰¿œ 60∫–
 			}
 		}
 	}
@@ -37627,13 +37892,13 @@ void CGame::SetForceRecallTime(int iClientH)
 
 			GetLocalTime(&SysTime);
 			switch (SysTime.wDayOfWeek) {
-			case 1:	iTL_ = 1*20; break;  
-			case 2:	iTL_ = 1*20; break;  
-			case 3:	iTL_ = 1*20; break;  
-			case 4:	iTL_ = 1*20; break;  
-			case 5:	iTL_ = 60*20; break; 
-			case 6:	iTL_ = 60*20; break; 
-			case 0:	iTL_ = 60*20; break; 
+			case 1:	iTL_ = 20*m_sRaidTimeMonday; break;  //ø˘ø‰¿œ  3∫– 2002-09-10 #1
+			case 2:	iTL_ = 20*m_sRaidTimeTuesday; break;  //»≠ø‰¿œ  3∫–
+			case 3:	iTL_ = 20*m_sRaidTimeWednesday; break;  //ºˆø‰¿œ  3∫–
+			case 4:	iTL_ = 20*m_sRaidTimeThursday; break;  //∏Òø‰¿œ  3∫–
+			case 5:	iTL_ = 20*m_sRaidTimeFriday; break; //±›ø‰¿œ 15∫–
+			case 6:	iTL_ = 20*m_sRaidTimeSaturday; break; //≈‰ø‰¿œ 45∫– 
+			case 0:	iTL_ = 20*m_sRaidTimeSunday; break; //¿œø‰¿œ 60∫–
 			}
 		}
 
@@ -38400,7 +38665,6 @@ void CGame::ReqCreateSlateHandler(int iClientH, char* pData)
 	cp = (char *)pData;
 	cp += 11;
 
-	m_sSlateSuccessRate = 35; //Temporary: to be read from cfg
 	// 35% chance of creating slates
 	if (dice(1,100) < m_sSlateSuccessRate) bIsSlatePresent = TRUE;
 
@@ -38871,42 +39135,42 @@ void CGame::StateChangeHandler(int iClientH, char * pData, DWORD dwMsgSize)
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->GetBaseStr() - cStr > CHARPOINTLIMIT) 
+	if ((m_pClientList[iClientH]->GetBaseStr() - cStr > m_sCharStatLimit) 
 		 || (m_pClientList[iClientH]->GetBaseStr() - cStr < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->GetBaseDex() - cDex > CHARPOINTLIMIT) 
+	if ((m_pClientList[iClientH]->GetBaseDex() - cDex > m_sCharStatLimit) 
 		 || (m_pClientList[iClientH]->GetBaseDex() - cDex < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->GetBaseInt() - cInt > CHARPOINTLIMIT) 
+	if ((m_pClientList[iClientH]->GetBaseInt() - cInt > m_sCharStatLimit) 
 		 || (m_pClientList[iClientH]->GetBaseInt() - cInt < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->m_iVit - cVit > CHARPOINTLIMIT) 
+	if ((m_pClientList[iClientH]->m_iVit - cVit > m_sCharStatLimit) 
 		 || (m_pClientList[iClientH]->m_iVit - cVit < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->GetBaseMag() - cMag > CHARPOINTLIMIT) 
+	if ((m_pClientList[iClientH]->GetBaseMag() - cMag > m_sCharStatLimit) 
 		 || (m_pClientList[iClientH]->GetBaseMag() - cMag < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->m_iCharisma - cChar > CHARPOINTLIMIT)
+	if ((m_pClientList[iClientH]->m_iCharisma - cChar > m_sCharStatLimit)
 		 || (m_pClientList[iClientH]->m_iCharisma - cChar < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
@@ -38961,7 +39225,7 @@ BOOL CGame::ChangeState(char cStateChange, char* cStr, char *cVit,char *cDex,cha
 	else if(cStateChange == MJSTAT_VIT)
 	{
 		*cVit += 1;
-//		if(m_pClientList[iClientH]->GetBaseStr() - cVit < 10 || m_pClientList[iClientH]->cVit - cVit < CHARPOINTLIMIT )
+//		if(m_pClientList[iClientH]->GetBaseStr() - cVit < 10 || m_pClientList[iClientH]->cVit - cVit < m_sCharStatLimit )
 //			return 0;
 	}
 	else if(cStateChange == MJSTAT_DEX)
@@ -39188,11 +39452,11 @@ BOOL CGame::_bDecodeCraftingConfigFileContents(char *pData, DWORD dwMsgSize)
 
 	delete[] pContents;
 	if ((cReadModeA != 0) || (cReadModeB != 0))
-	{ PutLogList("(???) CRITICAL ERROR! CRAFTING configuration file contents error!");
+	{ PutLogList("(ERROR) CRITICAL ERROR! CRAFTING configuration file contents error!");
 	return FALSE;
 	}
-	wsprintf(cTxt, "(!!) CRAFTING(Total:%d) configuration - success!", iCraftingConfigListIndex);
-	PutLogList(cTxt);
+	//wsprintf(cTxt, "(!!) CRAFTING(Total:%d) configuration - success!", iCraftingConfigListIndex);
+	//PutLogList(cTxt);
 
 	return TRUE;
 }
@@ -40781,12 +41045,12 @@ void CGame::_CreateHeldenianGUID(DWORD m_dwHeldenianGUID, int m_iHeldenianType1W
 	pFile = fopen(cFn, "wt");
 	if (pFile == NULL) 
 	{
-		wsprintf(cTxt, "(!) Cannot create Heldenian-GUID(%d) file", m_dwHeldenianGUID);
+		wsprintf(cTxt, "(ERROR) Cannot create Heldenian-GUID(%d) file", m_dwHeldenianGUID);
 		PutLogList(cTxt);
 	} else {
 		ZeroMemory(cTemp, sizeof(cTemp));
 		ZeroMemory(cTxt, sizeof(cTxt));
-		wsprintf(cTxt, "Heldenian-GUID = %d\n", m_dwHeldenianGUID);
+		/*wsprintf(cTxt, "Heldenian-GUID = %d\n", m_dwHeldenianGUID);
 		strcat(cTemp, cTxt);
 		ZeroMemory(cTxt, sizeof(cTxt));
 		wsprintf(cTxt, "Heldenian-Type1-Winner = %d\n", m_iHeldenianType1Winner);
@@ -40796,15 +41060,15 @@ void CGame::_CreateHeldenianGUID(DWORD m_dwHeldenianGUID, int m_iHeldenianType1W
 		strcat(cTemp, cTxt);
 		ZeroMemory(cTxt, sizeof(cTxt));
 		wsprintf(cTxt, "Heldenian-LastType = %d\n", m_iHeldenianType);
-		strcat(cTemp, cTxt);
+		strcat(cTemp, cTxt);*/
 		cp = (char *)cTemp;
 		fwrite(cp, strlen(cp), 1, pFile);
-		wsprintf(cTxt, "(O) HeldenianGUID(%d) file created", m_dwHeldenianGUID);
-		PutLogList(cTxt);
+		//wsprintf(cTxt, "(O) HeldenianGUID(%d) file created", m_dwHeldenianGUID);
+		//PutLogList(cTxt);
 	}
 	if (pFile != NULL) fclose(pFile);
 
-	switch (m_iHeldenianType1Winner) 
+	/*switch (m_iHeldenianType1Winner) 
 	{
 	case 1:	PutLogList("(!!) Aresden Owned Heldenian Type 1.");
 		break;
@@ -40830,7 +41094,7 @@ void CGame::_CreateHeldenianGUID(DWORD m_dwHeldenianGUID, int m_iHeldenianType1W
 		break;
 	case 2: PutLogList("(!!) Heldenian Type 2.");
 		break;	
-	} 
+	} */
 }
 
 bool CGame::bReadHeldenianGUIDFile(char * cFn)
@@ -40849,10 +41113,10 @@ bool CGame::bReadHeldenianGUIDFile(char * cFn)
 	pFile = fopen(cFn, "rt");
 	if (pFile == NULL) 
 	{
-		PutLogList("(!) Cannot open Heldenian-GUID file.");
+		PutLogList("(ERROR) Cannot open Heldenian-GUID file.");
 		return FALSE;
 	} else {
-		PutLogList("(!) Reading Heldenian-GUID file...");
+		//PutLogList("(*) Reading Heldenian-GUID file...");
 		cp = new char[dwFileSize+2];
 		ZeroMemory(cp, dwFileSize+2);
 		fread(cp, dwFileSize, 1, pFile);
@@ -40867,26 +41131,26 @@ bool CGame::bReadHeldenianGUIDFile(char * cFn)
 				{
 				case 1:
 					m_dwHeldenianGUID = atoi(token);
-					wsprintf(cTxt, "Heldenian-GUID = %d", m_dwHeldenianGUID);
-					PutLogList(cTxt);
+					//wsprintf(cTxt, "Heldenian-GUID = %d", m_dwHeldenianGUID);
+					//PutLogList(cTxt);
 					cReadMode = 0;
 					break;
 				case 2:
 					m_iHeldenianType1Winner = atoi(token);
-					wsprintf(cTxt, "Heldenian-Type1-Winner = %d", m_iHeldenianType1Winner);
-					PutLogList(cTxt);
+					//wsprintf(cTxt, "Heldenian-Type1-Winner = %d", m_iHeldenianType1Winner);
+					//PutLogList(cTxt);
 					cReadMode = 0;
 					break;
 				case 3:
 					m_iHeldenianType2Winner = atoi(token);
-					wsprintf(cTxt, "Heldenian-Type2-Winner = %d", m_iHeldenianType2Winner);
-					PutLogList(cTxt);
+					//wsprintf(cTxt, "Heldenian-Type2-Winner = %d", m_iHeldenianType2Winner);
+					//PutLogList(cTxt);
 					cReadMode = 0;
 					break;
 				case 4:
 					m_iLastHeldenianType = atoi(token);
-					wsprintf(cTxt, "Heldenian-LastType = %d", m_iLastHeldenianType);
-					PutLogList(cTxt);
+					//wsprintf(cTxt, "Heldenian-LastType = %d", m_iLastHeldenianType);
+					//PutLogList(cTxt);
 					cReadMode = 0;
 					break;
 				}
@@ -40901,7 +41165,7 @@ bool CGame::bReadHeldenianGUIDFile(char * cFn)
 		delete[] cp;
 	}
 	if (pFile != NULL) fclose(pFile);
-	switch (m_iHeldenianType1Winner) 
+	/*switch (m_iHeldenianType1Winner) 
 	{
 	case 1:	PutLogList("(!!) Aresden Owned Heldenian In Last Type (1).");
 		break;
@@ -40927,7 +41191,7 @@ bool CGame::bReadHeldenianGUIDFile(char * cFn)
 		break;	
 	default: PutLogList("(!!) Last Heldenian Type (No Last Type).");
 		break;
-	}
+	}*/
 	return TRUE;
 }
 void CGame::StartHeldenianMode(int iClientH)

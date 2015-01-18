@@ -925,7 +925,7 @@ void CClient::ApplyCombatKilledPenalty(char cPenaltyLevel, bool bIsSAattacked, b
 
 		if (m_bIsNeutral == TRUE) iExp = iExp / 3;
 
-		// if (m_iLevel == PLAYERMAXLEVEL) iExp = 0;
+		// if (m_iLevel == m_iPlayerMaxLevel) iExp = 0;
 
 		m_iExp -= iExp;
 		if (m_iExp < 0) m_iExp = 0;

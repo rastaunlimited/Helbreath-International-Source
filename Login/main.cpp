@@ -122,7 +122,8 @@ void PutLogList(char * cMsg, BYTE MsgLvl, BOOL PutOnFile, char *FileName)
 		UpdateScreen();
 	}
 	else if(strlen(cMsg) > MAXLOGLINESIZE) return;
-	if(PutOnFile == TRUE) PutLogFileList(cMsg, FileName);
+	//if(PutOnFile == TRUE)
+		PutLogFileList(cMsg, FileName);
 }
 //=============================================================================
 void OnPaint()

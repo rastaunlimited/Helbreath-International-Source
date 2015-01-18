@@ -1031,7 +1031,7 @@ public:
 
 	char m_cTakeHeroItemName[100]; 
 
-	int m_levelExpTable[MAXLEVEL +50];
+	int m_levelExpTable[890];
 
 	std::set<string> m_MuteList;
 

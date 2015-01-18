@@ -18042,7 +18042,7 @@ void CGame::DrawDialogBox_GaugePannel()
 	// Experience Gauge
 	iMaxPoint = m_levelExpTable[m_iLevel+1] - m_levelExpTable[m_iLevel];
 	iTemp = m_iExp - m_levelExpTable[m_iLevel];
-	 iBarWidth = 167 - (iTemp*167)/iMaxPoint;
+	// iBarWidth = 167 - (iTemp*167)/iMaxPoint;
 	 if( iBarWidth < 0 ) iBarWidth = 0;
 	 if( iBarWidth > 167 ) iBarWidth = 167;
 	 m_pSprite[SPRID_INTERFACE_ND_ICONPANNEL]->PutSpriteFastWidth(147 + iBarWidth, 434+13, 13, (167-iBarWidth), m_dwCurTime);
@@ -18619,8 +18619,8 @@ void CGame::DlgBoxClick_LevelUpSettings(short msX, short msY)
 		if(statChange > m_iLU_Point)
 			statChange = m_iLU_Point;
 
-		if(m_stat[cStat] - m_angelStat[cStat] + m_luStat[cStat] + statChange > 200)
-			statChange = 200 - (m_stat[cStat] - m_angelStat[cStat] + m_luStat[cStat]);
+		if(m_stat[cStat] - m_angelStat[cStat] + m_luStat[cStat] + statChange > 1000)
+			statChange = 1000 - (m_stat[cStat] - m_angelStat[cStat] + m_luStat[cStat]);
 		if(statChange < 0) statChange = 0;
 
 		if(m_iLU_Point >= statChange)
@@ -20336,7 +20336,10 @@ void CGame::DlgBoxClick_ItemSellorRepair(short msX, short msY)
 int CGame::iGetLevelExp(int iLevel)
 {int iRet;
 	if (iLevel == 0) return 0;
-	iRet = iGetLevelExp(iLevel - 1) + iLevel * ( 50 + (iLevel * (iLevel / 17) * (iLevel / 17) ) );
+	//iRet = iGetLevelExp(iLevel - 1) + iLevel * ( 50 + (iLevel * (iLevel / 17) * (iLevel / 17) ) );
+	
+	iRet = (iLevel * iLevel) + iLevel * ( 50 + (iLevel * (iLevel / 17) * (iLevel / 17) ) );
+
 	return iRet;
 }
 

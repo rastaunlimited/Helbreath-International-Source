@@ -202,7 +202,7 @@ bool InitInstance( HINSTANCE hInstance, int nCmdShow )
  SYSTEMTIME SysTime;
 
 	GetLocalTime(&SysTime);
-	wsprintf(cTitle, "Helbreath Legion Game Server V%d.%d (Executed at %.2d:%.2d on %d/%.2d)", UPPER_VERSION, LOWER_VERSION, SysTime.wHour, SysTime.wMinute, SysTime.wDay, SysTime.wMonth);
+	wsprintf(cTitle, "Helbreath Map Server V.%d.%d (Executed at %.2d:%.2d on %d/%.2d)", UPPER_VERSION, LOWER_VERSION, SysTime.wHour, SysTime.wMinute, SysTime.wDay, SysTime.wMonth);
 
 	G_hWnd = CreateWindowEx(0,
         szAppClass,
@@ -213,7 +213,7 @@ bool InitInstance( HINSTANCE hInstance, int nCmdShow )
 		100,
         100,
         800,
-        600,
+        400,
         NULL,
         NULL,
         hInstance,
@@ -238,11 +238,11 @@ bool InitInstance( HINSTANCE hInstance, int nCmdShow )
 	Wc.lpszClassName =  BCX_ClassName;
 	RegisterClass(&Wc);
 
-	List1=BCX_Listbox("",G_hWnd,1009,0,0,600,530);
-	Edit1=BCX_Editbox("",G_hWnd,1011,0,530,600,20);
-	Button1=BCX_Button("OK",G_hWnd,1010,0,550,200,20);
-	Button2=BCX_Button("Toggle scrolling",G_hWnd,1012,400,550,200,20);
-	Button3=BCX_Button("Clear",G_hWnd,1013,200,550,200,20);
+	List1=BCX_Listbox("",G_hWnd,1009,0,0,600,330);
+	Edit1=BCX_Editbox("",G_hWnd,1011,0,330,600,20);
+	Button1=BCX_Button("OK",G_hWnd,1010,0,350,200,20);
+	Button2=BCX_Button("Toggle scrolling",G_hWnd,1012,400,350,200,20);
+	Button3=BCX_Button("Clear",G_hWnd,1013,200,350,200,20);
 
 	ShowWindow(G_hWnd, nCmdShow);    
 	UpdateWindow(G_hWnd);            
@@ -302,7 +302,7 @@ void OnDestroy()
 
 	if (g_game != NULL) {
 		g_game->Quit();
-		delete g_game;
+	delete g_game;
 	}
 
 	if (G_mmTimer != NULL) _StopTimer(G_mmTimer);
@@ -457,6 +457,7 @@ void PutLogList(const char * cMsg)
 	if(scrolling)
 		SendMessage(List1,(UINT)LB_SETCURSEL,ItemCount,0);
 		ItemCount++;
+
 }
 void PutLogList(const string msg)
 {

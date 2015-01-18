@@ -1467,7 +1467,7 @@ void CLoginServer::CreateNewCharacter(char *Data, WORD ClientID, MYSQL myConn)
 						ZeroMemory(QueryConsult, sizeof(QueryConsult));
 						sprintf(QueryConsult, "INSERT INTO `skill` ( `CharID` , `SkillID`, `SkillMastery` , `SkillSSN`)\
 											  VALUES (	'%lu' ,		'%u' ,		'%u'	 ,   '%lu'  );",
-											  CharID  ,  s	,  20  ,  0 );
+											  CharID  ,  s	,  100  ,  0 );
 						if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 						QueryResult = mysql_store_result(&myConn);
 						SAFEFREERESULT(QueryResult);
@@ -1476,7 +1476,7 @@ void CLoginServer::CreateNewCharacter(char *Data, WORD ClientID, MYSQL myConn)
 						ZeroMemory(QueryConsult, sizeof(QueryConsult));
 						sprintf(QueryConsult, "INSERT INTO `skill` ( `CharID` , `SkillID`, `SkillMastery` , `SkillSSN`)\
 											  VALUES (   '%lu'   ,   '%u'   ,      '%u'      ,   '%lu'  );",
-											  CharID  ,  s	,  2  ,  0 );
+											  CharID  ,  s	,  100  ,  0 );
 						if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 						QueryResult = mysql_store_result(&myConn);
 						SAFEFREERESULT(QueryResult);
@@ -1948,7 +1948,7 @@ void CLoginServer::OnTimer()
 				}
 				else if(Client[w]->IsPlaying){
 					if(GameServer[Client[w]->ConnectedServerID] == NULL) {
-						SAFEDELETE(Client[w]);
+//SAFEDELETE(Client[w]);//goback
 					}
 					//else if(Client[w]->ForceDisconnRequestTime != 0 && (dwTime - Client[w]->ForceDisconnRequestTime) > MAX_FORCEDISCONN_WAIT_TIME) {SAFEDELETE(Client[w]);}
 				}
@@ -2122,7 +2122,7 @@ BOOL CLoginServer::IsMapAvailable(char *MapName, char *WorldName, char *GameServ
 		if(GameServer[w] != NULL)
 			for(BYTE b = 0; b < GameServer[w]->NumberOfMaps; b++)
 				if(IsSame(GameServer[w]->MapName[b], MapName)){
-					if (!IsSame(GameServer[w]->WorldName, WorldName))
+					if (IsSame(GameServer[w]->WorldName, WorldName))
 				{
 					if(!GameServer[w]->IsInitialized || GameServer[w]->IsBeingClosed) return FALSE;
 					SafeCopy(GameServerIP, GameServer[w]->ServerIP);

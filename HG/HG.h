@@ -88,7 +88,6 @@
 #define MAXNOTIFYMSGS		1000
 #define NIGHTTIME			40
 
-#define CHARPOINTLIMIT		200
 #define RAGPROTECTIONTIME	7000
 #define MAXREWARDGOLD		99999999
 
@@ -187,8 +186,6 @@
 //============================
 
 //============================
-#define PLAYERMAXLEVEL	180
-//============================
 
 //============================
 #define GMGMANACONSUMEUNIT	35
@@ -225,6 +222,7 @@
 class CGame  
 {
 public:
+	BOOL bReadSettingsConfigFile(char * cFn);
 
 	int  iGetMapLocationForbiddenSide(char * pMapName);
 	void CheckDenialServiceAttack(int iClientH, DWORD dwClientTime, DWORD dwMsgTime, char cKey);
@@ -782,7 +780,7 @@ public:
 	int  m_iClientConnectionCheckMaxNumber;
 	int  m_iClientConnectionCheckTimeRound;
 
-	int   m_iLevelExpTable[300];
+	int  m_iLevelExpTable[890];
  	CFish * m_pFish[MAXFISHS];
 	CPotion * m_pPotionConfigList[MAXPOTIONTYPES];
 
@@ -917,6 +915,26 @@ public:
 	int   m_iCrusadeWinnerSide;   
 
 	int   m_iPlayerMaxLevel;
+
+	int	 m_iPrimaryDropRate, m_iSecondaryDropRate;
+
+	int m_iEnemyKillAdjust;
+	int m_sCharPointLimit;
+
+		// Limit Checks
+	short m_sCharStatLimit;
+	short m_sCharSkillLimit;
+	char m_cRepDropModifier;
+	short m_sExpModifier;
+
+	short m_sMaxPlayerLevel;
+	short m_sRaidTimeMonday; 
+	short m_sRaidTimeTuesday; 
+	short m_sRaidTimeWednesday; 
+	short m_sRaidTimeThursday; 
+	short m_sRaidTimeFriday; 
+	short m_sRaidTimeSaturday; 
+	short m_sRaidTimeSunday; 
 
 	int   m_iWorldMaxUser;
 

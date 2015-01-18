@@ -201,7 +201,7 @@ public:
 	int   m_iTimeLeft_ForceRecall;  
 	int   m_iTimeLeft_FirmStamina; 
 	bool  m_bIsOnServerChange;     
-	int   m_iExpStock;			 
+	unsigned __int64   m_iExpStock;			 
 	DWORD m_dwExpStockTime;	
 	DWORD m_lastDamageTime;
 
@@ -213,7 +213,8 @@ public:
 
 	int   m_iAllocatedFish;		 
 	int   m_iFishChance;		 
-	char  m_cIPaddress[21];		 
+	char  m_cIPaddress[21];	
+	int antiflood;
 	bool  m_bIsSafeAttackMode;
 
 	bool  m_bIsOnWaitingProcess; 
