@@ -3666,11 +3666,11 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 	cp  += 4;
 
 	ip   = (int *)cp;
-	*ip  = m_pClientList[iClientH]->m_iCharisma;
+	*ip  = m_pClientList[iClientH]->m_iRange;
 	cp  += 4;
 
 	iStats = (m_pClientList[iClientH]->GetBaseStr() + m_pClientList[iClientH]->GetBaseDex() + m_pClientList[iClientH]->m_iVit +  
-		m_pClientList[iClientH]->GetBaseInt() + m_pClientList[iClientH]->GetBaseMag() + m_pClientList[iClientH]->m_iCharisma); 
+		m_pClientList[iClientH]->GetBaseInt() + m_pClientList[iClientH]->GetBaseMag() + m_pClientList[iClientH]->m_iRange); 
 
 	m_pClientList[iClientH]->m_iLU_Pool =  m_pClientList[iClientH]->m_iLevel*3 - (iStats - 70);
 	wp = (WORD *)cp; 
@@ -4561,7 +4561,7 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 	m_pClientList[iClientH]->SetDex( bGetOffsetValue(pData, 48) );
 	m_pClientList[iClientH]->SetInt( bGetOffsetValue(pData, 49), false );
 	m_pClientList[iClientH]->SetMag( bGetOffsetValue(pData, 50) );
-	m_pClientList[iClientH]->m_iCharisma = bGetOffsetValue(pData, 51);
+	m_pClientList[iClientH]->m_iRange = bGetOffsetValue(pData, 51);
 	m_pClientList[iClientH]->m_iLuck = bGetOffsetValue(pData, 52);
 	m_pClientList[iClientH]->m_iExp = dwGetOffsetValue(pData, 53);
 	for (i = 0; i < MAXMAGICTYPE; i++) m_pClientList[iClientH]->m_cMagicMastery[i] = bGetOffsetValue(pData, 57+i) - 48;
@@ -4826,7 +4826,7 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 			if((m_pClientList[iClientH]->m_iVit < 10) || (m_pClientList[iClientH]->m_iVit > m_sCharStatLimit)) return FALSE;
 			if((m_pClientList[iClientH]->GetBaseInt() < 10) || (m_pClientList[iClientH]->GetBaseInt() > m_sCharStatLimit)) return FALSE;
 			if((m_pClientList[iClientH]->GetBaseMag() < 10) || (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->m_iCharisma < 10) || (m_pClientList[iClientH]->m_iCharisma > m_sCharStatLimit)) return FALSE;
+			if((m_pClientList[iClientH]->m_iRange < 10) || (m_pClientList[iClientH]->m_iRange > m_sCharStatLimit)) return FALSE;
 			//if((m_pClientList[iClientH]->m_cAccountStatus != 2) && (m_pClientList[iClientH]->m_iLevel > LEVELLIMIT)) return FALSE;
 		}
 		if((m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cCharName) == FALSE) || (m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cAccountName) == FALSE)) return FALSE;
@@ -4942,7 +4942,7 @@ int CGame::_iComposePlayerDataFileContents(int iClientH, char * pData)
 	PutOffsetValue(pData, 75, BYTESIZE, m_pClientList[iClientH]->GetBaseDex());
 	PutOffsetValue(pData, 76, BYTESIZE, m_pClientList[iClientH]->GetBaseInt());
 	PutOffsetValue(pData, 77, BYTESIZE, m_pClientList[iClientH]->GetBaseMag());
-	PutOffsetValue(pData, 78, BYTESIZE, m_pClientList[iClientH]->m_iCharisma);
+	PutOffsetValue(pData, 78, BYTESIZE, m_pClientList[iClientH]->m_iRange);
 	PutOffsetValue(pData, 79, BYTESIZE, m_pClientList[iClientH]->m_iLuck);
 	PutOffsetValue(pData, 80, DWORDSIZE, m_pClientList[iClientH]->m_iExp);
 	PutOffsetValue(pData, 84, DWORDSIZE, m_pClientList[iClientH]->m_iEnemyKillCount);
@@ -8456,7 +8456,7 @@ bool CGame::bEquipItemHandler(int iClientH, short sItemIndex, bool bNotify)
 			}
 			break;
 		case 15: // Chr
-			if (m_pClientList[iClientH]->m_iCharisma < m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sItemEffectValue5) {
+			if (m_pClientList[iClientH]->m_iRange < m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sItemEffectValue5) {
 				SendNotifyMsg(NULL, iClientH, NOTIFY_ITEMRELEASED, m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_cEquipPos, sItemIndex, NULL, NULL);
 				ReleaseItemHandler(iClientH, m_pClientList[iClientH]->m_sItemEquipmentStatus[ cEquipPos ], TRUE);
 				return FALSE;
@@ -8564,20 +8564,20 @@ bool CGame::bEquipItemHandler(int iClientH, short sItemIndex, bool bNotify)
 		iTemp = iTemp & 0xFFFFFFF0;
 		sSpeed = (m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_cSpeed);
 
-		m_pClientList[iClientH]->m_sUsingWeaponSkill = m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill ;
+		//m_pClientList[iClientH]->m_sUsingWeaponSkill = m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill ;
 
 #ifdef WEAPONSPEEDLIMIT
 		sSpeed -= (m_pClientList[iClientH]->GetStr() / 13);
-		switch (m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill) 
-		{
-		//case SKILL_ARCHERY:  if (sSpeed < 1) sSpeed = 1; break; 		
-		//case SKILL_SHORTSWORD:  if (sSpeed < 0) sSpeed = 0; break; 
-		//case SKILL_LONGSWORD:  if (sSpeed < 2) sSpeed = 2; break; 		
-		//case SKILL_FENCING:  if (sSpeed < 1) sSpeed = 1; break; 
-		//case SKILL_AXE: if (sSpeed < 3) sSpeed = 1; break; 		
-		case SKILL_HAMMER: if (sSpeed < 1) sSpeed = 1; break; 		
-		default: if (sSpeed < 0) sSpeed = 0; break; 		
-		}			
+		////switch (m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill) 
+		////{
+		//////case SKILL_ARCHERY:  if (sSpeed < 1) sSpeed = 1; break; 		
+		//////case SKILL_SHORTSWORD:  if (sSpeed < 0) sSpeed = 0; break; 
+		//////case SKILL_LONGSWORD:  if (sSpeed < 2) sSpeed = 2; break; 		
+		//////case SKILL_FENCING:  if (sSpeed < 1) sSpeed = 1; break; 
+		//////case SKILL_AXE: if (sSpeed < 3) sSpeed = 1; break; 		
+		////case SKILL_HAMMER: if (sSpeed < 1) sSpeed = 1; break; 		
+		////default: if (sSpeed < 0) sSpeed = 0; break; 		
+		////}			
 #else
 		sSpeed -= (m_pClientList[iClientH]->GetStr() / 13);
 		if (sSpeed < 0) sSpeed = 0;	
@@ -8618,21 +8618,21 @@ bool CGame::bEquipItemHandler(int iClientH, short sItemIndex, bool bNotify)
 
 
 
-		m_pClientList[iClientH]->m_sUsingWeaponSkill = m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill ;
+	//	m_pClientList[iClientH]->m_sUsingWeaponSkill = m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill ;
 
 
 #ifdef WEAPONSPEEDLIMIT
 		sSpeed -= (m_pClientList[iClientH]->GetStr() / 13);
-		switch (m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill) 
-		{
-		//case SKILL_ARCHERY:  if (sSpeed < 1) sSpeed = 1; break; 		
-		//case SKILL_SHORTSWORD:  if (sSpeed < 0) sSpeed = 0; break; 
-		//case SKILL_LONGSWORD:  if (sSpeed < 2) sSpeed = 2; break; 		
-		//case SKILL_FENCING:  if (sSpeed < 1) sSpeed = 1; break; 
-		//case SKILL_AXE: if (sSpeed < 3) sSpeed = 1; break; 		
-		case SKILL_HAMMER: if (sSpeed < 1) sSpeed = 1; break; 		
-		default: if (sSpeed < 0) sSpeed = 0; break; 		
-		}	
+		//switch (m_pClientList[iClientH]->m_pItemList[sItemIndex]->m_sRelatedSkill) 
+		//{
+		////case SKILL_ARCHERY:  if (sSpeed < 1) sSpeed = 1; break; 		
+		////case SKILL_SHORTSWORD:  if (sSpeed < 0) sSpeed = 0; break; 
+		////case SKILL_LONGSWORD:  if (sSpeed < 2) sSpeed = 2; break; 		
+		////case SKILL_FENCING:  if (sSpeed < 1) sSpeed = 1; break; 
+		////case SKILL_AXE: if (sSpeed < 3) sSpeed = 1; break; 		
+		//case SKILL_HAMMER: if (sSpeed < 1) sSpeed = 1; break; 		
+		//default: if (sSpeed < 0) sSpeed = 0; break; 		
+		//}	
 #else
 		sSpeed -= (m_pClientList[iClientH]->GetStr() / 13);
 		if (sSpeed < 0) sSpeed = 0;
@@ -8930,7 +8930,7 @@ void CGame::ResponseCreateNewGuildHandler(char * pData, DWORD dwMsgSize)
 
 	for (i = 1; i < MAXCLIENTS; i++) 
 		if ((m_pClientList[i] != NULL) && (memcmp(m_pClientList[i]->m_cCharName, cCharName, 10) == 0) &&
-			(m_pClientList[i]->m_iLevel >= 20) && (m_pClientList[i]->m_iCharisma >= 20))
+			(m_pClientList[i]->m_iLevel >= 20) && (m_pClientList[i]->m_iRange >= 20))
 		{
 
 			wp = (WORD *)(pData + INDEX2_MSGTYPE);
@@ -9007,7 +9007,7 @@ void CGame::RequestCreateNewGuildHandler(int iClientH, char * pData, DWORD dwMsg
 	}
 	else {
 		if (m_pClientList[iClientH]->m_iLevel < 20 ||
-			m_pClientList[iClientH]->m_iCharisma < 20 ||
+			m_pClientList[iClientH]->m_iRange < 20 ||
 			m_pClientList[iClientH]->IsNeutral()	||
 			m_pClientList[iClientH]->m_iIsOnTown == PK ) 
 		{
@@ -9214,9 +9214,7 @@ void CGame::RequestPurchaseItemHandler(int iClientH, char * pItemName, int iNum)
 
 			dwGoldCount = dwGetItemCount(iClientH, "Gold");
 
-			iDiscountRatio = ((m_pClientList[iClientH]->m_iCharisma -10)/ 4) ;
-
-			iDiscountRatio = ((m_pClientList[iClientH]->m_iCharisma -50)/ -4);   // 50..90 charisma gives 0..10% price discount.	
+			iDiscountRatio = ((m_pClientList[iClientH]->m_iRange -10)/ 4) ;
 
 			if (m_iCrusadeWinnerSide != m_pClientList[iClientH]->m_side){ // Lost last Crusade +10% prices
 				iDiscountRatio += 10;
@@ -11058,7 +11056,7 @@ void CGame::SendNotifyMsg(int iFromH, int iToH, WORD wMsgType, DWORD sV1, DWORD 
 		*dwp = (DWORD)m_pClientList[iToH]->GetMag();
 		cp += 4;
 		dwp  = (DWORD *)cp;
-		*dwp = (DWORD)m_pClientList[iToH]->m_iCharisma;
+		*dwp = (DWORD)m_pClientList[iToH]->m_iRange;
 		cp += 4;
 		dwp  = (DWORD *)cp;
 		*dwp = (DWORD)m_pClientList[iToH]->m_iPKCount;
@@ -11165,9 +11163,9 @@ void CGame::SendNotifyMsg(int iFromH, int iToH, WORD wMsgType, DWORD sV1, DWORD 
 		iRet = m_pClientList[iToH]->m_pXSock->iSendMsg(cData, 10);
 		break;
 
-	case NOTIFY_CHARISMA:
+	case NOTIFY_RANGE:
 		dwp  = (DWORD *)cp;
-		*dwp = (DWORD)m_pClientList[iToH]->m_iCharisma;
+		*dwp = (DWORD)m_pClientList[iToH]->m_iRange;
 		cp += 4;
 
 		iRet = m_pClientList[iToH]->m_pXSock->iSendMsg(cData, 10);
@@ -11200,7 +11198,7 @@ void CGame::SendNotifyMsg(int iFromH, int iToH, WORD wMsgType, DWORD sV1, DWORD 
 		cp  += 4;
 
 		ip   = (int *)cp;
-		*ip  = m_pClientList[iToH]->m_iCharisma;
+		*ip  = m_pClientList[iToH]->m_iRange;
 		cp  += 4;
 
 		iRet = m_pClientList[iToH]->m_pXSock->iSendMsg(cData, 34);
@@ -12443,12 +12441,13 @@ void CGame::PlayerMagicHandler(int iClientH, int dX, int dY, short sType, bool b
 
 	//         1      2     3     4     5	 6     7	 8	  9    10
 	sMagicCircle = (sType / 10) + 1;
-	if (caster->m_cSkillMastery[SKILL_MAGIC] == 0)
-		dV1 = 1.0f;
-	else dV1 = (double)caster->m_cSkillMastery[SKILL_MAGIC];
+//	if (caster->m_cSkillMastery[SKILL_MAGIC] == 0)
+	//	dV1 = 1.0f;
+	//else 
+		//dV1 = (double)caster->m_cSkillMastery[SKILL_MAGIC];
 
 
-	if (bItemEffect == TRUE) dV1 = (double)100.0f;
+	 dV1 = (double)100.0f;
 
 	dV2 = (double)(dV1 / 100.0f);
 	dV3 = (double)_tmp_iMCProb[sMagicCircle];
@@ -12532,7 +12531,7 @@ void CGame::PlayerMagicHandler(int iClientH, int dX, int dY, short sType, bool b
 		return;
 	}
 
-	iResult = caster->m_cSkillMastery[SKILL_MAGIC];
+//	iResult = caster->m_cSkillMastery[SKILL_MAGIC];
 
 	if (caster->GetMag() > 50) iResult += (caster->GetMag() - 50); 
 
@@ -13102,7 +13101,7 @@ if ((m_bHeldenianMode) && (m_pMapList[caster->m_cMapIndex]->m_bIsHeldenianMap ==
 			{
 				iFollowersNum = iGetFollowerNumber(sOwnerH, cOwnerType);
 
-				if (iFollowersNum >= (caster->m_cSkillMastery[SKILL_MAGIC]/20) && !caster->IsGM()) break;
+//				if (iFollowersNum >= (caster->m_cSkillMastery[SKILL_MAGIC]/20) && !caster->IsGM()) break;
 
 				iNamingValue = m_pMapList[caster->m_cMapIndex]->iGetEmptyNamingValue();
 				if (iNamingValue == -1) {
@@ -13118,24 +13117,24 @@ if ((m_bHeldenianMode) && (m_pMapList[caster->m_cMapIndex]->m_bIsHeldenianMap ==
 
 					switch (iV1) {
 					case NULL: 						
-						iResult = dice(1, caster->m_cSkillMastery[SKILL_MAGIC] / 10);
+						///*iResult = dice(1, caster->m_cSkillMastery[SKILL_MAGIC] / 10);
 
-						if (iResult < caster->m_cSkillMastery[SKILL_MAGIC] / 20) 
-							iResult = caster->m_cSkillMastery[SKILL_MAGIC] / 20;
+						//if (iResult < caster->m_cSkillMastery[SKILL_MAGIC] / 20) 
+						//	iResult = caster->m_cSkillMastery[SKILL_MAGIC] / 20;
 
-						switch (iResult) {
-						case 1: strcpy(cNpcName, "Slime"); break;
-						case 2: strcpy(cNpcName, "Giant-Ant"); break;
-						case 3: strcpy(cNpcName, "Amphis"); break;
-						case 4: strcpy(cNpcName, "Orc"); break;
-						case 5: strcpy(cNpcName, "Skeleton"); break;
-						case 6: strcpy(cNpcName, "Clay-Golem"); break;
-						case 7: strcpy(cNpcName, "Stone-Golem"); break;
-						case 8: strcpy(cNpcName, "Orc-Mage"); break;
-						case 9: strcpy(cNpcName, "Hellbound"); break;
-						case 10:strcpy(cNpcName, "Cyclops"); break;
-						}
-						break;
+						//switch (iResult) {
+						//case 1: strcpy(cNpcName, "Slime"); break;
+						//case 2: strcpy(cNpcName, "Giant-Ant"); break;
+						//case 3: strcpy(cNpcName, "Amphis"); break;
+						//case 4: strcpy(cNpcName, "Orc"); break;
+						//case 5: strcpy(cNpcName, "Skeleton"); break;
+						//case 6: strcpy(cNpcName, "Clay-Golem"); break;
+						//case 7: strcpy(cNpcName, "Stone-Golem"); break;
+						//case 8: strcpy(cNpcName, "Orc-Mage"); break;
+						//case 9: strcpy(cNpcName, "Hellbound"); break;
+						//case 10:strcpy(cNpcName, "Cyclops"); break;
+						//}
+						//break;*/
 
 					case 1: strcpy(cNpcName, "Orc"); break;
 					case 2: strcpy(cNpcName, "Skeleton"); break;
@@ -13456,8 +13455,8 @@ if ((m_bHeldenianMode) && (m_pMapList[caster->m_cMapIndex]->m_bIsHeldenianMap ==
 
 			case DYNAMICOBJECT_ICESTORM:
 				iAddDynamicObjectList(iClientH, OWNERTYPE_PLAYER_INDIRECT, spell->m_sValue[MAGICV_DYNAMICOBJ], caster->m_cMapIndex, 
-					dX, dY, spell->m_dwLastTime*1000,
-					caster->m_cSkillMastery[SKILL_MAGIC]);
+					dX, dY, spell->m_dwLastTime*1000, 100);
+					//caster->m_cSkillMastery[SKILL_MAGIC]);
 				break;
 
 			default:
@@ -13753,7 +13752,7 @@ MAGIC_NOEFFECT:;
 	if (caster->m_iMP < 0) 
 		caster->m_iMP = 0;
 
-	CalculateSSN_SkillIndex(iClientH, SKILL_MAGIC, 1 );
+	//CalculateSSN_SkillIndex(iClientH, SKILL_MAGIC, 1 );
 
 	SendEventToNearClient_TypeB(MSGID_EVENT_COMMON, COMMONTYPE_MAGIC, caster->m_cMapIndex,
 		caster->m_sX, caster->m_sY, dX, dY, (sType+100), caster->m_sType);
@@ -17230,7 +17229,7 @@ int CGame::_iCalcSkillSSNpoint(int iLevel)
 	iRet = iLevel;
 	else if (iLevel > 50) {
 		//iRet = ( iLevel * iLevel / 5 ); // / 10;
-iRet = ( iLevel * iLevel / 10);
+iRet = ( iLevel * iLevel / 7);
 	}
 
 	return iRet;
@@ -17291,7 +17290,7 @@ bool CGame::bCheckLevelUp(int iClientH)
 				m_pClientList[iClientH]->SetInt(m_sCharStatLimit);
 			if (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)
 				m_pClientList[iClientH]->SetMag(m_sCharStatLimit);
-			if (m_pClientList[iClientH]->m_iCharisma > m_sCharStatLimit) m_pClientList[iClientH]->m_iCharisma = m_sCharStatLimit;
+			if (m_pClientList[iClientH]->m_iRange > m_sCharStatLimit) m_pClientList[iClientH]->m_iRange = m_sCharStatLimit;
 
 			SendNotifyMsg(NULL, iClientH, NOTIFY_LEVELUP, NULL, NULL, NULL, NULL);
 			
@@ -17381,11 +17380,11 @@ void CGame::LevelUpSettingsHandler(int iClientH, char * pData, DWORD dwMsgSize)
 		m_sCharStatLimit) || (cMag < 0)) 
 		return;
 
-	if ((m_pClientList[iClientH]->m_iCharisma + cChr > m_sCharStatLimit) || (cChr < 0)) 
+	if ((m_pClientList[iClientH]->m_iRange + cChr > m_sCharStatLimit) || (cChr < 0)) 
 		return;
 
 	iTotalSetting = m_pClientList[iClientH]->GetBaseStr() + m_pClientList[iClientH]->GetBaseDex() + m_pClientList[iClientH]->m_iVit + 
-		m_pClientList[iClientH]->GetBaseInt() + m_pClientList[iClientH]->GetBaseMag() + m_pClientList[iClientH]->m_iCharisma;
+		m_pClientList[iClientH]->GetBaseInt() + m_pClientList[iClientH]->GetBaseMag() + m_pClientList[iClientH]->m_iRange;
 
 	if (iTotalSetting + m_pClientList[iClientH]->m_iLU_Pool -3 > ((m_pClientList[iClientH]->m_iLevel-1)*3 + 70))
 	{
@@ -17414,7 +17413,7 @@ void CGame::LevelUpSettingsHandler(int iClientH, char * pData, DWORD dwMsgSize)
 	m_pClientList[iClientH]->SetDex(m_pClientList[iClientH]->GetBaseDex() + cDex);
 	m_pClientList[iClientH]->SetInt(m_pClientList[iClientH]->GetBaseInt() + cInt);
 	m_pClientList[iClientH]->SetMag(m_pClientList[iClientH]->GetBaseMag() + cMag);
-	m_pClientList[iClientH]->m_iCharisma  += cChr;
+	m_pClientList[iClientH]->m_iRange  += cChr;
 
 	SendNotifyMsg(NULL, iClientH, NOTIFY_SETTING_SUCCESS, NULL, NULL, NULL, NULL);
 
@@ -19940,8 +19939,8 @@ void CGame::UseItemHandler(int iClientH, short sItemIndex, short dX, short dY, s
 		case 20:
 			if (m_pClientList[iClientH] == NULL) return;
 
-			m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGICRES] = 20;
-			SendNotifyMsg(NULL, iClientH, NOTIFY_SKILL, 3, m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC], NULL, NULL);
+			//m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGICRES] = 20;
+			//SendNotifyMsg(NULL, iClientH, NOTIFY_SKILL, 3, m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC], NULL, NULL);
 			break;
 
 		case ITEMEFFECTTYPE_FIRMSTAMINAR:
@@ -23188,7 +23187,7 @@ void CGame::CalcTotalItemEffect(int iClientH, int iEquipItemID, bool bNotify)
 
 				//player->m_iHitRatio_ItemEffect_SM += item->m_sSM_HitRatio;
 				//player->m_iHitRatio_ItemEffect_L  += item->m_sL_HitRatio;
-				player->m_sUsingWeaponSkill = item->m_sRelatedSkill;
+				//player->m_sUsingWeaponSkill = item->m_sRelatedSkill;
 
 
 				if ((item->m_dwAttribute & 0x00000001) != NULL) {
@@ -23758,7 +23757,8 @@ void CGame::PoisonEffect(int iClientH, int iV1)
 	if (iPrevHP != m_pClientList[iClientH]->m_iHP)
 		SendNotifyMsg(NULL, iClientH, NOTIFY_HP, NULL, NULL, NULL, NULL);
 
-	iProb = m_pClientList[iClientH]->m_cSkillMastery[SKILL_POISONRES] -10 +m_pClientList[iClientH]->m_iAddPR;
+	//iProb = m_pClientList[iClientH]->m_cSkillMastery[SKILL_POISONRES] -10 +m_pClientList[iClientH]->m_iAddPR;
+	iProb = 10 +m_pClientList[iClientH]->m_iAddPR;
 	if (iProb <= 10) iProb = 10;
 	if (dice(1,100) <= iProb) {
 		m_pClientList[iClientH]->m_bIsPoisoned = FALSE;
@@ -25620,47 +25620,47 @@ void CGame::_CheckAttackType(int iClientH, short *spType)
 
 	case 20:
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_HANDATTACK] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_HANDATTACK] < 100) *spType = 1;
 		break;
 
 	case 21: 
 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_SHORTSWORD] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_SHORTSWORD] < 100) *spType = 1;
 		break;
 
 	case 22: 
 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_FENCING] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_FENCING] < 100) *spType = 1;
 		break;
 
 	case 23: 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)   *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_LONGSWORD] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_LONGSWORD] < 100) *spType = 1;
 		break;
 
 	case 24: 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_AXE] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_AXE] < 100) *spType = 1;
 		break;
 
 	case 25: 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 2;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_ARCHERY] < 100) *spType = 2;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_ARCHERY] < 100) *spType = 2;
 		if (m_pClientList[iClientH]->m_cArrowIndex == -1)      *spType = 0;
 		if (wType < 40) *spType = 1;
 		break;
 	case 26: 
 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_HAMMER] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_HAMMER] < 100) *spType = 1;
 		break;
 
 	case 27: 
 
 		if (m_pClientList[iClientH]->m_iSuperAttackLeft <= 0)  *spType = 1;
-		if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_STAFF] < 100) *spType = 1;
+		//if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_STAFF] < 100) *spType = 1;
 		break;
 	}
 }
@@ -32190,13 +32190,13 @@ void CGame::_TamingHandler(int iClientH, int iSkillNum, char cMapIndex, int dX, 
 
 void CGame::GetMagicAbilityHandler(int iClientH)
 {
-	if (m_pClientList[iClientH] == NULL) return;
-	if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC] != 0) return;
+	//if (m_pClientList[iClientH] == NULL) return;
+	////if (m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC] != 0) return;
 
-	m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC] = 20;
-	SendNotifyMsg(NULL, iClientH, NOTIFY_SKILL, 4, m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC], NULL, NULL);
+	////m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC] = 20;
+	////SendNotifyMsg(NULL, iClientH, NOTIFY_SKILL, 4, m_pClientList[iClientH]->m_cSkillMastery[SKILL_MAGIC], NULL, NULL);
 
-	m_pClientList[iClientH]->CheckTotalSkillMasteryPoints(4);
+	////m_pClientList[iClientH]->CheckTotalSkillMasteryPoints(4);
 }
 
 int CGame::iRequestPanningMapDataRequest(int iClientH, char * pData)
@@ -39096,7 +39096,7 @@ void CGame::StateChangeHandler(int iClientH, char * pData, DWORD dwMsgSize)
 	iOldDex = m_pClientList[iClientH]->GetBaseDex();
 	iOldInt = m_pClientList[iClientH]->GetBaseInt();
 	iOldMag = m_pClientList[iClientH]->GetBaseMag();
-	iOldChar = m_pClientList[iClientH]->m_iCharisma;
+	iOldChar = m_pClientList[iClientH]->m_iRange;
 	
 	
 	if(!ChangeState(cStateChange1,&cStr,&cVit,&cDex,&cInt,&cMag,&cChar))
@@ -39117,7 +39117,7 @@ void CGame::StateChangeHandler(int iClientH, char * pData, DWORD dwMsgSize)
 
 	if(m_pClientList[iClientH]->m_iGuildRank == 0 )
 	{
-		if(m_pClientList[iClientH]->m_iCharisma - cChar < 20)
+		if(m_pClientList[iClientH]->m_iRange - cChar < 20)
 		{
 			SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 			return;
@@ -39170,8 +39170,8 @@ void CGame::StateChangeHandler(int iClientH, char * pData, DWORD dwMsgSize)
 		return;
 	}
 
-	if ((m_pClientList[iClientH]->m_iCharisma - cChar > m_sCharStatLimit)
-		 || (m_pClientList[iClientH]->m_iCharisma - cChar < 10)) 
+	if ((m_pClientList[iClientH]->m_iRange - cChar > m_sCharStatLimit)
+		 || (m_pClientList[iClientH]->m_iRange - cChar < 10)) 
 	{
 		SendNotifyMsg(NULL, iClientH, NOTIFY_STATECHANGE_FAILED, NULL, NULL, NULL, NULL);
 		return;
@@ -39193,7 +39193,7 @@ void CGame::StateChangeHandler(int iClientH, char * pData, DWORD dwMsgSize)
 	if(cInt > 0)
 		CheckMagicInt(iClientH);
 	m_pClientList[iClientH]->SetMag( m_pClientList[iClientH]->GetBaseMag() - cMag);
-	m_pClientList[iClientH]->m_iCharisma -= cChar;
+	m_pClientList[iClientH]->m_iRange -= cChar;
 
 	m_pClientList[iClientH]->ValidateSkills(FALSE);
 
@@ -41235,7 +41235,7 @@ void CGame::StartHeldenianMode(int iClientH)
 			SendNotifyMsg(NULL, i, NOTIFY_HELDENIANSTART,  NULL , NULL, NULL, NULL); // You can now, fight on the battle field
 			SendNotifyMsg(NULL, i, NOTIFY_HELDENIANTELEPORT,  NULL , NULL, NULL, NULL); // You can now, go to the battle field
 			player->m_iWarContribution   = 0;
-			player->m_iConstructionPoint = 10000 + (player->m_iCharisma * 100);
+			player->m_iConstructionPoint = 10000 + (player->m_iRange * 100);
 			if (player->m_iConstructionPoint > MAXHELDENIANSUMMONPOINT) player->m_iConstructionPoint = MAXHELDENIANSUMMONPOINT;
 			SendNotifyMsg(NULL, i, NOTIFY_CONSTRUCTIONPOINT, player->m_iConstructionPoint, player->m_iWarContribution, 0, NULL); //0: Tell player of acquired points
 		}	

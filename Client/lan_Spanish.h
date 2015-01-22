@@ -1330,8 +1330,8 @@
 #define NOTIFYMSG_CANNOT_SELL_ITEM5 "Usted no puede vender más artículos, porque la bolsa está llena."
 #define NOTIFYMSG_CANNOT_SELL_ITEM6 "Inténtelo de nuevo después de quitarse el peso de tu bolsa."
 
-#define NOTIFYMSG_CHARISMA_UP "Comisión de Derechos Humanos se ha incrementado en %d points."
-#define NOTIFYMSG_CHARISMA_DOWN "Comisión de Derechos Humanos se ha reducido por %d points."
+#define NOTIFYMSG_RANGE_UP "Comisión de Derechos Humanos se ha incrementado en %d points."
+#define NOTIFYMSG_RANGE_DOWN "Comisión de Derechos Humanos se ha reducido por %d points."
 
 #define NOTIFYMSG_DROPITEMFIN_ERASEITEM3 "Usted dejó caer un %s."
 #define NOTIFYMSG_DROPITEMFIN_ERASEITEM4 "Se te ha caído %d %s."
@@ -1720,7 +1720,7 @@
 #define MSG_DEXTERITY "destreza"
 #define MSG_INTELLIGENCE "Inteligencia"
 #define MSG_MAGIC "Magic"
-#define MSG_CHARISMA "carisma"
+#define MSG_RANGE "carisma"
 #define MSG_HITPOINT "Hit Point"
 #define MSG_MANAPOINT "Mana Point"
 #define MSG_STAMINARPOINT "Staminar Point"

@@ -144,7 +144,7 @@ public:
 	int  m_iDamageAbsorption_Shield;
 
 	int  m_iLevel;
-	int  m_iVit, m_iCharisma;
+	int  m_iVit, m_iRange;
 	int  m_iLuck; 
 	int  m_iLU_Pool;
 
@@ -221,7 +221,7 @@ public:
 	int   m_iSuperAttackLeft;	 
 	int   m_iSuperAttackCount;   
 
-	short m_sUsingWeaponSkill;	 
+	//short m_sUsingWeaponSkill;	 
 
 	int   m_iMPSaveRatio;		 
 

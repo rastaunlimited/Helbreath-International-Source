@@ -1992,9 +1992,9 @@ int CMapData::iObjectFrameCounter(char * cPlayerName, short sViewPointX, short s
 					iDelay = (m_Data[dX][dY].m_iStatus & 0x000F)*12;
 					break;
 				case OBJECTMAGIC:
-					if(isClientPlayer)
+				/*	if(isClientPlayer)
 						iDelay = -(m_pGame->m_cSkillMastery[SKILL_MAGIC] * 0.13);
-					else
+					else*/
 						iDelay = -(100 * 0.13);
 					break;
 				default:

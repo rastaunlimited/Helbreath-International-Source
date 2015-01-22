@@ -160,7 +160,7 @@ CClient::CClient(HWND hWnd, int clientH)
 	m_iSuperAttackLeft  = 0;
 	m_iSuperAttackCount = 0;
 
-	m_sUsingWeaponSkill = SKILL_HANDATTACK; 
+	//m_sUsingWeaponSkill = SKILL_HANDATTACK; 
 	m_iMPSaveRatio   = 0;
 	m_iAddResistMagic  = 0;
 	m_iAddPhysicalDamage = 0;
@@ -520,7 +520,6 @@ void CClient::ValidateSkills(bool logInvalidSkills)
 		switch (skillIndex) {
 		case SKILL_MINING:  
 		case SKILL_MANUFACTURING:
-		case SKILL_HANDATTACK:
 			if (m_cSkillMastery[skillIndex] > (GetStr() * 2)) 
 			{	
 				invalidSkills += m_cSkillMastery[skillIndex] - (GetStr() * 2);
@@ -530,7 +529,11 @@ void CClient::ValidateSkills(bool logInvalidSkills)
 			}
 			break;
 
-		case SKILL_MAGICRES:
+		case SKILL_PRAYER:
+case SKILL_CRAFTING:
+			case SKILL_PRETENDCORPSE:
+			case SKILL_AGILITY:
+				case SKILL_FISHING:
 			if (m_cSkillMastery[skillIndex] > (m_iLevel * 2)) 
 			{	
 				invalidSkills += m_cSkillMastery[skillIndex] - (m_iLevel * 2);
@@ -540,25 +543,18 @@ void CClient::ValidateSkills(bool logInvalidSkills)
 			}
 			break;
 
-		case SKILL_MAGIC:
-		case SKILL_STAFF:
-			if (m_cSkillMastery[skillIndex] > (GetMag() * 2))
-			{	
-				invalidSkills += m_cSkillMastery[skillIndex] - (GetMag() * 2);
-				m_cSkillMastery[skillIndex] = GetMag() * 2;
-				m_iSkillSSN[skillIndex] = 0;
-				Notify(NULL, NOTIFY_SKILL, skillIndex, m_cSkillMastery[skillIndex], NULL, NULL);
-			}
-			break;
+		////case SKILL_MAGIC:
+		////case SKILL_STAFF:
+		////	if (m_cSkillMastery[skillIndex] > (GetMag() * 2))
+		////	{ 	
+		////		invalidSkills += m_cSkillMastery[skillIndex] - (GetMag() * 2);
+		////		m_cSkillMastery[skillIndex] = GetMag() * 2;
+		////		m_iSkillSSN[skillIndex] = 0;
+		////		Notify(NULL, NOTIFY_SKILL, skillIndex, m_cSkillMastery[skillIndex], NULL, NULL);
+		////	}
+		////	break;
 
-		case SKILL_FISHING:
-		case SKILL_ARCHERY:
-		case SKILL_SHORTSWORD:
-		case SKILL_LONGSWORD:
-		case SKILL_FENCING:
-		case SKILL_AXE:
-		case SKILL_SHIELD:
-		case SKILL_HAMMER:
+	/*	case SKILL_FISHING:
 			if (m_cSkillMastery[skillIndex] > (GetDex() * 2)) 
 			{	
 				invalidSkills += m_cSkillMastery[skillIndex] - (GetDex() * 2);
@@ -566,11 +562,11 @@ void CClient::ValidateSkills(bool logInvalidSkills)
 				m_iSkillSSN[skillIndex] = 0;
 				Notify(NULL, NOTIFY_SKILL, skillIndex, m_cSkillMastery[skillIndex], NULL, NULL);
 			}
-			break;
+			break;*/
 
 		case SKILL_ALCHEMY:
 		case SKILL_FARMING:
-		case SKILL_PRETENDCORPSE:
+		
 			if (m_cSkillMastery[skillIndex] > (GetInt() * 2)) 
 			{	
 				invalidSkills += m_cSkillMastery[skillIndex] - (GetInt() * 2);
@@ -580,15 +576,15 @@ void CClient::ValidateSkills(bool logInvalidSkills)
 			}
 			break;
 
-		case SKILL_POISONRES:
-			if (m_cSkillMastery[skillIndex] > (m_iVit * 2)) 
-			{	
-				invalidSkills += m_cSkillMastery[skillIndex] - (m_iVit * 2);
-				m_cSkillMastery[skillIndex] = m_iVit * 2;
-				m_iSkillSSN[skillIndex] = 0;
-				Notify(NULL, NOTIFY_SKILL, skillIndex, m_cSkillMastery[skillIndex], NULL, NULL);
-			}
-			break;
+		//case SKILL_POISONRES:
+		//	if (m_cSkillMastery[skillIndex] > (m_iVit * 2)) 
+		//	{	
+		//		invalidSkills += m_cSkillMastery[skillIndex] - (m_iVit * 2);
+		//		m_cSkillMastery[skillIndex] = m_iVit * 2;
+		//		m_iSkillSSN[skillIndex] = 0;
+		//		Notify(NULL, NOTIFY_SKILL, skillIndex, m_cSkillMastery[skillIndex], NULL, NULL);
+		//	}
+		//	break;
 		default:
 			m_iSkillSSN[skillIndex] = 0;
 			break;

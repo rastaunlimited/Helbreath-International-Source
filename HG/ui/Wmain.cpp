@@ -673,7 +673,7 @@ void parseCommand(char* pMsg)
 				if ((g_clientList[i] != NULL) && (memcmp(g_clientList[i]->m_cCharName, cName, 10) == 0)) {
 					ZeroMemory(buff, sizeof(buff));
 					if ((g_clientList[i] != NULL) && (memcmp(g_clientList[i]->m_cCharName, cName, 10) == 0)) {
-						wsprintf(buff, "%s:    Str:%d  Dex:%d  Vit:%d  Int:%d  Mag:%d  Chr:%d    Map:%s - %i , %i    Admin level:%i", g_clientList[i]->m_cCharName, g_clientList[i]->GetStr(),  g_clientList[i]->GetDex(), g_clientList[i]->m_iVit, g_clientList[i]->GetInt(),g_clientList[i]->GetMag(), g_clientList[i]->m_iCharisma, g_clientList[i]->m_cMapName, g_clientList[i]->m_sX, g_clientList[i]->m_sY, g_clientList[i]->m_iAdminUserLevel);
+						wsprintf(buff, "%s:    Str:%d  Dex:%d  Vit:%d  Int:%d  Mag:%d  Chr:%d    Map:%s - %i , %i    Admin level:%i", g_clientList[i]->m_cCharName, g_clientList[i]->GetStr(),  g_clientList[i]->GetDex(), g_clientList[i]->m_iVit, g_clientList[i]->GetInt(),g_clientList[i]->GetMag(), g_clientList[i]->m_iRange, g_clientList[i]->m_cMapName, g_clientList[i]->m_sX, g_clientList[i]->m_sY, g_clientList[i]->m_iAdminUserLevel);
 						PutLogList(buff);
 					}else{
 						wsprintf(buff,"Player %s is offline.", cName);

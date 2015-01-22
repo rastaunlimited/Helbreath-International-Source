@@ -16202,7 +16202,7 @@ void CGame::DrawDialogBoxs(short msX, short msY, short msZ, char cLB)
 			break;
 		}
 	}
-	if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
+	/*if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
 	{ 	if (m_iSuperAttackLeft > 0)
 		{	if (GetAsyncKeyState(VK_MENU)>>15)
 				m_pSprite[SPRID_INTERFACE_ND_ICONPANNEL]->PutTransSprite(368, 439, 3, m_dwCurTime);
@@ -16210,10 +16210,13 @@ void CGame::DrawDialogBoxs(short msX, short msY, short msZ, char cLB)
 			PutString_SprFont2(380, 454, G_cTxt, 220, 200, 200);
 		}
 	}else
-	{	if (m_iSuperAttackLeft > 0)
+	{	*/
+		if (m_iSuperAttackLeft > 0)
 		{	wsprintf(G_cTxt, "%d", m_iSuperAttackLeft);
 			PutString_SprFont2(380, 454, G_cTxt, 10, 10, 10);
-	}	}
+	}	
+	
+	//}
 }
 
 void CGame::_Draw_CharacterBody(short sX, short sY, short sType)
@@ -16567,15 +16570,15 @@ void CGame::EnableDialogBox(int iBoxID, int cType, int sV1, int sV2, char * pStr
 
 	case 16:
 		if (m_bIsDialogEnabled[iBoxID]  == FALSE) {
-			if (m_cSkillMastery[SKILL_MAGIC] == 0) {
+			/*if (m_cSkillMastery[SKILL_MAGIC] == 0) {
 				 DisableDialogBox(16);
 				 EnableDialogBox(21, 0, 480, 0);
 				 return;
 			}
-			else {
+			else {*/
 				m_stDialogBoxInfo[iBoxID].cMode = 0;
 				m_stDialogBoxInfo[iBoxID].sView = 0;
-			}
+			//}
 		}
 		break;
 
@@ -20902,65 +20905,65 @@ int CGame::_iGetAttackType()
 	wWeaponType = ((m_sPlayerAppr2 & 0x0FF0) >> 4);
 	if (wWeaponType == 0)
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_HANDATTACK] >= 100)) 
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_HANDATTACK] >= 100)) 
 			return 20;
 		else return 1;		// Boxe
 	}else if ((wWeaponType >= 1) && (wWeaponType <= 2))
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_SHORTSWORD] >= 100)) 
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_SHORTSWORD] >= 100)) 
 			return 21;
 		else return 1;		//Dag, SS
 	}else if ((wWeaponType > 2) && (wWeaponType < 20))
 	{	
 		if ((wWeaponType == 7)||(wWeaponType == 18)) // Added Kloness Esterk
 		{	
-			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-				(m_cSkillMastery[SKILL_FENCING] >= 100)) 
+			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+				//(m_cSkillMastery[SKILL_FENCING] >= 100)) 
 				return 22;
 			else return 1;  // Esterk
 		}else if (wWeaponType == 15)
 		{	
-			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-				(m_cSkillMastery[SKILL_LONGSWORD] >= 100)) 
+			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+				//(m_cSkillMastery[SKILL_LONGSWORD] >= 100)) 
 				return 30;
 			else return 5;  // StormBlade
 		}else
 		{	
-			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-				(m_cSkillMastery[SKILL_LONGSWORD] >= 100)) 
+			if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+				//(m_cSkillMastery[SKILL_LONGSWORD] >= 100)) 
 				return 23;
 			else return 1;	// LongSwords
 		}
 	}else if ((wWeaponType >= 20) && (wWeaponType < 29))
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_AXE] >= 100))
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_AXE] >= 100))
 			return 24;
 		else return 1;		// Haches
 	}else if ((wWeaponType >= 30) && (wWeaponType < 33))
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_HAMMER] >= 100))
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_HAMMER] >= 100))
 			return 26;
 		else return 1;		// Hammers
 	}else if ((wWeaponType >= 34) && (wWeaponType < 41))
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_STAFF] >= 100))
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_STAFF] >= 100))
 			return 27;
 		else return 1;		// Wands
 	}else if (wWeaponType >= 41)
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_ARCHERY] >= 100))
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE))// && 
+			//(m_cSkillMastery[SKILL_ARCHERY] >= 100))
 			return 25;
 		else return 2;		// Bows
 	}else if ((wWeaponType == 29) || (wWeaponType == 33))
 	{	
-		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) && 
-			(m_cSkillMastery[SKILL_LONGSWORD] >= 100))
+		if ((m_iSuperAttackLeft > 0) && (m_bSuperAttackMode == TRUE) )//&& 
+		//	(m_cSkillMastery[SKILL_LONGSWORD] >= 100))
 			return 23;
 		else return 1;		// LS
 	}
@@ -20971,34 +20974,35 @@ int CGame::_iGetWeaponSkillType()
 {
 	WORD wWeaponType = ((m_sPlayerAppr2 & 0x0FF0) >> 4);
 
-	if (wWeaponType == 0)
-	{	
-		return SKILL_HANDATTACK;
-	}else if ((wWeaponType >= 1) && (wWeaponType < 3))
-	{	
-		return SKILL_SHORTSWORD;
-	}else if ((wWeaponType >= 3) && (wWeaponType < 20))
-	{	
-		if ((wWeaponType == 7)||(wWeaponType == 18)) // Esterk or KlonessEsterk
-			 return SKILL_FENCING;
-		else return SKILL_LONGSWORD;
-	}else if ((wWeaponType >= 20) && (wWeaponType < 29))
-	{	
-		return SKILL_AXE;
-	}else if ((wWeaponType >= 30) && (wWeaponType < 33))
-	{	
-		return SKILL_HAMMER;
-	}else if ((wWeaponType >= 34) && (wWeaponType < 41))
-	{	
-		return SKILL_STAFF;
-	}else if (wWeaponType >= 41)
-	{	
-		return SKILL_ARCHERY;
-	}else if ((wWeaponType == 29) || (wWeaponType == 33))
-	{	
-		return SKILL_LONGSWORD;  // LS LightingBlade || BlackShadow
-	}
-	return SKILL_FISHING;
+	////if (wWeaponType == 0)
+	////{	
+	////	return SKILL_HANDATTACK;
+	////}else if ((wWeaponType >= 1) && (wWeaponType < 3))
+	////{	
+	////	return SKILL_SHORTSWORD;
+	////}else if ((wWeaponType >= 3) && (wWeaponType < 20))
+	////{	
+	////	if ((wWeaponType == 7)||(wWeaponType == 18)) // Esterk or KlonessEsterk
+	////		 return SKILL_FENCING;
+	////	else return SKILL_LONGSWORD;
+	////}else if ((wWeaponType >= 20) && (wWeaponType < 29))
+	////{	
+	////	return SKILL_AXE;
+	////}else if ((wWeaponType >= 30) && (wWeaponType < 33))
+	////{	
+	////	return SKILL_HAMMER;
+	////}else if ((wWeaponType >= 34) && (wWeaponType < 41))
+	////{	
+	////	return SKILL_STAFF;
+	////}else if (wWeaponType >= 41)
+	////{	
+	////	return SKILL_ARCHERY;
+	////}else if ((wWeaponType == 29) || (wWeaponType == 33))
+	////{	
+	////	return SKILL_LONGSWORD;  // LS LightingBlade || BlackShadow
+	////}
+	////return SKILL_FISHING;
+	return 0;
 }
 
 void CGame::NotifyMsg_AdminInfo(char *Data)
@@ -22720,7 +22724,7 @@ BOOL CGame::_bDraw_OnCreateNewCharacter(char * pName, short msX, short msY, int 
 	PutString(100, 309, MSG_DEXTERITY, RGB(5,5,5));//"Dexterity"
 	PutString(100, 326, MSG_INTELLIGENCE, RGB(5,5,5));//"Intelligence"
 	PutString(100, 343, MSG_MAGIC, RGB(5,5,5));//"Magic"
-	PutString(100, 360, MSG_CHARISMA, RGB(5,5,5));//"Charisma"
+	PutString(100, 360, MSG_RANGE, RGB(5,5,5));//"Range"
 
 	wsprintf(G_cTxt, "%d", m_createStat[STAT_STR]);
 	PutString(204 , 277+ 16*i++ , G_cTxt, RGB(25,35,25));
@@ -23209,7 +23213,7 @@ void CGame::UpdateScreen_OnCreateNewCharacter()
 		PutAlignedString(370, 580, 345 + 16*i++, UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER28);
 	}
 	else if ((msX >= 240+4-175) && (msX <= 268+4) && (msY >= 306+45) && (msY <= 319+45)) {
-		// Charisma
+		// Range
 		i= 0 ;
 		PutAlignedString(370, 580, 345 + 16*i++, UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER29);
 		PutAlignedString(370, 580, 345 + 16*i++, UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER30);
@@ -26818,8 +26822,8 @@ void CGame::NotifyMsgHandler(char * Data)
 		NotifyMsg_PlayerStatus(FALSE, Data);
 		break;
 
-	case NOTIFY_CHARISMA:
-		NotifyMsg_Charisma(Data);
+	case NOTIFY_RANGE:
+		NotifyMsg_Range(Data);
 		break;
 
 	case NOTIFY_ITEMSOLD:
@@ -31014,13 +31018,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 						case 7: // SS
 							if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0)))
 							{	if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0))
-								{	if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
-									{	m_cCommand = OBJECTATTACKMOVE;
+								{	//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
+									//{	
+										m_cCommand = OBJECTATTACKMOVE;
 										wType = _iGetAttackType();
-									}else
+									/*}else
 									{	m_cCommand = OBJECTRUN;
 										GetPlayerTurn();
-									}
+									}*/
 									m_sCommX = m_sMCX;
 									m_sCommY = m_sMCY;
 								}else
@@ -31063,13 +31068,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 							{	if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0))
 									&& (_iGetAttackType() != 5)) // no Dash possible with StormBlade
 								{	if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0))
-									{	if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
-										{	m_cCommand = OBJECTATTACKMOVE;
+									{	//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100)
+										//{	
+											m_cCommand = OBJECTATTACKMOVE;
 											wType = _iGetAttackType();
-										}else
+										/*}else
 										{	m_cCommand = OBJECTRUN;
 											GetPlayerTurn();
-										}
+										}*/
 										m_sCommX = m_sMCX;
 										m_sCommY = m_sMCY;
 									}else
@@ -31099,14 +31105,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 							else {
 								if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0))) {
 									if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0)) {
-										if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
+										//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
 											m_cCommand = OBJECTATTACKMOVE;
 											wType = _iGetAttackType();
-										}
-										else {
-											m_cCommand = OBJECTRUN;
-											GetPlayerTurn();
-										}
+										//}
+										//else {
+											//m_cCommand = OBJECTRUN;
+											//GetPlayerTurn();
+										//}
 										m_sCommX = m_sMCX;
 										m_sCommY = m_sMCY;
 									}
@@ -31138,13 +31144,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 							}else
 							{	if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0))) 
 								{	if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0)) 
-									{	if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) 
-										{	m_cCommand = OBJECTATTACKMOVE;
+									{	//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) 
+										//{	
+											m_cCommand = OBJECTATTACKMOVE;
 											wType = _iGetAttackType();
-										}else 
+										/*}else 
 										{	m_cCommand = OBJECTRUN;
 											GetPlayerTurn();
-										}
+										}*/
 										m_sCommX = m_sMCX;
 										m_sCommY = m_sMCY;
 									}else 
@@ -31173,14 +31180,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 							else {
 								if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0))) {
 									if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0)) {
-										if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
+										//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
 											m_cCommand = OBJECTATTACKMOVE;
 											wType = _iGetAttackType();
-										}
+									/*	}
 										else {
 											m_cCommand = OBJECTRUN;
 											GetPlayerTurn();
-										}
+										}*/
 										m_sCommX = m_sMCX;
 										m_sCommY = m_sMCY;
 									}
@@ -31211,14 +31218,14 @@ CP_SKIPMOUSEBUTTONSTATUS:;
 							else {
 								if (((absX == 2) && (absY == 2)) || ((absX == 0) && (absY == 2)) || ((absX == 2) && (absY == 0))) {
 									if ((m_bShiftPressed || m_bRunningMode) && (m_iSP > 0)) {
-										if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
+										//if (m_cSkillMastery[_iGetWeaponSkillType()] == 100) {
 											m_cCommand = OBJECTATTACKMOVE;
 											wType = _iGetAttackType();
-										}
+									/*	}
 										else {
 											m_cCommand = OBJECTRUN;
 											GetPlayerTurn();
-										}
+										}*/
 										m_sCommX = m_sMCX;
 										m_sCommY = m_sMCY;
 									}
@@ -33014,7 +33021,7 @@ void CGame::DrawDialogBox_LevelUpSetting(short msX, short msY)
 	if ((msX >= sX + 210) && (msX <= sX + 220) && (msY >= sY + 203) && (msY <= sY + 209) && (m_luStat[STAT_MAG] > 0))
 		m_pSprite[SPRID_INTERFACE_ND_GAME4]->PutSpriteFast(sX + 210, sY + 203, 6, dwTime);
 
-	// Charisma
+	// Range
 	PutString(sX + 24, sY + 220, DRAW_DIALOGBOX_LEVELUP_SETTING9, RGB(5,5,5));
 	wsprintf(cTxt, "%d", m_stat[STAT_CHR]);
 	PutString(sX + 109, sY + 220, cTxt, RGB(25,35,25));
@@ -34138,9 +34145,9 @@ void CGame::DrawDialogBox_Magic(short msX, short msY, short msZ)
 	}
 
 	sMagicCircle = m_stDialogBoxInfo[3].sView + 1;
-	if (m_cSkillMastery[SKILL_MAGIC] == 0)
-		dV1 = 1.0f;
-	else dV1 = (double)m_cSkillMastery[SKILL_MAGIC];
+	//if (m_cSkillMastery[SKILL_MAGIC] == 0)
+		dV1 = 100.0f;
+//	else dV1 = (double)m_cSkillMastery[SKILL_MAGIC];
 	dV2 = (double)(dV1 / 100.0f);
 	dV3 = (double)_tmp_iMCProb[sMagicCircle];
 	dV1 = dV2 * dV3;
@@ -37243,7 +37250,7 @@ void CGame::DlgBoxClick_SkillDlg(short msX, short msY)
 
 
 	switch (m_stDialogBoxInfo[26].cMode) {
-	case 1:
+	case SKILL_ALCHEMY:
 		if ((msX >= sX + iAdjX + 60) && (msX <= sX + iAdjX + 153) && (msY >= sY + iAdjY + 175) && (msY <= sY + iAdjY + 195))
 		{	m_stDialogBoxInfo[26].cMode = 2;
 			m_stDialogBoxInfo[26].cStr[0] = 1;
@@ -37254,7 +37261,7 @@ void CGame::DlgBoxClick_SkillDlg(short msX, short msY)
 		}
 		break;
 	// Crafting
-	case 7:
+	case SKILL_CRAFTING:
 		if ((msX >= sX + iAdjX + 60) && (msX <= sX + iAdjX + 153) && (msY >= sY + iAdjY + 175) && (msY <= sY + iAdjY + 195))
 		{	DebugLog("Tag1 DlgBoxClick_SkillDlg");
 			if (m_stDialogBoxInfo[26].sV1 == -1)
@@ -37329,7 +37336,7 @@ void CGame::DlgBoxClick_SkillDlg(short msX, short msY)
 		}	}
 		break;
 
-	case 4:
+	case SKILL_MANUFACTURING:
 		iAdjX = -1 ;
 		iAdjY = -7 ;
 		if (m_pDispBuildItemList[m_stDialogBoxInfo[26].cStr[0]]->m_bBuildEnabled == TRUE)
@@ -37672,7 +37679,7 @@ void CGame::NotifyMsg_CannotSellItem(char * Data)
 	m_bIsItemDisabled[wV1] = FALSE;
 }
 
-void CGame::NotifyMsg_Charisma(char * Data)
+void CGame::NotifyMsg_Range(char * Data)
 {
  DWORD * dwp;
  int  iPrevChar;
@@ -37683,11 +37690,11 @@ void CGame::NotifyMsg_Charisma(char * Data)
 	m_stat[STAT_CHR] = (int)*dwp;
 
 	if (m_stat[STAT_CHR] > iPrevChar)
-	{	wsprintf(cTxt, NOTIFYMSG_CHARISMA_UP, m_stat[STAT_CHR] - iPrevChar);//"
+	{	wsprintf(cTxt, NOTIFYMSG_RANGE_UP, m_stat[STAT_CHR] - iPrevChar);//"
 		AddEventList(cTxt, 10);
 		PlaySound('E', 21, 0);
 	}else
-	{	wsprintf(cTxt, NOTIFYMSG_CHARISMA_DOWN, iPrevChar - m_stat[STAT_CHR]);//"
+	{	wsprintf(cTxt, NOTIFYMSG_RANGE_DOWN, iPrevChar - m_stat[STAT_CHR]);//"
 		AddEventList(cTxt, 10);
 	}
 }
@@ -42048,7 +42055,7 @@ void CGame::DrawDialogBox_ChangeStatsMajestic(short msX, short msY)
 	if ((msX >= sX + 210) && (msX <= sX + 220) && (msY >= sY + 203) && (msY <= sY + 209))
 		m_pSprite[SPRID_INTERFACE_ND_GAME4]->PutSpriteFast(sX + 210, sY + 203, 6, dwTime);
 
-	// Charisma
+	// Range
 	PutString(sX + 24, sY + 220, DRAW_DIALOGBOX_LEVELUP_SETTING9, RGB(5,5,5));
 	wsprintf(cTxt, "%d", m_stat[STAT_CHR]);
 	PutString(sX + 109, sY + 220, cTxt, RGB(25,35,25));
@@ -42177,7 +42184,7 @@ void CGame::DlgBoxClick_ChangeStatsMajestic(short msX, short msY)
 			PlaySound('E', 14, 5);
 		}
 
-		// Charisma UP - Diuuude
+		// Range UP - Diuuude
 		if ((msX >= sX + 195) && (msX <= sX + 205) && (msY >= sY + 222) && (msY <= sY + 228) && (m_luStat[STAT_CHR] < 0)) {
 			if (cStateChange1 == MJSTAT_CHR){
 				cStateChange1 = 0;
@@ -42295,7 +42302,7 @@ void CGame::DlgBoxClick_ChangeStatsMajestic(short msX, short msY)
 			PlaySound('E', 14, 5);
 		}
 
-		// Charisma DOWN - Diuuude
+		// Range DOWN - Diuuude
 		if ((msX >= sX + 210) && (msX <= sX + 220) && (msY >= sY + 222) && (msY <= sY + 228) && (m_stat[STAT_CHR] > 10)) {
 			if (cStateChange1 == 0){
 				cStateChange1 = MJSTAT_CHR;

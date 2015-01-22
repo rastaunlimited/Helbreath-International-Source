@@ -358,7 +358,7 @@ public:
 	void NotifyMsg_PlayerProfile(char * Data);
 	void NotifyMsg_WhisperMode(BOOL bActive, char * Data);
 	void NotifyMsg_PlayerStatus(BOOL bOnGame, char * Data);
-	void NotifyMsg_Charisma(char * Data);
+	void NotifyMsg_Range(char * Data);
 	void NotifyMsg_ItemRepaired(char * Data);
 	void NotifyMsg_RepairItemPrice(char * Data);
 	void NotifyMsg_CannotRepairItem(char * Data);

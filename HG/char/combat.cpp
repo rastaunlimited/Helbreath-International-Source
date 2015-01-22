@@ -29,7 +29,8 @@ bool CheckResistingMagicSuccess(char cAttackerDir, short sTargetH, char cTargetT
 		if (g_clientList[sTargetH]->IsInvincible()) return TRUE;
 
 		cTargetDir = g_clientList[sTargetH]->m_cDir;
-		iTarGetMagicResistRatio = g_clientList[sTargetH]->m_cSkillMastery[SKILL_MAGICRES] +g_clientList[sTargetH]->m_iAddMR; 
+		//iTarGetMagicResistRatio = g_clientList[sTargetH]->m_cSkillMastery[SKILL_MAGICRES] +g_clientList[sTargetH]->m_iAddMR; 
+iTarGetMagicResistRatio = g_clientList[sTargetH]->m_iAddMR; 
 
 		if (g_clientList[sTargetH]->GetMag() > 50) 
 			iTarGetMagicResistRatio += (g_clientList[sTargetH]->GetMag() - 50);
@@ -69,8 +70,8 @@ bool CheckResistingMagicSuccess(char cAttackerDir, short sTargetH, char cTargetT
 	if (iResult <= iDestHitRatio) return FALSE;
 
 	// Resisting Magic
-	if (cTargetType == OWNERTYPE_PLAYER)
-		CalculateSSN_SkillIndex(sTargetH, SKILL_MAGICRES, 1);
+	//if (cTargetType == OWNERTYPE_PLAYER)
+		//CalculateSSN_SkillIndex(sTargetH, SKILL_MAGICRES, 1);
 
 	return TRUE;
 }
@@ -83,7 +84,8 @@ bool checkResistingPoisonSuccess(short sOwnerH, char cOwnerType)
 	switch (cOwnerType) {
 	case OWNERTYPE_PLAYER:
 		if (g_clientList[sOwnerH] == NULL) return FALSE;
-		iResist = g_clientList[sOwnerH]->m_cSkillMastery[SKILL_POISONRES] + g_clientList[sOwnerH]->m_iAddPR;
+		iResist =  g_clientList[sOwnerH]->m_iAddPR;
+		//iResist = g_clientList[sOwnerH]->m_cSkillMastery[SKILL_POISONRES] + g_clientList[sOwnerH]->m_iAddPR;
 		break;
 
 	case OWNERTYPE_NPC:
@@ -95,8 +97,8 @@ bool checkResistingPoisonSuccess(short sOwnerH, char cOwnerType)
 	iResult = dice(1, 100);
 	if (iResult >= iResist) 		return FALSE;
 
-	if (cOwnerType == OWNERTYPE_PLAYER)
-		CalculateSSN_SkillIndex(sOwnerH, SKILL_POISONRES, 1);
+	//if (cOwnerType == OWNERTYPE_PLAYER)
+		//CalculateSSN_SkillIndex(sOwnerH, SKILL_POISONRES, 1);
 
 	return TRUE;
 }
@@ -150,22 +152,13 @@ void CalculateSSN_SkillIndex(int iClientH, short sSkillIndex, int iValue)
 	if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] == 0) return;
 
 	switch (sSkillIndex) {
-	case SKILL_MAGIC:
-	case SKILL_HANDATTACK:
-	case SKILL_ARCHERY:
-	case SKILL_SHORTSWORD:
-	case SKILL_LONGSWORD:
-	case SKILL_FENCING:
-	case SKILL_AXE:
-	case SKILL_HAMMER:
-	case SKILL_STAFF:
+			
+	case SKILL_AGILITY:			
+	case SKILL_PRAYER:			
 	case SKILL_PRETENDCORPSE:
-	case SKILL_MAGICRES:
-	case SKILL_SHIELD:
-	case SKILL_POISONRES:
 		iValue *= iValue*8;
 		break;
-	case SKILL_FARMING:
+	case SKILL_CRAFTING:case SKILL_FARMING:
 	case SKILL_MANUFACTURING:
 	case SKILL_ALCHEMY:
 	case SKILL_MINING:
@@ -186,7 +179,6 @@ void CalculateSSN_SkillIndex(int iClientH, short sSkillIndex, int iValue)
 			switch (sSkillIndex) 
 			{
 			case SKILL_MINING:
-			case SKILL_HANDATTACK:
 			case SKILL_MANUFACTURING:
 				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->GetStr() * 2)) {
 					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
@@ -195,7 +187,10 @@ void CalculateSSN_SkillIndex(int iClientH, short sSkillIndex, int iValue)
 				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
 				break;
 
-			case SKILL_MAGICRES:
+			//case SKILL_MAGICRES:
+			case SKILL_PRETENDCORPSE:
+				case SKILL_FISHING:
+			
 				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->m_iLevel * 2)) {
 					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
 					g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
@@ -203,34 +198,28 @@ void CalculateSSN_SkillIndex(int iClientH, short sSkillIndex, int iValue)
 				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
 				break;
 
-			case SKILL_MAGIC:
-			case SKILL_STAFF:
-				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->GetMag() * 2)) {
-					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
-					g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
-				}
-				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
-				break;
+			////case SKILL_MAGIC:
+			////case SKILL_STAFF:
+			//	if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->GetMag() * 2)) {
+			//		g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
+			//		g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
+			//	}
+			//	else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
+			//	break;
 
-			case SKILL_FISHING:
-			case SKILL_ARCHERY:
-			case SKILL_SHORTSWORD:
-			case SKILL_LONGSWORD:
-			case SKILL_FENCING:
-			case SKILL_AXE:
-			case SKILL_SHIELD:
-			case SKILL_HAMMER:
+			
+		//	case SKILL_DEFENSE:
+			/*
 				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->GetDex() * 2)) {
 					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
 					g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
 				}
 				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
 				break;
-
+*/
 			case SKILL_FARMING:
 			case SKILL_ALCHEMY:
-			case SKILL_15:
-			case SKILL_PRETENDCORPSE:
+				case SKILL_CRAFTING:	
 				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->GetInt() * 2)) {
 					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
 					g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
@@ -238,13 +227,13 @@ void CalculateSSN_SkillIndex(int iClientH, short sSkillIndex, int iValue)
 				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
 				break;
 
-			case SKILL_POISONRES:
+			/*case SKILL_POISONRES:
 				if (g_clientList[iClientH]->m_cSkillMastery[sSkillIndex] > (g_clientList[iClientH]->m_iVit * 2)) {
 					g_clientList[iClientH]->m_cSkillMastery[sSkillIndex]--;
 					g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = iOldSSN;
 				}
 				else g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
-				break;
+				break;*/
 
 			default:
 				g_clientList[iClientH]->m_iSkillSSN[sSkillIndex] = 0;
@@ -350,9 +339,9 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 			iAP_SM = iAP_L    = dice(1, (g_clientList[sAttackerH]->GetStr() / 12));
 			if (iAP_SM <= 0) iAP_SM = 1;
 			if (iAP_L  <= 0) iAP_L  = 1;
-			iAttackerHitRatio = g_clientList[sAttackerH]->m_iHitRatio + g_clientList[sAttackerH]->m_cSkillMastery[SKILL_HANDATTACK];
+			iAttackerHitRatio = g_clientList[sAttackerH]->m_iHitRatio;// + g_clientList[sAttackerH]->m_cSkillMastery[SKILL_HANDATTACK];
 
-			g_clientList[sAttackerH]->m_sUsingWeaponSkill = SKILL_HANDATTACK;
+			//g_clientList[sAttackerH]->m_sUsingWeaponSkill = SKILL_HANDATTACK;
 
 		}
 		else if ((wWeaponType >= 1) && (wWeaponType < 40)) {
@@ -442,7 +431,7 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 			iTemp = (int)(dTmp2 +0.5f);
 			iAP_L += iTemp;
 
-			switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) 
+			/*switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) 
 			{
 			case SKILL_ARCHERY:
 				iAP_SM += (iAP_SM/10); iAP_L += (iAP_L/10);
@@ -466,7 +455,10 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 				iAP_SM += (iAP_SM/5); iAP_L += (iAP_L/5);
 				iAttackerHitRatio +=  50;
 				break;
-			}
+			}*/
+			iAP_SM += (iAP_SM/10); iAP_L += (iAP_L/10);
+				iAttackerHitRatio += 30;
+
 
 			iAttackerHitRatio += 100;
 			iAttackerHitRatio += g_clientList[sAttackerH]->m_iCustomItemValue_Attack;
@@ -475,9 +467,9 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 
 		if (bIsDash == TRUE) {
 
-			iAttackerHitRatio += 20;
+			iAttackerHitRatio += 30;
 
-			switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
+		/*	switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
 			case SKILL_LONGSWORD:  
 				iAP_SM += (iAP_SM/10); iAP_L += (iAP_L/10); 
 				break;
@@ -487,7 +479,7 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 			case SKILL_HAMMER:
 				iAP_SM += (iAP_SM/5); iAP_L += (iAP_L/5);
 				break;
-			}
+			}*/
 		}
 
 		iAttackerHP = g_clientList[sAttackerH]->m_iHP;
@@ -1117,7 +1109,7 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 				}
 
 				if (g_clientList[sTargetH]->m_iDamageAbsorption_Shield > 0) {
-					if (dice(1,100) <= (g_clientList[sTargetH]->m_cSkillMastery[SKILL_SHIELD])) {
+				/*	if (dice(1,100) <= (g_clientList[sTargetH]->m_cSkillMastery[SKILL_SHIELD])) {
 
 						CalculateSSN_SkillIndex(sTargetH, SKILL_SHIELD, 1);
 
@@ -1144,7 +1136,7 @@ int calculateAttackEffect(short sTargetH, char cTargetType, short sAttackerH, ch
 								g_game->ReleaseItemHandler(sTargetH, iTemp, TRUE);  
 							}
 						}
-					}
+					}*/
 				}
 
 				iAP_SM = iAP_SM - (iAP_Abs_Armor + iAP_Abs_Shield);
@@ -1365,18 +1357,19 @@ CAE_SKIPDAMAGEMOVE:;
 							int iProb;
 
 
-							if (cAttackerType == OWNERTYPE_PLAYER) {
-								switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
-								case SKILL_ARCHERY: iProb = 3500; break;
-								case SKILL_LONGSWORD: iProb = 1000; break;
-								case SKILL_FENCING: iProb = 2900; break;
-								case SKILL_AXE: iProb = 2500; break;
-								case SKILL_HAMMER: iProb = 2000; break;
-								case SKILL_STAFF: iProb = 2000; break;
-								default: iProb = 1; break;
-								}
-							}
-							else iProb = 1;
+							//if (cAttackerType == OWNERTYPE_PLAYER) {
+							//	switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
+							//	case SKILL_ARCHERY: iProb = 3500; break;
+							//	case SKILL_LONGSWORD: iProb = 1000; break;
+							//	case SKILL_FENCING: iProb = 2900; break;
+							//	case SKILL_AXE: iProb = 2500; break;
+							//	case SKILL_HAMMER: iProb = 2000; break;
+							//	case SKILL_STAFF: iProb = 2000; break;
+							//	default: iProb = 1; break;
+							//	}
+							//}
+							//else 
+								iProb = 500;//1
 
 							if (dice(1,10000) >= iProb) 
 								g_game->SendEventToNearClient_TypeA(sTargetH, OWNERTYPE_PLAYER, MSGID_EVENT_MOTION, OBJECTDAMAGE, iAP_SM, sAttackerWeapon, NULL);
@@ -1783,9 +1776,9 @@ CAE_SKIPDAMAGEMOVE2:;
 				}
 			}
 			else {
-				if (wWeaponType == 0) {
+				/*if (wWeaponType == 0) {
 					CalculateSSN_SkillIndex(sAttackerH, SKILL_HANDATTACK, 1);
-				}
+				}*/
 			}
 		}
 	}
@@ -1809,35 +1802,35 @@ void EnduStrippingDamage(short sTargetH, short sAttackerH, char cAttackerType, i
 
 	if (cAttackerType	== OWNERTYPE_PLAYER && 
 		(g_clientList[sTargetH]->m_side != g_clientList[sAttackerH]->m_side || g_mapList[g_clientList[sAttackerH]->m_cMapIndex]->m_bIsFightZone)){
-		switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
-		case SKILL_HAMMER:
-			stripChance = 0.25;
-			enduDamage = 20;
-			equiptItem = g_clientList[sAttackerH]->m_sItemEquipmentStatus[EQUIPPOS_TWOHAND];
-			if (equiptItem == -1 || g_clientList[sAttackerH]->m_pItemList[equiptItem] == NULL) break;
+		//switch (g_clientList[sAttackerH]->m_sUsingWeaponSkill) {
+		////case SKILL_HAMMER:
+		//	stripChance = 0.25;
+		//	enduDamage = 20;
+		//	equiptItem = g_clientList[sAttackerH]->m_sItemEquipmentStatus[EQUIPPOS_TWOHAND];
+		//	if (equiptItem == -1 || g_clientList[sAttackerH]->m_pItemList[equiptItem] == NULL) break;
 
-			switch (g_clientList[sAttackerH]->m_pItemList[equiptItem]->m_sIDnum){
-			case ITEM_HAMMER:
-				stripChance = 0.25;
-				enduDamage = 20;
-				break;
-			case ITEM_BHAMMER:
-				stripChance = 0.5; 
-				enduDamage = 25;
-				break;
-			case ITEM_BARBARIANHAMMER:
-				stripChance = 0.625;
-				enduDamage = 30;
-				break;
-			case ITEM_GBHAMMER:
-				stripChance = 0.625; 
-				enduDamage = 35;
-				break;
-			}
-			break;
-		case SKILL_AXE: enduDamage = 3; break;  
-		default: enduDamage = 1; break;  
-		}
+		//	switch (g_clientList[sAttackerH]->m_pItemList[equiptItem]->m_sIDnum){
+		//	case ITEM_HAMMER:
+		//		stripChance = 0.25;
+		//		enduDamage = 20;
+		//		break;
+		//	case ITEM_BHAMMER:
+		//		stripChance = 0.5; 
+		//		enduDamage = 25;
+		//		break;
+		//	case ITEM_BARBARIANHAMMER:
+		//		stripChance = 0.625;
+		//		enduDamage = 30;
+		//		break;
+		//	case ITEM_GBHAMMER:
+		//		stripChance = 0.625; 
+		//		enduDamage = 35;
+		//		break;
+		//	}
+		//	break;
+		////case SKILL_AXE: enduDamage = 3; break;  
+		//default: enduDamage = 1; break;  
+		//}
 	}
 
 	if (!g_clientList[sTargetH]->IsNeutral() && 

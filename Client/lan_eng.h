@@ -122,7 +122,7 @@
 #define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER28	"as well as maximum MP and MP recovery."
 
 #define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER29	"Determine your character's initial"
-#define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER30	"charisma assigned. If CHR is increased"
+#define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER30	"Range assigned. If Range is increased"
 #define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER31	"to a certain amount, you can form a"
 #define	UPDATE_SCREEN_ON_CREATE_NEW_CHARACTER32	"guild. Cost of item purchase is reduced."
 
@@ -918,7 +918,7 @@
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING6	"Dexterity"
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING7	"Intelligence"
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING8	"Magic"
-#define	DRAW_DIALOGBOX_LEVELUP_SETTING9	"Charisma"
+#define	DRAW_DIALOGBOX_LEVELUP_SETTING9	"Range"
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING10	"At level up, your specific stat(s)"
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING11	"will be increased by this setting."
 #define	DRAW_DIALOGBOX_LEVELUP_SETTING12	"Press the OK button when you"
@@ -1024,7 +1024,7 @@
 #define	DRAW_DIALOGBOX_FISHING2	"Probability:"
 
 
-#define	DRAW_DIALOGBOX_GUILDMENU1	"Make a new guild (20 Charisma)"
+#define	DRAW_DIALOGBOX_GUILDMENU1	"Make a new guild (20 Range)"
 #define	DRAW_DIALOGBOX_GUILDMENU4	"Break up your guild"
 #define	DRAW_DIALOGBOX_GUILDMENU7	"Buy a guild admission ticket"
 #define	DRAW_DIALOGBOX_GUILDMENU9	"Buy a guild withdrawal ticket"
@@ -1485,8 +1485,8 @@
 #define	NOTIFYMSG_CANNOT_SELL_ITEM6	"Try again after removing weight off your bag."
 
 
-#define	NOTIFYMSG_CHARISMA_UP	"CHR has been increased by %dpoints."
-#define	NOTIFYMSG_CHARISMA_DOWN	"CHR has been decreased by %dpoints."
+#define	NOTIFYMSG_RANGE_UP	"Range has been increased by %dpoints."
+#define	NOTIFYMSG_RANGE_DOWN	"Range has been decreased by %dpoints."
 
 
 #define	NOTIFYMSG_DROPITEMFIN_ERASEITEM3	"You dropped a %s."
@@ -1925,7 +1925,7 @@
 #define MSG_DEXTERITY		"Dexterity"
 #define MSG_INTELLIGENCE	"Intelligence"
 #define MSG_MAGIC			"Magic"
-#define MSG_CHARISMA		"Charisma"
+#define MSG_RANGE		"Range"
 #define MSG_HITPOINT		"Hit Point"
 #define MSG_MANAPOINT		"Mana Point"
 #define MSG_STAMINARPOINT	"Staminar Point"
