@@ -82,13 +82,13 @@
 #define CHATTIMEOUT_B		500
 #define CHATTIMEOUT_C		2000
 #define MAXITEMS			50
-#define MAXBANKITEMS		121 
+#define MAXBANKITEMS		120 
 #define MAXGUILDSMAN		32
 #define MAXMENUITEMS		140  //v2.15  120 ->140
 #define TEXTDLGMAXLINES		300 //v2.18 3000->300
 
 #define MAXMAGICTYPE		100
-#define MAXSKILLTYPE		24
+#define MAXSKILLTYPE		10
 #define MAXWHETHEROBJECTS	600
 #define MAXBUILDITEMS		100
 #define MAXGAMEMSGS			300
@@ -535,6 +535,7 @@ public:
 	void DisableDialogBox(int iBoxID);
 	void EnableDialogBox(int iBoxID, int cType, int sV1, int sV2, char * pString = NULL);
 	void InitItemList(char * Data);
+	void InitSkillList(char * Data);
 	int _iCheckDlgBoxFocus(short msX, short msY, char cButtonSide);
 	void GetPlayerTurn();
 	BOOL __fastcall DrawObject_OnDead(int indexX, int indexY, int sX, int sY, BOOL bTrans, DWORD dwTime, int msX, int msY);

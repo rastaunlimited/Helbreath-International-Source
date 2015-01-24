@@ -2612,6 +2612,9 @@ void CGame::GameRecvMsgHandler(DWORD dwMsgSize, char * Data)
 		InitItemList(Data);
 		break;
 
+		case MSGID_PLAYERSKILLCONTENTS:
+		InitSkillList(Data);
+		break;
 	case MSGID_NOTIFY:
 		NotifyMsgHandler(Data);
 		break;
@@ -4738,7 +4741,8 @@ void CGame::DlgBoxClick_GuildMenu(short msX, short msY)
 }
 
 void CGame::CreateNewGuildResponseHandler(char * Data)
-{WORD * wpResult;
+{
+	WORD * wpResult;
  	wpResult = (WORD *)(Data + INDEX2_MSGTYPE);
 	switch (*wpResult) {
 	case MSGTYPE_CONFIRM:
@@ -15803,18 +15807,78 @@ void CGame::InitItemList(char * Data)
 		*/
 	}
 
+	
+}
+void CGame::InitSkillList(char * Data)
+{
+	char * cp;
+	short * sp;
+	int i, * ip;
+	WORD * wp;
+
+	cp = (char *)(Data + 6);
+
+	ip   = (int *)cp;
+	m_cSkillMastery[0] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[1] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[2] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[3] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[4] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[5] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[6] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[7] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[8] = *ip;
+	cp += 2;
+	ip   = (int *)cp;
+	m_cSkillMastery[9] = *ip;
+	cp += 2;
 	// Magic, Skill Mastery
 	for (i = 0; i < MAXMAGICTYPE; i++)
-	{	m_cMagicMastery[i] = *cp;
+	{	
+		m_cMagicMastery[i] = *cp;
 		cp++;
 	}
 
-	for (i = 0; i < MAXSKILLTYPE; i++)
-	{	m_cSkillMastery[i] = (unsigned char)*cp;
-		if (m_pSkillCfgList[i] != NULL)
-			m_pSkillCfgList[i]->m_iLevel = (int)*cp;
-		cp++;
-	}
+	//sp = (short *) cp ;
+	//	sSkillIndex = (short) *sp ;
+	//	cp += 2 ;
+	//
+	//	for ( i = 0; i < DEF_MAXSKILLTYPE; i++) {	
+	//		m_pClientList[iClientH]->m_cSkillMastery[i] = 0 ;
+	//		m_pClientList[iClientH]->m_iSkillSSN[i] = 0 ;
+	//	}
+	//
+	//	for ( i = 0; i < sSkillIndex; i++ ) {
+	//
+	//		sp = (short *) cp ;
+	//		sSkillID = (short) *sp ;
+	//		cp += 2 ;
+	//
+	//		sp = (short *) cp ;
+	//		m_pClientList[iClientH]->m_cSkillMastery[sSkillID] = (short) *sp ;
+	//		cp += 2 ;
+	//		 
+	//		ip = (int *) cp ;
+	//		m_pClientList[iClientH]->m_iSkillSSN[sSkillID] = (int) *ip ;
+	//		cp += 4 ;
+	//}
+	//	
 }
 
 void CGame::DrawDialogBox_GuideMap(short msX, short msY, char cLB)
@@ -40042,6 +40106,7 @@ void CGame::MotionEventHandler(char * Data)
 	wp   = (WORD *)(Data + INDEX2_MSGTYPE);
 	wEventType = *wp;
 	cp = (char *)(Data + INDEX2_MSGTYPE + 2);
+
 	wp = (WORD *)cp;
 	wObjectID = *wp;
 	cp += 2;

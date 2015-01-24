@@ -3464,7 +3464,7 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 	bool    bRet, bFlag;
 	char  * pBuffer = NULL;
 	short * sp;
-	
+
 	CClient * player = m_pClientList[iClientH];
 
 	if (!player) return;
@@ -3477,11 +3477,11 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 	memcpy(cName, cp, 10);
 	cp += 10;
 
-	//player->m_cAccountStatus = *cp;
-	cp++;
+	////player->m_cAccountStatus = *cp;
+	//cp++;
 
-	cGuildStatus = *cp;
-	cp++;
+	//cGuildStatus = *cp;
+	//cp++;
 
 	player->m_iHitRatio		= 0;
 	player->m_iDefenseRatio	= 0;
@@ -3504,10 +3504,10 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 		return;
 	}
 
-		int iTotalPoints = 0;
+	int iTotalPoints = 0;
 	for (i = 0; i <	MAXSKILLTYPE; i++) 
 		iTotalPoints += m_pClientList[iClientH]->m_cSkillMastery[i];
-		if ((iTotalPoints-21 > m_sCharSkillLimit) && (m_pClientList[iClientH]->m_iAdminUserLevel == 0)) {
+	if ((iTotalPoints-21 > m_sCharSkillLimit) && (m_pClientList[iClientH]->m_iAdminUserLevel == 0)) {
 		wsprintf(g_cTxt, "(HACK) Packet Editing: (%s) Player: (%s) - has more than allowed skill points (%d).", m_pClientList[iClientH]->m_cIPaddress, m_pClientList[iClientH]->m_cCharName, iTotalPoints);
 		PutLogFileList(g_cTxt);
 		DeleteClient(iClientH, FALSE, TRUE, TRUE, TRUE);
@@ -3719,9 +3719,65 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 	case XSOCKEVENT_SOCKETCLOSED:
 		DeleteClient(iClientH, TRUE, TRUE);
 		if(pBuffer != NULL) delete[] pBuffer;
-	return;
-}
+		return;
+	}
 
+	ZeroMemory(pBuffer, sizeof(pBuffer));
+	ZeroMemory(cp, sizeof(cp));
+
+	ZeroMemory(cData, sizeof(cData));
+	dwp  = (DWORD *)(pBuffer);
+	*dwp = MSGID_PLAYERSKILLCONTENTS;
+
+	cp = (char *)(pBuffer + INDEX2_MSGTYPE + 2);
+
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[0];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[1];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[2];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[3];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[4];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[5];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[6];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[7];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[8];
+	cp += 2;
+	ip   = (int *)cp;
+	*ip  = m_pClientList[iClientH]->m_cSkillMastery[9];
+	cp += 2;
+
+	for (i = 0; i < MAXMAGICTYPE; i++) {
+		*cp = m_pClientList[iClientH]->m_cMagicMastery[i];
+		cp++;
+	}
+
+	iRet = m_pClientList[iClientH]->m_pXSock->iSendMsg(pBuffer, 6 + 20 + 100);
+
+	switch (iRet) {
+	case XSOCKEVENT_QUENEFULL:
+	case XSOCKEVENT_SOCKETERROR:
+	case XSOCKEVENT_CRITICALERROR:
+	case XSOCKEVENT_SOCKETCLOSED:
+		DeleteClient(iClientH, TRUE, TRUE);
+		if(pBuffer != NULL) delete[] pBuffer;
+		return;
+	}
 	dwp  = (DWORD *)(pBuffer + INDEX4_MSGID);
 	*dwp = MSGID_PLAYERITEMLISTCONTENTS;
 	wp   = (WORD *) (pBuffer + INDEX2_MSGTYPE);
@@ -3753,6 +3809,7 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 	CalcTotalItemEffect(iClientH, -1, FALSE);
 
 	cp = (char *)(pBuffer + INDEX2_MSGTYPE + 2);
+
 	*cp = iTotalItemA;
 	cp++;
 
@@ -3864,17 +3921,7 @@ void CGame::InitPlayerData(int iClientH, char * pData, DWORD dwSize)
 		*/
 	}
 
-	for (i = 0; i < MAXMAGICTYPE; i++) {
-		*cp = m_pClientList[iClientH]->m_cMagicMastery[i];
-		cp++;
-	}
-
-	for (i = 0; i < MAXSKILLTYPE; i++) {
-		*cp = m_pClientList[iClientH]->m_cSkillMastery[i];
-		cp++;
-	}
-
-	iRet = m_pClientList[iClientH]->m_pXSock->iSendMsg(pBuffer, 6 + 1 + iTotalItemA*44 + iTotalItemB*43 + MAXMAGICTYPE + MAXSKILLTYPE);
+	iRet = m_pClientList[iClientH]->m_pXSock->iSendMsg(pBuffer, 6 + iTotalItemA*44 + iTotalItemB*43);//44 //43
 	switch (iRet) {
 	case XSOCKEVENT_QUENEFULL:
 	case XSOCKEVENT_SOCKETERROR:
@@ -4529,14 +4576,40 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 	bool   IsItemEquipped;
 	CItem * item;
 	WORD   BankItemIndex, TotalSkillPoints, sTmpType, sTmpAppr1;
-	static long charIndexEnd = 449;
+	static long charIndexEnd = 751;
 
 	iNotUsedItemPrice = 0;
-
+	//bGetOffsetValue = +1
+	//wGetOffsetValue = +2
+	//dwGetOffsetValue = +4
 	if(m_pClientList[iClientH] == NULL) return FALSE;
+	m_pClientList[iClientH]->m_dwCharID = dwGetOffsetValue(pData, 0);
+	m_pClientList[iClientH]->m_sCharIDnum1 = (short)dwGetOffsetValue(pData, 4);
+	m_pClientList[iClientH]->m_sCharIDnum2 = (short)dwGetOffsetValue(pData, 8);
+	m_pClientList[iClientH]->m_sCharIDnum3 = (short)dwGetOffsetValue(pData, 12);
+	m_pClientList[iClientH]->m_iLevel = wGetOffsetValue(pData, 16);
+	m_pClientList[iClientH]->SetStr( bGetOffsetValue(pData, 18), false );
+	m_pClientList[iClientH]->m_iVit = bGetOffsetValue(pData, 19);
+	m_pClientList[iClientH]->SetDex( bGetOffsetValue(pData, 20) );
+	m_pClientList[iClientH]->SetInt( bGetOffsetValue(pData, 21), false );
+	m_pClientList[iClientH]->SetMag( bGetOffsetValue(pData, 22) );
+	m_pClientList[iClientH]->m_iRange = bGetOffsetValue(pData, 23);
+	m_pClientList[iClientH]->m_iLuck = bGetOffsetValue(pData, 24);
+	m_pClientList[iClientH]->m_iExp = dwGetOffsetValue(pData, 25);
+	m_pClientList[iClientH]->m_cSex = (Sex)bGetOffsetValue(pData, 29);
+	m_pClientList[iClientH]->m_cSkin = bGetOffsetValue(pData, 30);
+	m_pClientList[iClientH]->m_cHairStyle = bGetOffsetValue(pData, 31);
+	m_pClientList[iClientH]->m_cHairColor = bGetOffsetValue(pData, 32);
+	m_pClientList[iClientH]->m_cUnderwear = bGetOffsetValue(pData, 33);
+	//m_pClientList[iClientH]->ApprColor = Retrive32DWordValue(cp, 34);
+	//m_pClientList[iClientH]->Appr1 = Retrive16WordValue(cp, 38);
+	//m_pClientList[iClientH]->Appr2 = Retrive16WordValue(cp, 42);
+	//m_pClientList[iClientH]->Appr3 = Retrive16WordValue(cp, 46);
+	//m_pClientList[iClientH]->Appr4 = Retrive16WordValue(cp, 50);
+	ZeroMemory(m_pClientList[iClientH]->m_cLocation, sizeof(m_pClientList[iClientH]->m_cLocation));
+	SafeCopy(m_pClientList[iClientH]->m_cLocation, pData+54, 10);
 	ZeroMemory(m_pClientList[iClientH]->m_cMapName, sizeof(m_pClientList[iClientH]->m_cMapName));
-	SafeCopy(m_pClientList[iClientH]->m_cMapName, pData, 10);
-
+	SafeCopy(m_pClientList[iClientH]->m_cMapName, pData+64, 10);
 	m_pClientList[iClientH]->m_cMapIndex = (char) iGetMapIndex(m_pClientList[iClientH]->m_cMapName);
 	if (m_pClientList[iClientH]->m_cMapIndex == -1)
 	{
@@ -4544,94 +4617,78 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 		PutLogList(cTxt);
 		return FALSE;
 	}
-	m_pClientList[iClientH]->m_sX = (short)wGetOffsetValue(pData, 10);
-	m_pClientList[iClientH]->m_sY = (short)wGetOffsetValue(pData, 12);
-	m_pClientList[iClientH]->m_cSex = (Sex)bGetOffsetValue(pData, 14);
-	m_pClientList[iClientH]->m_cSkin = bGetOffsetValue(pData, 15);
-	m_pClientList[iClientH]->m_cHairStyle = bGetOffsetValue(pData, 16);
-	m_pClientList[iClientH]->m_cHairColor = bGetOffsetValue(pData, 17);
-	m_pClientList[iClientH]->m_cUnderwear = bGetOffsetValue(pData, 18);
-	ZeroMemory(m_pClientList[iClientH]->m_cGuildName, sizeof(m_pClientList[iClientH]->m_cGuildName));
-	SafeCopy(m_pClientList[iClientH]->m_cGuildName, pData+19, 20);
-	m_pClientList[iClientH]->m_iGuildRank = (signed char)bGetOffsetValue(pData, 39);
-	m_pClientList[iClientH]->m_iHP = dwGetOffsetValue(pData, 40);
-	m_pClientList[iClientH]->m_iLevel = wGetOffsetValue(pData, 44);
-	m_pClientList[iClientH]->SetStr( bGetOffsetValue(pData, 46), false );
-	m_pClientList[iClientH]->m_iVit = bGetOffsetValue(pData, 47);
-	m_pClientList[iClientH]->SetDex( bGetOffsetValue(pData, 48) );
-	m_pClientList[iClientH]->SetInt( bGetOffsetValue(pData, 49), false );
-	m_pClientList[iClientH]->SetMag( bGetOffsetValue(pData, 50) );
-	m_pClientList[iClientH]->m_iRange = bGetOffsetValue(pData, 51);
-	m_pClientList[iClientH]->m_iLuck = bGetOffsetValue(pData, 52);
-	m_pClientList[iClientH]->m_iExp = dwGetOffsetValue(pData, 53);
-	for (i = 0; i < MAXMAGICTYPE; i++) m_pClientList[iClientH]->m_cMagicMastery[i] = bGetOffsetValue(pData, 57+i) - 48;
-	ZeroMemory(m_pClientList[iClientH]->m_cLocation, sizeof(m_pClientList[iClientH]->m_cLocation));
-	SafeCopy(m_pClientList[iClientH]->m_cLocation, pData+181, 10);
-	//if (memcmp(m_pClientList[iClientH]->m_cLocation+3,"hunter",6) == 0) m_pClientList[iClientH]->m_bIsPlayerCivil = TRUE;
-	m_pClientList[iClientH]->m_iMP = dwGetOffsetValue(pData, 191);
-	m_pClientList[iClientH]->m_iSP = dwGetOffsetValue(pData, 195);
-	m_pClientList[iClientH]->m_iLU_Pool = bGetOffsetValue(pData, 199);
-	m_pClientList[iClientH]->m_iEnemyKillCount = dwGetOffsetValue(pData, 200);
-	m_pClientList[iClientH]->m_iPKCount = (int)dwGetOffsetValue(pData, 204);
-	m_pClientList[iClientH]->m_iRewardGold = dwGetOffsetValue(pData, 208);
-	for(BYTE b = 0; b < 24; b++)
-	{
-		m_pClientList[iClientH]->m_cSkillMastery[b] = bGetOffsetValue(pData, (157+b));
-		m_pClientList[iClientH]->m_iSkillSSN[b] = dwGetOffsetValue(pData, (212+(b*4)));
-	}
-	m_pClientList[iClientH]->m_iHungerStatus = bGetOffsetValue(pData, 312);
-	m_pClientList[iClientH]->m_iAdminUserLevel = bGetOffsetValue(pData, 313);
-	m_pClientList[iClientH]->m_iTimeLeft_ShutUp = dwGetOffsetValue(pData, 314);
-	m_pClientList[iClientH]->m_iTimeLeft_Rating = dwGetOffsetValue(pData, 318);
-	m_pClientList[iClientH]->m_reputation = (int)dwGetOffsetValue(pData, 322);
-	m_pClientList[iClientH]->m_iGuildGUID = (short)wGetOffsetValue(pData, 326);
-	m_pClientList[iClientH]->m_iDownSkillIndex = (signed char)bGetOffsetValue(pData, 330);
-	m_pClientList[iClientH]->m_dwCharID = dwGetOffsetValue(pData, 331);
-	m_pClientList[iClientH]->m_sCharIDnum1 = (short)dwGetOffsetValue(pData, 335);
-	m_pClientList[iClientH]->m_sCharIDnum2 = (short)dwGetOffsetValue(pData, 339);
-	m_pClientList[iClientH]->m_sCharIDnum3 = (short)dwGetOffsetValue(pData, 343);
+	m_pClientList[iClientH]->m_sX = (short)wGetOffsetValue(pData, 74);
+	m_pClientList[iClientH]->m_sY = (short)wGetOffsetValue(pData, 76);
+	m_pClientList[iClientH]->m_iContribution = dwGetOffsetValue(pData, 78);
+	m_pClientList[iClientH]->m_iSpecialAbilityTime = dwGetOffsetValue(pData, 82);
+	ZeroMemory(m_pClientList[iClientH]->m_cLockedMapName, sizeof(m_pClientList[iClientH]->m_cLockedMapName));
+	SafeCopy(m_pClientList[iClientH]->m_cLockedMapName, pData+86, 10);
+	m_pClientList[iClientH]->m_iLockedMapTime = dwGetOffsetValue(pData, 96);
+	//LastSaveDate
 	ZeroMemory(OriginBlockDate, sizeof(OriginBlockDate));
-	SafeCopy(OriginBlockDate, pData+347, 20);
+	SafeCopy(OriginBlockDate, pData+100, 20);
 	char seps[] = " :-";
 	StrTok pStrTok(new CStrTok(OriginBlockDate, seps));
 	m_pClientList[iClientH]->m_iPenaltyBlockYear = atoi(pStrTok->pGet());
 	m_pClientList[iClientH]->m_iPenaltyBlockMonth = atoi(pStrTok->pGet());
 	m_pClientList[iClientH]->m_iPenaltyBlockDay = atoi(pStrTok->pGet());
-	m_pClientList[iClientH]->m_iQuest = wGetOffsetValue(pData, 367);
-	m_pClientList[iClientH]->m_iCurQuestCount = wGetOffsetValue(pData, 369);
-	m_pClientList[iClientH]->m_iQuestRewardType = (sWORD)wGetOffsetValue(pData, 371);
-	m_pClientList[iClientH]->m_iQuestRewardAmount = dwGetOffsetValue(pData, 373);
-	m_pClientList[iClientH]->m_iContribution = dwGetOffsetValue(pData, 377);
-	m_pClientList[iClientH]->m_iQuestID = dwGetOffsetValue(pData, 381);
-	m_pClientList[iClientH]->m_bIsQuestCompleted = bGetOffsetValue(pData, 385) ? TRUE : FALSE;
-	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = dwGetOffsetValue(pData, 386);
-	m_pClientList[iClientH]->m_iTimeLeft_FirmStamina = dwGetOffsetValue(pData, 390);
-	m_pClientList[iClientH]->m_iSpecialEventID = dwGetOffsetValue(pData, 394);
-	m_pClientList[iClientH]->m_iSuperAttackLeft = wGetOffsetValue(pData, 398);
-	m_pClientList[iClientH]->m_iFightzoneNumber = bGetOffsetValue(pData, 400);
-	m_pClientList[iClientH]->m_iReserveTime = dwGetOffsetValue(pData, 401);
-	m_pClientList[iClientH]->m_iFightZoneTicketNumber = bGetOffsetValue(pData, 405);
-	m_pClientList[iClientH]->m_iSpecialAbilityTime = dwGetOffsetValue(pData, 406);
-	m_pClientList[iClientH]->m_iWarContribution = dwGetOffsetValue(pData, 410);
-	ZeroMemory(m_pClientList[iClientH]->m_cLockedMapName, sizeof(m_pClientList[iClientH]->m_cLockedMapName));
-	SafeCopy(m_pClientList[iClientH]->m_cLockedMapName, pData+414, 10);
-	m_pClientList[iClientH]->m_iLockedMapTime = dwGetOffsetValue(pData, 424);
-	m_pClientList[iClientH]->m_iCrusadeDuty = bGetOffsetValue(pData, 428);
-	m_pClientList[iClientH]->m_iConstructionPoint = dwGetOffsetValue(pData, 429);
-	m_pClientList[iClientH]->m_dwCrusadeGUID = dwGetOffsetValue(pData, 433);
-	m_pClientList[iClientH]->m_iDeadPenaltyTime = dwGetOffsetValue(pData, 437);
-	m_pClientList[iClientH]->m_iPartyID = dwGetOffsetValue(pData, 441);
-	m_pClientList[iClientH]->m_iGizonItemUpgradeLeft = wGetOffsetValue(pData, 445);
-	m_pClientList[iClientH]->m_elo = wGetOffsetValue(pData, charIndexEnd-2);
-	
+	ZeroMemory(m_pClientList[iClientH]->m_cGuildName, sizeof(m_pClientList[iClientH]->m_cGuildName));
+	SafeCopy(m_pClientList[iClientH]->m_cGuildName, pData+120, 20);
+	m_pClientList[iClientH]->m_iGuildGUID = (short)wGetOffsetValue(pData, 140);
+	m_pClientList[iClientH]->m_iGuildRank = (signed char)bGetOffsetValue(pData, 142);
+	m_pClientList[iClientH]->m_iFightzoneNumber = bGetOffsetValue(pData, 143);
+	m_pClientList[iClientH]->m_iReserveTime = dwGetOffsetValue(pData, 144);
+	m_pClientList[iClientH]->m_iFightZoneTicketNumber = bGetOffsetValue(pData, 148);
+	m_pClientList[iClientH]->m_iQuest = wGetOffsetValue(pData, 149);
+	m_pClientList[iClientH]->m_iQuestID = dwGetOffsetValue(pData, 151);
+	m_pClientList[iClientH]->m_iCurQuestCount = wGetOffsetValue(pData, 155);
+	m_pClientList[iClientH]->m_iQuestRewardType = (sWORD)wGetOffsetValue(pData, 157);
+	m_pClientList[iClientH]->m_iQuestRewardAmount = dwGetOffsetValue(pData, 159);
+	m_pClientList[iClientH]->m_bIsQuestCompleted = bGetOffsetValue(pData, 163) ? TRUE : FALSE;
+	m_pClientList[iClientH]->m_iSpecialEventID = dwGetOffsetValue(pData, 164);
+	m_pClientList[iClientH]->m_iWarContribution = dwGetOffsetValue(pData, 168);
+	m_pClientList[iClientH]->m_iCrusadeDuty = bGetOffsetValue(pData, 172);
+	m_pClientList[iClientH]->m_dwCrusadeGUID = dwGetOffsetValue(pData, 173);
+	m_pClientList[iClientH]->m_iConstructionPoint = dwGetOffsetValue(pData, 177);
+	m_pClientList[iClientH]->m_reputation = (int)dwGetOffsetValue(pData, 181);
+	m_pClientList[iClientH]->m_iHP = dwGetOffsetValue(pData, 185);
+	m_pClientList[iClientH]->m_iMP = dwGetOffsetValue(pData, 189);
+	m_pClientList[iClientH]->m_iSP = dwGetOffsetValue(pData, 193);
+	m_pClientList[iClientH]->m_iEnemyKillCount = dwGetOffsetValue(pData, 197);
+	m_pClientList[iClientH]->m_iPKCount = (int)dwGetOffsetValue(pData, 201);
+	m_pClientList[iClientH]->m_iRewardGold = dwGetOffsetValue(pData, 205);
+	m_pClientList[iClientH]->m_iDownSkillIndex = (signed char)bGetOffsetValue(pData, 209);
+	m_pClientList[iClientH]->m_iHungerStatus = bGetOffsetValue(pData, 210);
+	m_pClientList[iClientH]->m_iSuperAttackLeft = wGetOffsetValue(pData, 211);
+	m_pClientList[iClientH]->m_iTimeLeft_ShutUp = dwGetOffsetValue(pData, 213);
+	m_pClientList[iClientH]->m_iTimeLeft_Rating = dwGetOffsetValue(pData, 217);
+	m_pClientList[iClientH]->m_iTimeLeft_ForceRecall = dwGetOffsetValue(pData, 221);
+	m_pClientList[iClientH]->m_iTimeLeft_FirmStamina = dwGetOffsetValue(pData, 225);
+	m_pClientList[iClientH]->m_iDeadPenaltyTime = dwGetOffsetValue(pData, 229);
+	m_pClientList[iClientH]->m_iPartyID = dwGetOffsetValue(pData, 233);
+	m_pClientList[iClientH]->m_iGizonItemUpgradeLeft = wGetOffsetValue(pData, 237);
+	m_pClientList[iClientH]->m_elo = wGetOffsetValue(pData, 239);
+	//m_bIsBankModified +1
+	m_pClientList[iClientH]->m_iAdminUserLevel = bGetOffsetValue(pData, 242);
+	for (i = 0; i < MAXMAGICTYPE; i++) 
+		m_pClientList[iClientH]->m_cMagicMastery[i] = bGetOffsetValue(pData, 243+i);
+	ZeroMemory(m_pClientList[iClientH]->m_cProfile, sizeof(m_pClientList[iClientH]->m_cProfile));
+	SafeCopy(m_pClientList[iClientH]->m_cProfile, pData+343, 255);
+
+	for(BYTE b = 0; b < 10; b++)
+	{
+		m_pClientList[iClientH]->m_cSkillMastery[b] = bGetOffsetValue(pData, (598+b));//+55
+		m_pClientList[iClientH]->m_iSkillSSN[b] = dwGetOffsetValue(pData, (653+(b*4)));//+100
+	}
+
 	for (i = 0; i < MAXITEMEQUIPPOS; i++) m_pClientList[iClientH]->m_sItemEquipmentStatus[i] = -1;
 	for (i = 0; i < MAXITEMS; i++) m_pClientList[iClientH]->m_bIsItemEquipped[i] = FALSE;
 	NItems = bGetOffsetValue(pData, charIndexEnd);
 	NBankItems = bGetOffsetValue(pData, (charIndexEnd+1 + (NItems*64)+1));
 	if(NItems > MAXITEMS || NBankItems > MAXBANKITEMS) return FALSE;
 	if(NItems > 0)
-		for(BYTE b = 0; b < NItems; b++)
-		{
+
+		for	(BYTE b = 0; b < NItems; b++) {
 			WORD IndexForItem = (charIndexEnd+1 + (b*64));
 			ZeroMemory(ItemName, sizeof(ItemName));
 			SafeCopy(ItemName, pData+IndexForItem, 20);
@@ -4702,7 +4759,7 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 				PutLogFileList(cTxt, ERROR_LOGFILE);
 				item->m_wCurLifeSpan = 1;
 			}
-			
+
 			if (item->m_cItemType == ITEMTYPE_NOTUSED)
 			{
 				iNotUsedItemPrice += item->m_wPrice;
@@ -4802,96 +4859,93 @@ bool CGame::_bDecodePlayerDatafileContents(int iClientH, char * pData, DWORD dwS
 					SAFEDELETE(m_pClientList[iClientH]->m_pItemInBankList[b]);
 				}
 			}
-		WORD InfoSize = (BankItemIndex +(NBankItems*59)+1);
-		ZeroMemory(m_pClientList[iClientH]->m_cProfile, sizeof(m_pClientList[iClientH]->m_cProfile));
-		SafeCopy(m_pClientList[iClientH]->m_cProfile, pData+InfoSize, strlen(pData+InfoSize));
 
-		bool bRet = m_pMapList[m_pClientList[iClientH]->m_cMapIndex]->bIsValidLoc(m_pClientList[iClientH]->m_sX, m_pClientList[iClientH]->m_sY);
-		if(bRet == FALSE)
-		{
-			if ((m_pClientList[iClientH]->m_sX != -1) || (m_pClientList[iClientH]->m_sY != -1))
+			bool bRet = m_pMapList[m_pClientList[iClientH]->m_cMapIndex]->bIsValidLoc(m_pClientList[iClientH]->m_sX, m_pClientList[iClientH]->m_sY);
+			if(bRet == FALSE)
 			{
-				ZeroMemory(cTxt, sizeof(cTxt));
-				wsprintf(cTxt, "Invalid location error! %s (%d, %d)", m_pClientList[iClientH]->m_cCharName, m_pClientList[iClientH]->m_sX, m_pClientList[iClientH]->m_sY);
-				PutLogFileList(cTxt, ERROR_LOGFILE);
-				return FALSE;
+				if ((m_pClientList[iClientH]->m_sX != -1) || (m_pClientList[iClientH]->m_sY != -1))
+				{
+					ZeroMemory(cTxt, sizeof(cTxt));
+					wsprintf(cTxt, "Invalid location error! %s (%d, %d)", m_pClientList[iClientH]->m_cCharName, m_pClientList[iClientH]->m_sX, m_pClientList[iClientH]->m_sY);
+					PutLogFileList(cTxt, ERROR_LOGFILE);
+					return FALSE;
+				}
 			}
-		}
-		
-		if(!m_pClientList[iClientH]->IsGM())
-		{
-			//if((m_pClientList[iClientH]->m_iLU_Pool < 0) || (m_pClientList[iClientH]->m_iLU_Pool > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseStr() < 10) || (m_pClientList[iClientH]->GetBaseStr() > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseDex() < 10) || (m_pClientList[iClientH]->GetBaseDex() > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->m_iVit < 10) || (m_pClientList[iClientH]->m_iVit > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseInt() < 10) || (m_pClientList[iClientH]->GetBaseInt() > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->GetBaseMag() < 10) || (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)) return FALSE;
-			if((m_pClientList[iClientH]->m_iRange < 10) || (m_pClientList[iClientH]->m_iRange > m_sCharStatLimit)) return FALSE;
-			//if((m_pClientList[iClientH]->m_cAccountStatus != 2) && (m_pClientList[iClientH]->m_iLevel > LEVELLIMIT)) return FALSE;
-		}
-		if((m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cCharName) == FALSE) || (m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cAccountName) == FALSE)) return FALSE;
-		if(m_pClientList[iClientH]->m_iPenaltyBlockYear != 0 && !IsDatePast(OriginBlockDate)) return FALSE;
-		if(m_pClientList[iClientH]->m_iReserveTime != 0)
-		{
-			SYSTEMTIME SysTime;
-			GetLocalTime(&SysTime);
-			__int64 iDateSum1 = (__int64)m_pClientList[iClientH]->m_iReserveTime;
-			__int64 iDateSum2 = (__int64)(SysTime.wMonth*10000 + SysTime.wDay*100 + SysTime.wHour);
-			if(iDateSum2 >= iDateSum1)
+
+			if(!m_pClientList[iClientH]->IsGM())
 			{
-				SendNotifyMsg(NULL, i, NOTIFY_FIGHTZONERESERVE, -2, NULL, NULL, NULL);
-				m_pClientList[iClientH]->m_iFightzoneNumber = 0;
-				m_pClientList[iClientH]->m_iReserveTime = 0;
-				m_pClientList[iClientH]->m_iFightZoneTicketNumber = 0;
+				//if((m_pClientList[iClientH]->m_iLU_Pool < 0) || (m_pClientList[iClientH]->m_iLU_Pool > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->GetBaseStr() < 10) || (m_pClientList[iClientH]->GetBaseStr() > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->GetBaseDex() < 10) || (m_pClientList[iClientH]->GetBaseDex() > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->m_iVit < 10) || (m_pClientList[iClientH]->m_iVit > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->GetBaseInt() < 10) || (m_pClientList[iClientH]->GetBaseInt() > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->GetBaseMag() < 10) || (m_pClientList[iClientH]->GetBaseMag() > m_sCharStatLimit)) return FALSE;
+				if((m_pClientList[iClientH]->m_iRange < 10) || (m_pClientList[iClientH]->m_iRange > m_sCharStatLimit)) return FALSE;
+				//if((m_pClientList[iClientH]->m_cAccountStatus != 2) && (m_pClientList[iClientH]->m_iLevel > LEVELLIMIT)) return FALSE;
 			}
-		}
-		if(m_pClientList[iClientH]->m_iAdminUserLevel < 0) m_pClientList[iClientH]->m_iAdminUserLevel = 0;
-		if(m_pClientList[iClientH]->m_cSex == MALE) sTmpType = 1;
-		else if(m_pClientList[iClientH]->m_cSex == FEMALE) sTmpType = 4;
-		switch (m_pClientList[iClientH]->m_cSkin) {
-		case 1:
-			break;
-		case 2:
-			sTmpType += 1;
-			break;
-		case 3:
-			sTmpType += 2;
-			break;
-		}
-		if(m_pClientList[iClientH]->m_iAdminUserLevel >= 10) sTmpType = m_pClientList[iClientH]->m_iAdminUserLevel;
-		sTmpAppr1 = (m_pClientList[iClientH]->m_cHairStyle << 8) | (m_pClientList[iClientH]->m_cHairColor << 4) | (m_pClientList[iClientH]->m_cUnderwear);
+			if((m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cCharName) == FALSE) || (m_Misc.bCheckValidName(m_pClientList[iClientH]->m_cAccountName) == FALSE)) return FALSE;
+			if(m_pClientList[iClientH]->m_iPenaltyBlockYear != 0 && !IsDatePast(OriginBlockDate)) return FALSE;
+			if(m_pClientList[iClientH]->m_iReserveTime != 0)
+			{
+				SYSTEMTIME SysTime;
+				GetLocalTime(&SysTime);
+				__int64 iDateSum1 = (__int64)m_pClientList[iClientH]->m_iReserveTime;
+				__int64 iDateSum2 = (__int64)(SysTime.wMonth*10000 + SysTime.wDay*100 + SysTime.wHour);
+				if(iDateSum2 >= iDateSum1)
+				{
+					SendNotifyMsg(NULL, i, NOTIFY_FIGHTZONERESERVE, -2, NULL, NULL, NULL);
+					m_pClientList[iClientH]->m_iFightzoneNumber = 0;
+					m_pClientList[iClientH]->m_iReserveTime = 0;
+					m_pClientList[iClientH]->m_iFightZoneTicketNumber = 0;
+				}
+			}
+			if(m_pClientList[iClientH]->m_iAdminUserLevel < 0) m_pClientList[iClientH]->m_iAdminUserLevel = 0;
+			if(m_pClientList[iClientH]->m_cSex == MALE) sTmpType = 1;
+			else if(m_pClientList[iClientH]->m_cSex == FEMALE) sTmpType = 4;
+			switch (m_pClientList[iClientH]->m_cSkin) {
+			case 1:
+				break;
+			case 2:
+				sTmpType += 1;
+				break;
+			case 3:
+				sTmpType += 2;
+				break;
+			}
+			if(m_pClientList[iClientH]->m_iAdminUserLevel >= 10) sTmpType = m_pClientList[iClientH]->m_iAdminUserLevel;
+			sTmpAppr1 = (m_pClientList[iClientH]->m_cHairStyle << 8) | (m_pClientList[iClientH]->m_cHairColor << 4) | (m_pClientList[iClientH]->m_cUnderwear);
 
-		m_pClientList[iClientH]->m_sType  = sTmpType;
-		m_pClientList[iClientH]->m_sAppr1 = sTmpAppr1;
+			m_pClientList[iClientH]->m_sType  = sTmpType;
+			m_pClientList[iClientH]->m_sAppr1 = sTmpAppr1;
 
-		iCalcTotalWeight(iClientH);
-		TotalSkillPoints = 0;
-		for(int b = 0; b < 24; b++) TotalSkillPoints += m_pClientList[iClientH]->m_cSkillMastery[b];
+			iCalcTotalWeight(iClientH);
+			TotalSkillPoints = 0;
+			for(int b = 0; b < 24; b++) TotalSkillPoints += m_pClientList[iClientH]->m_cSkillMastery[b];
 
-		if (m_pClientList[iClientH]->m_sCharIDnum1 == 0) {
-			int _i, _iTemp1, _iTemp2;
-			short _sID1, _sID2, _sID3;
+			if (m_pClientList[iClientH]->m_sCharIDnum1 == 0) {
+				int _i, _iTemp1, _iTemp2;
+				short _sID1, _sID2, _sID3;
 
-			_iTemp1 = 1;
-			_iTemp2 = 1;
-			for (_i = 0; _i < 10; _i++) {
-				_iTemp1 += m_pClientList[iClientH]->m_cCharName[_i];
-				_iTemp2 += abs(m_pClientList[iClientH]->m_cCharName[_i] ^ m_pClientList[iClientH]->m_cCharName[_i]);
+				_iTemp1 = 1;
+				_iTemp2 = 1;
+				for (_i = 0; _i < 10; _i++) {
+					_iTemp1 += m_pClientList[iClientH]->m_cCharName[_i];
+					_iTemp2 += abs(m_pClientList[iClientH]->m_cCharName[_i] ^ m_pClientList[iClientH]->m_cCharName[_i]);
+				}
+
+				_sID1 = (short)timeGetTime(); 
+				_sID2 = (short)_iTemp1; 
+				_sID3 = (short)_iTemp2;
+
+				m_pClientList[iClientH]->m_sCharIDnum1 = _sID1;
+				m_pClientList[iClientH]->m_sCharIDnum2 = _sID2;
+				m_pClientList[iClientH]->m_sCharIDnum3 = _sID3;
 			}
 
-			_sID1 = (short)timeGetTime(); 
-			_sID2 = (short)_iTemp1; 
-			_sID3 = (short)_iTemp2;
+			m_pClientList[iClientH]->m_iRewardGold += iNotUsedItemPrice;
+			if (IsSame(m_pClientList[iClientH]->m_cLocation, "NONE")) m_pClientList[iClientH]->m_bIsNeutral = TRUE;
 
-			m_pClientList[iClientH]->m_sCharIDnum1 = _sID1;
-			m_pClientList[iClientH]->m_sCharIDnum2 = _sID2;
-			m_pClientList[iClientH]->m_sCharIDnum3 = _sID3;
-		}
-
-		m_pClientList[iClientH]->m_iRewardGold += iNotUsedItemPrice;
-		if (IsSame(m_pClientList[iClientH]->m_cLocation, "NONE")) m_pClientList[iClientH]->m_bIsNeutral = TRUE;
-
-		return TRUE;
+			return TRUE;
 }
 //=============================================================================
 int CGame::_iComposePlayerDataFileContents(int iClientH, char * pData)
@@ -4901,106 +4955,111 @@ int CGame::_iComposePlayerDataFileContents(int iClientH, char * pData)
 	int   i;
 	BYTE  NItems, NBankItems;
 	WORD  IndexForItem, Index;
+	static long charIndexEnd = 751;
 
 	if (m_pClientList[iClientH] == NULL) return 0;
+	//char id +4
+	PutOffsetValue(pData, 4, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum1);
+	PutOffsetValue(pData, 8, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum2);
+	PutOffsetValue(pData, 12, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum3);
+	PutOffsetValue(pData, 16, WORDSIZE, m_pClientList[iClientH]->m_iLevel);
+	PutOffsetValue(pData, 18, BYTESIZE, m_pClientList[iClientH]->GetBaseStr());
+	PutOffsetValue(pData, 19, BYTESIZE, m_pClientList[iClientH]->m_iVit);
+	PutOffsetValue(pData, 20, BYTESIZE, m_pClientList[iClientH]->GetBaseDex());
+	PutOffsetValue(pData, 21, BYTESIZE, m_pClientList[iClientH]->GetBaseInt());
+	PutOffsetValue(pData, 22, BYTESIZE, m_pClientList[iClientH]->GetBaseMag());
+	PutOffsetValue(pData, 23, BYTESIZE, m_pClientList[iClientH]->m_iRange);
+	PutOffsetValue(pData, 24, BYTESIZE, m_pClientList[iClientH]->m_iLuck);
+	PutOffsetValue(pData, 25, DWORDSIZE, m_pClientList[iClientH]->m_iExp);
+	PutOffsetValue(pData, 29, BYTESIZE, m_pClientList[iClientH]->m_cSex);
+	PutOffsetValue(pData, 30, BYTESIZE, m_pClientList[iClientH]->m_cSkin);
+	PutOffsetValue(pData, 31, BYTESIZE, m_pClientList[iClientH]->m_cHairStyle);
+	PutOffsetValue(pData, 32, BYTESIZE, m_pClientList[iClientH]->m_cHairColor);
+	PutOffsetValue(pData, 33, BYTESIZE, m_pClientList[iClientH]->m_cUnderwear);
 
-	GetLocalTime(&SysTime);
-	PutOffsetValue(pData, 0, WORDSIZE, SysTime.wYear);
-	PutOffsetValue(pData, 2, BYTESIZE, SysTime.wMonth);
-	PutOffsetValue(pData, 3, BYTESIZE, SysTime.wDay);
-	PutOffsetValue(pData, 4, BYTESIZE, SysTime.wHour);
-	PutOffsetValue(pData, 5, BYTESIZE, SysTime.wMinute);
-	PutOffsetValue(pData, 6, BYTESIZE, SysTime.wSecond);
-	ZeroMemory(pData+7, 10);
-	SafeCopy(pData+7, m_pClientList[iClientH]->m_cLocation);
-	ZeroMemory(pData+17, 10);
-	SafeCopy(pData+17, m_pClientList[iClientH]->m_cMapName);
-	PutOffsetValue(pData, 27, WORDSIZE, m_pClientList[iClientH]->m_sX);
-	PutOffsetValue(pData, 29, WORDSIZE, m_pClientList[iClientH]->m_sY);
-	ZeroMemory(pData+31, 10);
+	PutOffsetValue(pData, 34, DWORDSIZE, m_pClientList[iClientH]->m_iApprColor);
+	PutOffsetValue(pData, 38, DWORDSIZE, m_pClientList[iClientH]->m_sAppr1);
+	PutOffsetValue(pData, 42, DWORDSIZE, m_pClientList[iClientH]->m_sAppr2);
+	PutOffsetValue(pData, 46, DWORDSIZE, m_pClientList[iClientH]->m_sAppr3);
+	PutOffsetValue(pData, 50, DWORDSIZE, m_pClientList[iClientH]->m_sAppr4);
+	ZeroMemory(pData+54, 10);
+	SafeCopy(pData+54, m_pClientList[iClientH]->m_cLocation);
+	ZeroMemory(pData+64, 10);
+	SafeCopy(pData+64, m_pClientList[iClientH]->m_cMapName);
+	PutOffsetValue(pData, 74, WORDSIZE, m_pClientList[iClientH]->m_sX);
+	PutOffsetValue(pData, 76, WORDSIZE, m_pClientList[iClientH]->m_sY);
+	PutOffsetValue(pData, 78, DWORDSIZE, m_pClientList[iClientH]->m_iContribution);
+	PutOffsetValue(pData, 82, DWORDSIZE, m_pClientList[iClientH]->m_iSpecialAbilityTime);
+	ZeroMemory(pData+86, 10);
+	SafeCopy(pData+86, m_pClientList[iClientH]->m_cLockedMapName);
+	PutOffsetValue(pData, 96, DWORDSIZE, m_pClientList[iClientH]->m_iLockedMapTime);
+	ZeroMemory(pData+100, 20);
+	ZeroMemory(cTxt, sizeof(cTxt));
+	wsprintf(cTxt, "%d-%d-%d 00:00:00", m_pClientList[iClientH]->m_iPenaltyBlockYear, m_pClientList[iClientH]->m_iPenaltyBlockMonth, m_pClientList[iClientH]->m_iPenaltyBlockDay);
+	SafeCopy(pData+100, cTxt);
+	ZeroMemory(pData+120, 20);
 	if (m_pClientList[iClientH]->m_iGuildRank != -1)
 	{
-		SafeCopy(pData+31, m_pClientList[iClientH]->m_cGuildName);
-		PutOffsetValue(pData, 51, WORDSIZE, m_pClientList[iClientH]->m_iGuildGUID);
+		SafeCopy(pData+120, m_pClientList[iClientH]->m_cGuildName);
+		PutOffsetValue(pData, 140, WORDSIZE, m_pClientList[iClientH]->m_iGuildGUID);
 	}
 	else
 	{
-		SafeCopy(pData+31, "NONE");
-		PutOffsetValue(pData, 51, WORDSIZE, -1);
+		SafeCopy(pData+120, "NONE");
+		PutOffsetValue(pData, 140, WORDSIZE, -1);
 	}
-	PutOffsetValue(pData, 53, WORDSIZE, m_pClientList[iClientH]->m_iGuildRank);
-	if(m_pClientList[iClientH]->m_iHP <= 0) m_pClientList[iClientH]->m_iHP = m_pClientList[iClientH]->GetMaxHP();
-	PutOffsetValue(pData, 55, DWORDSIZE, m_pClientList[iClientH]->m_iHP);
-	if(m_pClientList[iClientH]->m_iMP <= 0) m_pClientList[iClientH]->m_iMP = 30;
-	PutOffsetValue(pData, 59, DWORDSIZE, m_pClientList[iClientH]->m_iMP);
-	if(m_pClientList[iClientH]->m_iSP < 0) m_pClientList[iClientH]->m_iSP = 20;
-	PutOffsetValue(pData, 63, DWORDSIZE, m_pClientList[iClientH]->m_iSP);
-	PutOffsetValue(pData, 67, WORDSIZE, m_pClientList[iClientH]->m_iLevel);
-	PutOffsetValue(pData, 69, DWORDSIZE, m_pClientList[iClientH]->m_reputation);
-	PutOffsetValue(pData, 73, BYTESIZE, m_pClientList[iClientH]->GetBaseStr());
-	PutOffsetValue(pData, 74, BYTESIZE, m_pClientList[iClientH]->m_iVit);
-	PutOffsetValue(pData, 75, BYTESIZE, m_pClientList[iClientH]->GetBaseDex());
-	PutOffsetValue(pData, 76, BYTESIZE, m_pClientList[iClientH]->GetBaseInt());
-	PutOffsetValue(pData, 77, BYTESIZE, m_pClientList[iClientH]->GetBaseMag());
-	PutOffsetValue(pData, 78, BYTESIZE, m_pClientList[iClientH]->m_iRange);
-	PutOffsetValue(pData, 79, BYTESIZE, m_pClientList[iClientH]->m_iLuck);
-	PutOffsetValue(pData, 80, DWORDSIZE, m_pClientList[iClientH]->m_iExp);
-	PutOffsetValue(pData, 84, DWORDSIZE, m_pClientList[iClientH]->m_iEnemyKillCount);
-	PutOffsetValue(pData, 88, DWORDSIZE, m_pClientList[iClientH]->m_iPKCount);
-	PutOffsetValue(pData, 92, DWORDSIZE, m_pClientList[iClientH]->m_iRewardGold);
-	PutOffsetValue(pData, 96, BYTESIZE, m_pClientList[iClientH]->m_iDownSkillIndex);
-	PutOffsetValue(pData, 97, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum1);
-	PutOffsetValue(pData, 101, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum2);
-	PutOffsetValue(pData, 105, DWORDSIZE, m_pClientList[iClientH]->m_sCharIDnum3);
-	PutOffsetValue(pData, 109, BYTESIZE, m_pClientList[iClientH]->m_cSex);
-	PutOffsetValue(pData, 110, BYTESIZE, m_pClientList[iClientH]->m_cSkin);
-	PutOffsetValue(pData, 111, BYTESIZE, m_pClientList[iClientH]->m_cHairStyle);
-	PutOffsetValue(pData, 112, BYTESIZE, m_pClientList[iClientH]->m_cHairColor);
-	PutOffsetValue(pData, 113, BYTESIZE, m_pClientList[iClientH]->m_cUnderwear);
-	PutOffsetValue(pData, 114, BYTESIZE, m_pClientList[iClientH]->m_iHungerStatus);
-	PutOffsetValue(pData, 115, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_ShutUp);
-	PutOffsetValue(pData, 119, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_Rating);
-	PutOffsetValue(pData, 123, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_ForceRecall);
-	PutOffsetValue(pData, 127, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_FirmStamina);
-	PutOffsetValue(pData, 131, BYTESIZE, m_pClientList[iClientH]->m_bIsBankModified);
-	ZeroMemory(pData+132, 20);
-	ZeroMemory(cTxt, sizeof(cTxt));
-	wsprintf(cTxt, "%d-%d-%d 00:00:00", m_pClientList[iClientH]->m_iPenaltyBlockYear, m_pClientList[iClientH]->m_iPenaltyBlockMonth, m_pClientList[iClientH]->m_iPenaltyBlockDay);
-	SafeCopy(pData+132, cTxt);
-	PutOffsetValue(pData, 152, WORDSIZE, m_pClientList[iClientH]->m_iQuest);
-	PutOffsetValue(pData, 154, WORDSIZE, m_pClientList[iClientH]->m_iQuestID);
-	PutOffsetValue(pData, 156, WORDSIZE, m_pClientList[iClientH]->m_iCurQuestCount);
-	PutOffsetValue(pData, 158, WORDSIZE, m_pClientList[iClientH]->m_iQuestRewardType);
-	PutOffsetValue(pData, 160, DWORDSIZE, m_pClientList[iClientH]->m_iQuestRewardAmount);
-	PutOffsetValue(pData, 164, DWORDSIZE, m_pClientList[iClientH]->m_iContribution);
+	PutOffsetValue(pData, 142, WORDSIZE, m_pClientList[iClientH]->m_iGuildRank);
+	PutOffsetValue(pData, 143, BYTESIZE, m_pClientList[iClientH]->m_iFightzoneNumber);
+	PutOffsetValue(pData, 144, DWORDSIZE, m_pClientList[iClientH]->m_iReserveTime);
+	PutOffsetValue(pData, 148, BYTESIZE, m_pClientList[iClientH]->m_iFightZoneTicketNumber);
+	PutOffsetValue(pData, 149, WORDSIZE, m_pClientList[iClientH]->m_iQuest);
+	PutOffsetValue(pData, 151, WORDSIZE, m_pClientList[iClientH]->m_iQuestID);
+	PutOffsetValue(pData, 155, WORDSIZE, m_pClientList[iClientH]->m_iCurQuestCount);
+	PutOffsetValue(pData, 157, WORDSIZE, m_pClientList[iClientH]->m_iQuestRewardType);
+	PutOffsetValue(pData, 159, DWORDSIZE, m_pClientList[iClientH]->m_iQuestRewardAmount);
+	PutOffsetValue(pData, 163, BYTESIZE, m_pClientList[iClientH]->m_bIsQuestCompleted);
+	PutOffsetValue(pData, 164, DWORDSIZE, m_pClientList[iClientH]->m_iSpecialEventID);
 	PutOffsetValue(pData, 168, DWORDSIZE, m_pClientList[iClientH]->m_iWarContribution);
-	PutOffsetValue(pData, 172, BYTESIZE, m_pClientList[iClientH]->m_bIsQuestCompleted);
-	PutOffsetValue(pData, 173, DWORDSIZE, m_pClientList[iClientH]->m_iSpecialEventID);
-	PutOffsetValue(pData, 177, WORDSIZE, m_pClientList[iClientH]->m_iSuperAttackLeft);
-	PutOffsetValue(pData, 179, BYTESIZE, m_pClientList[iClientH]->m_iFightzoneNumber);
-	PutOffsetValue(pData, 180, DWORDSIZE, m_pClientList[iClientH]->m_iReserveTime);
-	PutOffsetValue(pData, 184, BYTESIZE, m_pClientList[iClientH]->m_iFightZoneTicketNumber);
-	PutOffsetValue(pData, 185, DWORDSIZE, m_pClientList[iClientH]->m_iSpecialAbilityTime);
-	ZeroMemory(pData+189, 10);
-	SafeCopy(pData+189, m_pClientList[iClientH]->m_cLockedMapName);
-	PutOffsetValue(pData, 199, DWORDSIZE, m_pClientList[iClientH]->m_iLockedMapTime);
-	PutOffsetValue(pData, 203, BYTESIZE, m_pClientList[iClientH]->m_iCrusadeDuty);
-	PutOffsetValue(pData, 204, DWORDSIZE, m_pClientList[iClientH]->m_dwCrusadeGUID);
-	PutOffsetValue(pData, 208, DWORDSIZE, m_pClientList[iClientH]->m_iConstructionPoint);
-	PutOffsetValue(pData, 212, DWORDSIZE, m_pClientList[iClientH]->m_iDeadPenaltyTime);
-	PutOffsetValue(pData, 216, DWORDSIZE, m_pClientList[iClientH]->m_iPartyID);
-	PutOffsetValue(pData, 220, WORDSIZE, m_pClientList[iClientH]->m_iGizonItemUpgradeLeft);
-	PutOffsetValue(pData, 222, DWORDSIZE, m_pClientList[iClientH]->m_iSpecialAbilityTime);
-	PutOffsetValue(pData, 226, WORDSIZE, m_pClientList[iClientH]->m_sAppr1);
-	PutOffsetValue(pData, 230, WORDSIZE, m_pClientList[iClientH]->m_sAppr2);
-	PutOffsetValue(pData, 234, WORDSIZE, m_pClientList[iClientH]->m_sAppr3);
-	PutOffsetValue(pData, 238, WORDSIZE, m_pClientList[iClientH]->m_sAppr4);
-	PutOffsetValue(pData, 242, DWORDSIZE, m_pClientList[iClientH]->m_iApprColor);
-	PutOffsetValue(pData, 246, WORDSIZE, m_pClientList[iClientH]->m_elo);
-	for (i = 0; i < MAXMAGICTYPE; i++) PutOffsetValue(pData, 250+i, BYTESIZE, m_pClientList[iClientH]->m_cMagicMastery[i]+48);
-	for (i = 0; i < 24; i++){
-		PutOffsetValue(pData, 350+i, BYTESIZE, m_pClientList[iClientH]->m_cSkillMastery[i]);
-		PutOffsetValue(pData, 374+(i*4),DWORDSIZE, m_pClientList[iClientH]->m_iSkillSSN[i]);
+	PutOffsetValue(pData, 172, BYTESIZE, m_pClientList[iClientH]->m_iCrusadeDuty);
+	PutOffsetValue(pData, 173, DWORDSIZE, m_pClientList[iClientH]->m_dwCrusadeGUID);
+	PutOffsetValue(pData, 177, DWORDSIZE, m_pClientList[iClientH]->m_iConstructionPoint);
+	PutOffsetValue(pData, 181, DWORDSIZE, m_pClientList[iClientH]->m_reputation);
+	if(m_pClientList[iClientH]->m_iHP <= 0) m_pClientList[iClientH]->m_iHP = m_pClientList[iClientH]->GetMaxHP();
+	PutOffsetValue(pData, 185, DWORDSIZE, m_pClientList[iClientH]->m_iHP);
+	if(m_pClientList[iClientH]->m_iMP <= 0) m_pClientList[iClientH]->m_iMP = 30;
+	PutOffsetValue(pData, 189, DWORDSIZE, m_pClientList[iClientH]->m_iMP);
+	if(m_pClientList[iClientH]->m_iSP < 0) m_pClientList[iClientH]->m_iSP = 20;
+	PutOffsetValue(pData, 193, DWORDSIZE, m_pClientList[iClientH]->m_iSP);
+	PutOffsetValue(pData, 197, DWORDSIZE, m_pClientList[iClientH]->m_iEnemyKillCount);
+	PutOffsetValue(pData, 201, DWORDSIZE, m_pClientList[iClientH]->m_iPKCount);
+	PutOffsetValue(pData, 205, DWORDSIZE, m_pClientList[iClientH]->m_iRewardGold);
+	PutOffsetValue(pData, 209, BYTESIZE, m_pClientList[iClientH]->m_iDownSkillIndex);
+	PutOffsetValue(pData, 210, BYTESIZE, m_pClientList[iClientH]->m_iHungerStatus);
+	PutOffsetValue(pData, 211, WORDSIZE, m_pClientList[iClientH]->m_iSuperAttackLeft);
+	PutOffsetValue(pData, 213, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_ShutUp);
+	PutOffsetValue(pData, 217, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_Rating);
+	PutOffsetValue(pData, 221, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_ForceRecall);
+	PutOffsetValue(pData, 225, DWORDSIZE, m_pClientList[iClientH]->m_iTimeLeft_FirmStamina);
+	PutOffsetValue(pData, 229, DWORDSIZE, m_pClientList[iClientH]->m_iDeadPenaltyTime);
+	PutOffsetValue(pData, 233, DWORDSIZE, m_pClientList[iClientH]->m_iPartyID);
+	PutOffsetValue(pData, 237, WORDSIZE, m_pClientList[iClientH]->m_iGizonItemUpgradeLeft);
+	PutOffsetValue(pData, 239, WORDSIZE, m_pClientList[iClientH]->m_elo);
+	PutOffsetValue(pData, 241, BYTESIZE, m_pClientList[iClientH]->m_bIsBankModified);
+	//adminlevel +1
+	for (i = 0; i < MAXMAGICTYPE; i++) 
+		PutOffsetValue(pData, 243+i, BYTESIZE, m_pClientList[iClientH]->m_cMagicMastery[i]);//+48
+	if(strlen(m_pClientList[iClientH]->m_cProfile) == 0){
+		SafeCopy(pData+343, "__________");
+		//return (Index+12);
+	}
+	else{
+		SafeCopy(pData+343, m_pClientList[iClientH]->m_cProfile);
+		//return (Index+2+strlen(m_pClientList[iClientH]->m_cProfile)+1);
+	}  
+
+	for (i = 0; i < 10; i++){
+		PutOffsetValue(pData, 598+i, BYTESIZE, m_pClientList[iClientH]->m_cSkillMastery[i]);
+		PutOffsetValue(pData, 653+(i*4),DWORDSIZE, m_pClientList[iClientH]->m_iSkillSSN[i]);
 	}
 
 	NItems = 0;
@@ -5008,7 +5067,7 @@ int CGame::_iComposePlayerDataFileContents(int iClientH, char * pData)
 
 	for(i = 0; i < MAXITEMS; i++)
 		if(m_pClientList[iClientH]->m_pItemList[i] != NULL){
-			IndexForItem = (475 + (NItems*64));
+			IndexForItem = (charIndexEnd+1 + (NItems*64));
 			ZeroMemory(pData+IndexForItem, 20);
 			SafeCopy(pData+IndexForItem, m_pClientList[iClientH]->m_pItemList[i]->m_cName);
 			PutOffsetValue(pData, (IndexForItem+20), DWORDSIZE, m_pClientList[iClientH]->m_pItemList[i]->m_dwCount);
@@ -5028,39 +5087,31 @@ int CGame::_iComposePlayerDataFileContents(int iClientH, char * pData)
 			PutOffsetValue(pData, (IndexForItem+56), I64SIZE, m_pClientList[iClientH]->m_pItemList[i]->ItemUniqueID);
 			NItems++;
 		}
-	PutOffsetValue(pData, 474, BYTESIZE, NItems);
+		PutOffsetValue(pData, charIndexEnd, BYTESIZE, NItems);
 
-	Index = 475+(NItems*64);
-	if(m_pClientList[iClientH]->m_bIsBankModified)
-		for(i = 0; i < MAXBANKITEMS; i++)
-			if(m_pClientList[iClientH]->m_pItemInBankList[i] != NULL){
-				IndexForItem = (Index+1+(NBankItems*59));
-				ZeroMemory(pData+IndexForItem, 20);
-				SafeCopy(pData+IndexForItem, m_pClientList[iClientH]->m_pItemInBankList[i]->m_cName);
-				PutOffsetValue(pData, (IndexForItem+20), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_dwCount);
-				PutOffsetValue(pData, (IndexForItem+24), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectType);
-				PutOffsetValue(pData, (IndexForItem+26), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue1);
-				PutOffsetValue(pData, (IndexForItem+30), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue2);
-				PutOffsetValue(pData, (IndexForItem+34), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue3);
-				PutOffsetValue(pData, (IndexForItem+38), BYTESIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_cItemColor);
-				PutOffsetValue(pData, (IndexForItem+39), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue1);
-				PutOffsetValue(pData, (IndexForItem+41), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue2);
-				PutOffsetValue(pData, (IndexForItem+43), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue3);
-				PutOffsetValue(pData, (IndexForItem+45), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_wCurLifeSpan);
-				PutOffsetValue(pData, (IndexForItem+47), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_dwAttribute);
-				PutOffsetValue(pData, (IndexForItem+51), I64SIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->ItemUniqueID);
-				NBankItems++;
-			}
-	PutOffsetValue(pData, Index, BYTESIZE, NBankItems);
-	Index += (NBankItems*59)+1;
-	if(strlen(m_pClientList[iClientH]->m_cProfile) == 0){
-		SafeCopy(pData+Index, "__________");
-		return (Index+12);
-	}
-	else{
-		SafeCopy(pData+Index, m_pClientList[iClientH]->m_cProfile);
-		return (Index+2+strlen(m_pClientList[iClientH]->m_cProfile)+1);
-	}                                                         
+		Index = charIndexEnd+1+(NItems*64);
+		if(m_pClientList[iClientH]->m_bIsBankModified)
+			for(i = 0; i < MAXBANKITEMS; i++)
+				if(m_pClientList[iClientH]->m_pItemInBankList[i] != NULL){
+					IndexForItem = (Index+1+(NBankItems*59));
+					ZeroMemory(pData+IndexForItem, 20);
+					SafeCopy(pData+IndexForItem, m_pClientList[iClientH]->m_pItemInBankList[i]->m_cName);
+					PutOffsetValue(pData, (IndexForItem+20), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_dwCount);
+					PutOffsetValue(pData, (IndexForItem+24), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectType);
+					PutOffsetValue(pData, (IndexForItem+26), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue1);
+					PutOffsetValue(pData, (IndexForItem+30), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue2);
+					PutOffsetValue(pData, (IndexForItem+34), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sTouchEffectValue3);
+					PutOffsetValue(pData, (IndexForItem+38), BYTESIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_cItemColor);
+					PutOffsetValue(pData, (IndexForItem+39), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue1);
+					PutOffsetValue(pData, (IndexForItem+41), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue2);
+					PutOffsetValue(pData, (IndexForItem+43), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_sItemSpecEffectValue3);
+					PutOffsetValue(pData, (IndexForItem+45), WORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_wCurLifeSpan);
+					PutOffsetValue(pData, (IndexForItem+47), DWORDSIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->m_dwAttribute);
+					PutOffsetValue(pData, (IndexForItem+51), I64SIZE, m_pClientList[iClientH]->m_pItemInBankList[i]->ItemUniqueID);
+					NBankItems++;
+				}
+				PutOffsetValue(pData, Index, BYTESIZE, NBankItems);
+				return (Index);                                                      
 }
 //=============================================================================
 bool CGame::_bDecodeItemConfigFileContents(char * pData, DWORD dwMsgSize)

@@ -1467,7 +1467,7 @@ void CLoginServer::CreateNewCharacter(char *Data, WORD ClientID, MYSQL myConn)
 						ZeroMemory(QueryConsult, sizeof(QueryConsult));
 						sprintf(QueryConsult, "INSERT INTO `skill` ( `CharID` , `SkillID`, `SkillMastery` , `SkillSSN`)\
 											  VALUES (	'%lu' ,		'%u' ,		'%u'	 ,   '%lu'  );",
-											  CharID  ,  s	,  100  ,  0 );
+											  CharID  ,  s	,  10  ,  0 );
 						if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 						QueryResult = mysql_store_result(&myConn);
 						SAFEFREERESULT(QueryResult);
@@ -1476,7 +1476,7 @@ void CLoginServer::CreateNewCharacter(char *Data, WORD ClientID, MYSQL myConn)
 						ZeroMemory(QueryConsult, sizeof(QueryConsult));
 						sprintf(QueryConsult, "INSERT INTO `skill` ( `CharID` , `SkillID`, `SkillMastery` , `SkillSSN`)\
 											  VALUES (   '%lu'   ,   '%u'   ,      '%u'      ,   '%lu'  );",
-											  CharID  ,  s	,  100  ,  0 );
+											  CharID  ,  s	,  10  ,  0 );
 						if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 						QueryResult = mysql_store_result(&myConn);
 						SAFEFREERESULT(QueryResult);
@@ -1485,7 +1485,7 @@ void CLoginServer::CreateNewCharacter(char *Data, WORD ClientID, MYSQL myConn)
 						ZeroMemory(QueryConsult, sizeof(QueryConsult));
 						sprintf(QueryConsult, "INSERT INTO `skill` ( `CharID` , `SkillID`, `SkillMastery` , `SkillSSN`)\
 											  VALUES (   '%lu'   ,   '%u'   ,      '%u'      ,   '%lu'  );",
-											  CharID  ,  s	,  0  ,  0 );
+											  CharID  ,  s	,  10  ,  0 );
 						if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 						QueryResult = mysql_store_result(&myConn);
 						SAFEFREERESULT(QueryResult);
@@ -2177,7 +2177,7 @@ void CLoginServer::ProcessRequestPlayerData(char *Data, BYTE GSID, MYSQL myConn)
 		}*/
 		else
 		{
-			CharInfoSize = GetCharacterInfo(CharName, (SendBuff+17), myConn);
+			CharInfoSize = GetCharacterInfo(CharName, (SendBuff+16), myConn);
 			if(CharInfoSize == 0)
 			{
 				*wp = LOGRESMSGTYPE_REJECT;
@@ -2219,9 +2219,9 @@ WORD CLoginServer::GetCharacterInfo(char *CharName, char *Data, MYSQL myConn)
 	MYSQL_FIELD *field[100];
 	MYSQL_ROW myRow, SkillRow[MAXSKILLS], ItemRow[MAXITEMS], BankItemRow[MAXBANKITEMS];
 	st_mysql_res    *QueryResult = NULL;
-	static long charIndexEnd = 450;
+	static long charIndexEnd = 751;
 
-	SendValue(Data, 200, BYTESIZE, 3);//lu_pool
+	//SendValue(Data, 200, BYTESIZE, 3);//lu_pool
 	ZeroMemory(QueryConsult, sizeof(QueryConsult));
 	ZeroMemory(CharProfile, sizeof(CharProfile));
 	ZeroMemory(GoodCharName, sizeof(GoodCharName));
@@ -2243,80 +2243,81 @@ WORD CLoginServer::GetCharacterInfo(char *CharName, char *Data, MYSQL myConn)
 	for(BYTE f = 0; f < NFields; f++)
 	{
 		field[f] = mysql_fetch_field(QueryResult);
-		if(IsSame(field[f]->name, "MapLoc"))                SafeCopy(Data+1, myRow[f], strlen(myRow[f]));
-		else if(IsSame(field[f]->name, "account_name"))     SafeCopy(AccountName, myRow[f]);
-		else if(IsSame(field[f]->name, "LocX"))             SendValue(Data, 11, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "LocY"))             SendValue(Data, 13, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Gender"))           SendValue(Data, 15, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Skin"))             SendValue(Data, 16, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "HairStyle"))        SendValue(Data, 17, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "HairColor"))        SendValue(Data, 18, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Underwear"))        SendValue(Data, 19, BYTESIZE, atoi(myRow[f]));
+		//unused else if(IsSame(field[f]->name, "account_name"))     SafeCopy(AccountName, myRow[f]);
+	
+		 if(IsSame(field[f]->name, "CharID"))
+		{
+			CharID = atoi(myRow[f]);
+			SendValue(Data, 0, DWORDSIZE, CharID);
+		}
+		else if(IsSame(field[f]->name, "ID1"))              SendValue(Data, 4, DWORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "ID2"))              SendValue(Data, 8, DWORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "ID3"))              SendValue(Data, 12, DWORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Level"))            SendValue(Data, 16, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Strenght"))         SendValue(Data, 18, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Vitality"))         SendValue(Data, 19, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Dexterity"))        SendValue(Data, 20, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Intelligence"))     SendValue(Data, 21, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Magic"))            SendValue(Data, 22, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Agility"))         SendValue(Data, 23, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Luck"))             SendValue(Data, 24, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Exp"))              SendValue(Data, 25, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "Gender"))           SendValue(Data, 29, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Skin"))             SendValue(Data, 30, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "HairStyle"))        SendValue(Data, 31, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "HairColor"))        SendValue(Data, 32, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Underwear"))        SendValue(Data, 33, BYTESIZE, atoi(myRow[f]));
+		//m_pClientList[iClientH]->ApprColor = Retrive32DWordValue(cp, 34);
+	//m_pClientList[iClientH]->Appr1 = Retrive16WordValue(cp, 38);
+	//m_pClientList[iClientH]->Appr2 = Retrive16WordValue(cp, 42);
+	//m_pClientList[iClientH]->Appr3 = Retrive16WordValue(cp, 46);
+	//m_pClientList[iClientH]->Appr4 = Retrive16WordValue(cp, 50);
+		else if(IsSame(field[f]->name, "Nation"))           SafeCopy(Data+54, myRow[f], strlen(myRow[f]));
+		else if(IsSame(field[f]->name, "MapLoc"))                SafeCopy(Data+64, myRow[f], strlen(myRow[f]));
+		else if(IsSame(field[f]->name, "LocX"))             SendValue(Data, 74, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "LocY"))             SendValue(Data, 76, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Contribution"))     SendValue(Data, 78, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftSpecTime"))     SendValue(Data, 82, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LockMapName"))      SafeCopy(Data+86, myRow[f], strlen(myRow[f]));
+		else if(IsSame(field[f]->name, "LockMapTime"))      SendValue(Data, 96, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "BlockDate"))        SafeCopy(Data+100, myRow[f], strlen(myRow[f]));
 		else if(IsSame(field[f]->name, "GuildName")){
 			bp = (BYTE*)(Data);
-			SafeCopy(Data+20, myRow[f], strlen(myRow[f]));
+			SafeCopy(Data+120, myRow[f], strlen(myRow[f]));
 			if(!GuildExists(myRow[f], &GuildID, myConn)) *bp = 0;
 			else								 *bp = 1;				
 		}
-		else if(IsSame(field[f]->name, "GuildRank"))        SendValue(Data, 40, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "HP"))               SendValue(Data, 41, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "Level"))            SendValue(Data, 45, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Strenght"))         SendValue(Data, 47, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Vitality"))         SendValue(Data, 48, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Dexterity"))        SendValue(Data, 49, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Intelligence"))     SendValue(Data, 50, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Magic"))            SendValue(Data, 51, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Agility"))         SendValue(Data, 52, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Luck"))             SendValue(Data, 53, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Exp"))              SendValue(Data, 54, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "MagicMastery"))     SafeCopy(Data+58, myRow[f], strlen(myRow[f]));
-		else if(IsSame(field[f]->name, "Nation"))           SafeCopy(Data+182, myRow[f], strlen(myRow[f]));
-		else if(IsSame(field[f]->name, "MP"))               SendValue(Data, 192, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "SP"))               SendValue(Data, 196, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "EK"))               SendValue(Data, 201, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "PK"))               SendValue(Data, 205, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "RewardGold"))       SendValue(Data, 209, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "Hunger"))           SendValue(Data, 313, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "AdminLevel")){
-			AdminUserLevel = (BYTE)atoi(myRow[f]);
-			SendValue(Data, 314, BYTESIZE, AdminUserLevel);
-		}
-		else if(IsSame(field[f]->name, "LeftShutupTime"))   SendValue(Data, 315, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftPopTime"))      SendValue(Data, 319, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "Popularity"))       SendValue(Data, 323, DWORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "GuildID"))          SendValue(Data, 327, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "DownSkillID"))      SendValue(Data, 331, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "CharID"))
-		{
-			CharID = atoi(myRow[f]);
-			SendValue(Data, 332, DWORDSIZE, CharID);
-		}
-		else if(IsSame(field[f]->name, "ID1"))              SendValue(Data, 336, DWORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "ID2"))              SendValue(Data, 340, DWORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "ID3"))              SendValue(Data, 344, DWORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "BlockDate"))        SafeCopy(Data+348, myRow[f], strlen(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestNum"))         SendValue(Data, 368, WORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestCount"))       SendValue(Data, 370, WORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestRewType"))     SendValue(Data, 372, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestRewAmmount"))  SendValue(Data, 374, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "Contribution"))     SendValue(Data, 378, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestID"))          SendValue(Data, 382, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "QuestCompleted"))   SendValue(Data, 386, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftForceRecallTime")) SendValue(Data, 387, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftFirmStaminarTime")) SendValue(Data, 391, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "EventID"))          SendValue(Data, 395, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftSAC"))          SendValue(Data, 399, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "FightNum"))         SendValue(Data, 401, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "FightDate"))        SendValue(Data, 402, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "FightTicket"))      SendValue(Data, 406, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftSpecTime"))     SendValue(Data, 407, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "WarCon"))           SendValue(Data, 411, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "LockMapName"))      SafeCopy(Data+415, myRow[f], strlen(myRow[f]));
-		else if(IsSame(field[f]->name, "LockMapTime"))      SendValue(Data, 425, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "CruJob"))           SendValue(Data, 429, BYTESIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "CruConstructPoint"))SendValue(Data, 430, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "CruID"))            SendValue(Data, 434, DWORDSIZE, atoul(myRow[f]));
-		else if(IsSame(field[f]->name, "LeftDeadPenaltyTime"))SendValue(Data, 438, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "GuildID"))          SendValue(Data, 140, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "GuildRank"))        SendValue(Data, 142, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "FightNum"))         SendValue(Data, 143, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "FightDate"))        SendValue(Data, 144, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "FightTicket"))      SendValue(Data, 148, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestNum"))         SendValue(Data, 149, WORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestID"))          SendValue(Data, 151, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestCount"))       SendValue(Data, 155, WORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestRewType"))     SendValue(Data, 157, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestRewAmmount"))  SendValue(Data, 159, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "QuestCompleted"))   SendValue(Data, 163, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "EventID"))          SendValue(Data, 164, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "WarCon"))           SendValue(Data, 168, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "CruJob"))           SendValue(Data, 172, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "CruConstructPoint"))SendValue(Data, 173, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "CruID"))            SendValue(Data, 177, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "Popularity"))       SendValue(Data, 181, DWORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "HP"))               SendValue(Data, 185, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "MP"))               SendValue(Data, 189, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "SP"))               SendValue(Data, 193, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "EK"))               SendValue(Data, 197, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "PK"))               SendValue(Data, 201, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "RewardGold"))       SendValue(Data, 205, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "DownSkillID"))      SendValue(Data, 209, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "Hunger"))           SendValue(Data, 210, BYTESIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftSAC"))          SendValue(Data, 211, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftShutupTime"))   SendValue(Data, 213, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftPopTime"))      SendValue(Data, 217, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftForceRecallTime")) SendValue(Data, 221, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftFirmStaminarTime")) SendValue(Data, 225, DWORDSIZE, atoul(myRow[f]));
+		else if(IsSame(field[f]->name, "LeftDeadPenaltyTime"))SendValue(Data, 229, DWORDSIZE, atoul(myRow[f]));
 		else if(IsSame(field[f]->name, "PartyID")){
 			DWORD dwPartyID = 0;
 			DWORD dwTempPartyID = 0;
@@ -2327,11 +2328,28 @@ WORD CLoginServer::GetCharacterInfo(char *CharName, char *Data, MYSQL myConn)
 					dwPartyID = dwTempPartyID;
 					break;
 				}
-				SendValue(Data, 442, DWORDSIZE, dwPartyID);
+				SendValue(Data, 233, DWORDSIZE, dwPartyID);
 		}
-		else if(IsSame(field[f]->name, "GizonItemUpgradeLeft"))SendValue(Data, 446, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "elo"))				SendValue(Data, charIndexEnd - WORDSIZE, WORDSIZE, atoi(myRow[f]));
-		else if(IsSame(field[f]->name, "Profile"))          SafeCopy(CharProfile, myRow[f]);
+		else if(IsSame(field[f]->name, "GizonItemUpgradeLeft"))SendValue(Data, 237, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "elo"))				SendValue(Data,  239, WORDSIZE, atoi(myRow[f]));
+		else if(IsSame(field[f]->name, "AdminLevel")){
+			AdminUserLevel = (BYTE)atoi(myRow[f]);
+			SendValue(Data, 242, BYTESIZE, AdminUserLevel);
+		}
+		else if(IsSame(field[f]->name, "MagicMastery"))     SafeCopy(Data+243, myRow[f], strlen(myRow[f]));
+		else if(IsSame(field[f]->name, "Profile"))          SafeCopy(Data+343, myRow[f]);
+	
+	/*if(strlen(CharProfile) == 0){
+		SafeCopy(Data+InfoSize, "__________");
+		SAFEFREERESULT(QueryResult);
+		return (WORD)(InfoSize + 10);
+	}
+	else{
+		SafeCopy(Data+InfoSize, CharProfile, strlen(CharProfile));
+		SAFEFREERESULT(QueryResult);
+		return (WORD)(InfoSize + strlen(CharProfile)+2);
+	}*/
+	
 	}
 	if(CharID == NULL){
 		ZeroMemory(log, sizeof(log));
@@ -2373,9 +2391,9 @@ WORD CLoginServer::GetCharacterInfo(char *CharName, char *Data, MYSQL myConn)
 	}
 	for(int b = 0; b < NRows; b++){
 		SkillRow[b] = mysql_fetch_row(QueryResult);
-		bp = (BYTE*)(Data+158+ atoi(SkillRow[b][FISkillID]));
+		bp = (BYTE*)(Data+598+ atoi(SkillRow[b][FISkillID]));
 		*bp = (BYTE)atoi(SkillRow[b][FISkillMastery]);
-		dwp = (DWORD*)(Data+213+ (atoi(SkillRow[b][FISkillID])*4));
+		dwp = (DWORD*)(Data+653+ (atoi(SkillRow[b][FISkillID])*4));
 		*dwp = atoi(SkillRow[b][FISkillSSN]);
 	}
 	ZeroMemory(QueryConsult, sizeof(QueryConsult));
@@ -2485,16 +2503,8 @@ WORD CLoginServer::GetCharacterInfo(char *CharName, char *Data, MYSQL myConn)
 		}
 	}
 	InfoSize = (WORD)(BankItemIndex +(NBankItems*59)+2);
-	if(strlen(CharProfile) == 0){
-		SafeCopy(Data+InfoSize, "__________");
-		SAFEFREERESULT(QueryResult);
-		return (WORD)(InfoSize + 10);
-	}
-	else{
-		SafeCopy(Data+InfoSize, CharProfile, strlen(CharProfile));
-		SAFEFREERESULT(QueryResult);
-		return (WORD)(InfoSize + strlen(CharProfile)+2);
-	}
+
+	return (WORD)(InfoSize);
 }
 //=============================================================================
 void CLoginServer::CheckActiveAccountsNumber(DWORD time)
@@ -2678,7 +2688,7 @@ BOOL CLoginServer::IsGMAccount(char *AccountName, MYSQL myConn)
 //=============================================================================
 void CLoginServer::SaveCharacter(char* Data, MYSQL myConn)
 {
-	char   *cp, AccName[15], AccPwd[15], CharName[15], Location[15], MapName[15], BlockDate[25], SaveDate[25],
+	char   *cp, AccName[15], AccPwd[15], CharName[15], Location[15], MapName[15], BlockDate[25],
 		GuildName[25], GoodGuildName[50], LockedMapName[15], MagicMastery[105], Profile[260], GoodProfile[520], QueryConsult[10000];
 	sBYTE  DownSkillIndex;
 	BYTE   STR, DEX, VIT, INT, MAG, AGI, Luck, Sex, Skin, HairStyle,
@@ -2699,6 +2709,8 @@ void CLoginServer::SaveCharacter(char* Data, MYSQL myConn)
 	st_mysql_res    *pQueryResult = NULL;
 	cItem	*ItemInfo;
 	std::string itemQuery;
+	static long charIndexEnd = 751;
+
 
 	ZeroMemory(CharName, sizeof(CharName));
 	SafeCopy(CharName, Data, 10);
@@ -2709,108 +2721,103 @@ void CLoginServer::SaveCharacter(char* Data, MYSQL myConn)
 	Flag = (BOOL)Retrive8ByteValue(Data, 30);
 	CharID = GetCharID(CharName, AccName, myConn);
 	cp = (Data+31);
-	SaveTime.wYear   = Retrive16WordValue(cp, 0);
-	SaveTime.wMonth  = Retrive8ByteValue(cp, 2);
-	SaveTime.wDay    = Retrive8ByteValue(cp, 3);
-	SaveTime.wHour   = Retrive8ByteValue(cp, 4);
-	SaveTime.wMinute = Retrive8ByteValue(cp, 5);
-	SaveTime.wSecond = Retrive8ByteValue(cp, 6);
-	ZeroMemory(SaveDate, sizeof(SaveDate));
-	sprintf(SaveDate, "%d-%d-%d %d:%d:%d", SaveTime.wYear, SaveTime.wMonth, SaveTime.wDay, SaveTime.wHour, SaveTime.wMinute, SaveTime.wSecond);
+	//charid +4
+	CharID1 = (sWORD)Retrive32DWordValue(cp, 4);
+	CharID2 = (sWORD)Retrive32DWordValue(cp, 8);
+	CharID3 = (sWORD)Retrive32DWordValue(cp, 12);
+	Level = Retrive16WordValue(cp, 16);
+	STR = Retrive8ByteValue(cp, 18);
+	VIT = Retrive8ByteValue(cp, 19);
+	DEX = Retrive8ByteValue(cp, 20);
+	INT = Retrive8ByteValue(cp, 21);
+	MAG = Retrive8ByteValue(cp, 22);
+	AGI = Retrive8ByteValue(cp, 23);
+	Luck = Retrive8ByteValue(cp, 24);
+	Exp = Retrive32DWordValue(cp, 25);
+	Sex = Retrive8ByteValue(cp, 29);
+	Skin = Retrive8ByteValue(cp, 30);
+	HairStyle = Retrive8ByteValue(cp, 31);
+	HairColor = Retrive8ByteValue(cp, 32);
+	Underwear = Retrive8ByteValue(cp, 33);
+	ApprColor = Retrive32DWordValue(cp, 34);
+	Appr1 = Retrive32DWordValue(cp, 38);
+	Appr2 = Retrive32DWordValue(cp, 42);
+	Appr3 = Retrive32DWordValue(cp, 46);
+	Appr4 = Retrive32DWordValue(cp, 50);
 	ZeroMemory(Location, sizeof(Location));
-	SafeCopy(Location, cp+7, 10);
+	SafeCopy(Location, cp+54, 10);
 	ZeroMemory(MapName, sizeof(MapName));
-	SafeCopy(MapName, cp+17, 10);
-	MapLocX = (sWORD)Retrive16WordValue(cp, 27);
-	MapLocY = (sWORD)Retrive16WordValue(cp, 29);
-	ZeroMemory(GuildName, sizeof(GuildName));
-	SafeCopy(GuildName, cp+31, 20);
-	GuildID = Retrive16WordValue(cp, 51);
-	GuildRank = (sWORD)Retrive16WordValue(cp, 53);
-	HP = Retrive32DWordValue(cp, 55);
-	MP = Retrive32DWordValue(cp, 59);
-	SP = Retrive32DWordValue(cp, 63);
-	Level = Retrive16WordValue(cp, 67);
-	Rating = (sDWORD)Retrive32DWordValue(cp, 69);
-	STR = Retrive8ByteValue(cp, 73);
-	VIT = Retrive8ByteValue(cp, 74);
-	DEX = Retrive8ByteValue(cp, 75);
-	INT = Retrive8ByteValue(cp, 76);
-	MAG = Retrive8ByteValue(cp, 77);
-	AGI = Retrive8ByteValue(cp, 78);
-	Luck = Retrive8ByteValue(cp, 79);
-	Exp = Retrive32DWordValue(cp, 80);
-	EK = Retrive32DWordValue(cp, 84);
-	PK = Retrive32DWordValue(cp, 88);
-	RewardGold = Retrive32DWordValue(cp, 92);
-	DownSkillIndex = (sBYTE)Retrive8ByteValue(cp, 96);
-	CharID1 = (sWORD)Retrive32DWordValue(cp, 97);
-	CharID2 = (sWORD)Retrive32DWordValue(cp, 101);
-	CharID3 = (sWORD)Retrive32DWordValue(cp, 105);
-	Sex = Retrive8ByteValue(cp, 109);
-	Skin = Retrive8ByteValue(cp, 110);
-	HairStyle = Retrive8ByteValue(cp, 111);
-	HairColor = Retrive8ByteValue(cp, 112);
-	Underwear = Retrive8ByteValue(cp, 113);
-	HungerStatus = Retrive8ByteValue(cp, 114);
-	TimeLeftShutUp = Retrive32DWordValue(cp, 115);
-	TimeLeftRating = Retrive32DWordValue(cp, 119);
-	TimeLeftForceRecall = Retrive32DWordValue(cp, 123);
-	TimeLeftFirmStaminar = Retrive32DWordValue(cp, 127);
-	bIsBankModified = (BOOL)Retrive8ByteValue(cp, 131);
-	ZeroMemory(BlockDate, sizeof(BlockDate));
-	SafeCopy(BlockDate, cp+132, 20);
-	Quest = Retrive16WordValue(cp, 152);
-	QuestID = Retrive16WordValue(cp, 154);
-	CurQuestCount = Retrive16WordValue(cp, 156);
-	QuestRewardType = (sWORD)Retrive16WordValue(cp, 158);
-	QuestRewardAmmount = Retrive32DWordValue(cp, 160);
-	Contribution = Retrive32DWordValue(cp, 164);
-	WarContribution = Retrive32DWordValue(cp, 168);
-	IsQuestCompleted = (BOOL)Retrive8ByteValue(cp, 172);
-	SpecialEventID = Retrive32DWordValue(cp, 173);
-	SuperAttackLeft = Retrive16WordValue(cp, 177);
-	FightzoneNumber = Retrive8ByteValue(cp, 179);
-	ReserveTime = Retrive32DWordValue(cp, 180);
-	FightzoneTicketNumber = Retrive8ByteValue(cp, 184);
-	SpecialAbilityTime = Retrive32DWordValue(cp, 185);
+	SafeCopy(MapName, cp+64, 10);
+	MapLocX = (sWORD)Retrive16WordValue(cp, 74);
+	MapLocY = (sWORD)Retrive16WordValue(cp, 76);
+	Contribution = Retrive32DWordValue(cp, 78);
+	SpecialAbilityTime = Retrive32DWordValue(cp, 82);
 	ZeroMemory(LockedMapName, sizeof(LockedMapName));
-	SafeCopy(LockedMapName, cp+189, 10);
-	LockedMapTime = Retrive32DWordValue(cp, 199);
-	CrusadeDuty = Retrive8ByteValue(cp, 203);
-	CrusadeGUID = Retrive32DWordValue(cp, 204);
-	ConstructionPoint = Retrive32DWordValue(cp, 208);
-	DeadPenaltyTime = Retrive32DWordValue(cp, 212);
-	PartyID = Retrive32DWordValue(cp, 216);
-	//PartyID = 0;
-	Gizon = Retrive16WordValue(cp, 220);
-	SpecialAbilityTime = Retrive32DWordValue(cp, 222);
-	Appr1 = Retrive16WordValue(cp, 226);
-	Appr2 = Retrive16WordValue(cp, 230);
-	Appr3 = Retrive16WordValue(cp, 234);
-	Appr4 = Retrive16WordValue(cp, 238);
-	ApprColor = Retrive32DWordValue(cp, 242);
-	elo = Retrive16WordValue(cp, 246);
+	SafeCopy(LockedMapName, cp+86, 10);
+	LockedMapTime = Retrive32DWordValue(cp, 96);
+	ZeroMemory(BlockDate, sizeof(BlockDate));
+	SafeCopy(BlockDate, cp+100, 20);
+	ZeroMemory(GuildName, sizeof(GuildName));
+	SafeCopy(GuildName, cp+120, 20);
+	GuildID = Retrive16WordValue(cp, 140);
+	GuildRank = (sWORD)Retrive16WordValue(cp, 142);
+	FightzoneNumber = Retrive8ByteValue(cp, 143);
+	ReserveTime = Retrive32DWordValue(cp, 144);
+	FightzoneTicketNumber = Retrive8ByteValue(cp, 148);
+	Quest = Retrive16WordValue(cp, 149);
+	QuestID = Retrive16WordValue(cp, 151);
+	CurQuestCount = Retrive16WordValue(cp, 155);
+	QuestRewardType = (sWORD)Retrive16WordValue(cp, 157);
+	QuestRewardAmmount = Retrive32DWordValue(cp, 159);
+	IsQuestCompleted = (BOOL)Retrive8ByteValue(cp, 163);
+	SpecialEventID = Retrive32DWordValue(cp, 164);
+	WarContribution = Retrive32DWordValue(cp, 168);
+	CrusadeDuty = Retrive8ByteValue(cp, 172);
+	CrusadeGUID = Retrive32DWordValue(cp, 173);
+	ConstructionPoint = Retrive32DWordValue(cp, 177);
+	Rating = (sDWORD)Retrive32DWordValue(cp, 181);
+	HP = Retrive32DWordValue(cp, 185);
+	MP = Retrive32DWordValue(cp, 189);
+	SP = Retrive32DWordValue(cp, 193);
+	EK = Retrive32DWordValue(cp, 197);
+	PK = Retrive32DWordValue(cp, 201);
+	RewardGold = Retrive32DWordValue(cp, 205);
+	DownSkillIndex = (sBYTE)Retrive8ByteValue(cp, 209);
+	HungerStatus = Retrive8ByteValue(cp, 210);
+	SuperAttackLeft = Retrive16WordValue(cp, 211);
+	TimeLeftShutUp = Retrive32DWordValue(cp, 213);
+	TimeLeftRating = Retrive32DWordValue(cp, 217);
+	TimeLeftForceRecall = Retrive32DWordValue(cp, 221);
+	TimeLeftFirmStaminar = Retrive32DWordValue(cp, 225);
+	DeadPenaltyTime = Retrive32DWordValue(cp, 229);
+	PartyID = Retrive32DWordValue(cp, 233);
+	Gizon = Retrive16WordValue(cp, 237);
+	elo = Retrive16WordValue(cp, 239);
+	bIsBankModified = (BOOL)Retrive8ByteValue(cp, 241);
+	//adminlevel +1
 	ZeroMemory(MagicMastery, sizeof(MagicMastery));
-	SafeCopy(MagicMastery, cp+250, 100);
-	for (w = 0; w < 24; w++)
+	SafeCopy(MagicMastery, cp+243, 100);
+	ZeroMemory(Profile, sizeof(Profile));
+	SafeCopy(Profile, (cp+343), 255);
+
+	for (w = 0; w < 10; w++)
 	{
-		SkillMastery = Retrive8ByteValue(cp, 350+w);
-		SkillSSN = Retrive32DWordValue(cp, 374+(w*4));
+		SkillMastery = Retrive8ByteValue(cp, 598+w);
+		SkillSSN = Retrive32DWordValue(cp, 653+(w*4));
 		ZeroMemory(QueryConsult, sizeof(QueryConsult));
 		sprintf(QueryConsult, "UPDATE `skill` SET `SkillMastery` = '%d',`SkillSSN` = '%lu' WHERE `CharID` = '%lu' AND `SkillID` = '%d' LIMIT 1;", SkillMastery, SkillSSN, CharID, w);
 		if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 		pQueryResult = mysql_store_result(&myConn);
 		SAFEFREERESULT(pQueryResult);
 	}
-	NItems = Retrive8ByteValue(cp, 474);
+	NItems = Retrive8ByteValue(cp, charIndexEnd);
 	CurItemID = (GetLastInsertedItemID(myConn)+1);
 	DeleteAllItemsFromChar(CharID, myConn, bIsBankModified);
 	ItemInfo = new cItem;
 	if(NItems > 0){
 		itemQuery.append("INSERT INTO `item` ( `CharID` , `ItemName`, `Count` , `ItemType`, `ID1`, `ID2`, `ID3`, `Color`, `Effect1`, `Effect2`, `Effect3`, `LifeSpan`, `Attribute`, `ItemEquip`, `ItemPosX`, `ItemPosY`, `ItemID`) VALUES");
 		for(w = 0; w < NItems; w++){
-			IndexForItem = (WORD)(475 + (w*64));
+			IndexForItem = (WORD)(charIndexEnd+1 + (w*64));
 			ZeroMemory(ItemInfo->ItemName, sizeof(ItemInfo->ItemName));
 			SafeCopy(ItemInfo->ItemName, cp+IndexForItem, 20);
 			if(strlen(ItemInfo->ItemName) == 0) continue;
@@ -2846,7 +2853,7 @@ void CLoginServer::SaveCharacter(char* Data, MYSQL myConn)
 		pQueryResult = mysql_store_result(&myConn);
 		SAFEFREERESULT(pQueryResult);
 	}
-	Index = (WORD)(475+(NItems*64));
+	Index = (WORD)(charIndexEnd+1+(NItems*64));
 	NBankItems = Retrive8ByteValue(cp, Index);
 	if(NBankItems > 0){
 		itemQuery.clear();
@@ -2888,17 +2895,14 @@ void CLoginServer::SaveCharacter(char* Data, MYSQL myConn)
 	}
 
 	SAFEDELETE(ItemInfo);
-	Index += ((NBankItems*59)+1);
-	ZeroMemory(Profile, sizeof(Profile));
-	SafeCopy(Profile, (cp+Index), strlen(cp+Index));
 	ZeroMemory(QueryConsult, sizeof(QueryConsult));
 	ZeroMemory(GoodGuildName, sizeof(GoodGuildName));
 	MakeGoodName(GoodGuildName, GuildName);
 	ZeroMemory(GoodProfile, sizeof(GoodProfile));
 	MakeGoodName(GoodProfile, Profile);
-	sprintf(QueryConsult, "UPDATE `char_database` SET `LastSaveDate` = '%s',`ID1` = '%d',`ID2` = '%d',`ID3` = '%d',`Level` = '%d',`Strenght` = '%d',`Vitality` = '%d',`Dexterity` = '%d',`Intelligence` = '%d',`Magic` = '%d',`Agility` = '%d',`Luck` = '%d',`Exp` = '%lu',`Gender` = '%d',`Skin` = '%d',`HairStyle` = '%d',`HairColor` = '%d',`Underwear` = '%d',`ApprColor` = '%lu',`Appr1` = '%lu',`Appr2` = '%lu',`Appr3` = '%lu',`Appr4` = '%lu',`Nation` = '%s',`MapLoc` = '%s',`LocX` = '%d',`LocY` = '%d',`Profile` = '%s',`Contribution` = '%lu',`LeftSpecTime` = '%lu',`LockMapName` = '%s',`LockMapTime` = '%lu',`BlockDate` = '%s',`GuildName` = '%s',`GuildID` = '%d',`GuildRank` = '%d',`FightNum` = '%d',`FightDate` = '%lu',`FightTicket` = '%d',`QuestNum` = '%u',`QuestID` = '%u',`QuestCount` = '%u',`QuestRewType` = '%d',`QuestRewAmmount` = '%lu',\
+	sprintf(QueryConsult, "UPDATE `char_database` SET `ID1` = '%d',`ID2` = '%d',`ID3` = '%d',`Level` = '%d',`Strenght` = '%d',`Vitality` = '%d',`Dexterity` = '%d',`Intelligence` = '%d',`Magic` = '%d',`Agility` = '%d',`Luck` = '%d',`Exp` = '%lu',`Gender` = '%d',`Skin` = '%d',`HairStyle` = '%d',`HairColor` = '%d',`Underwear` = '%d',`ApprColor` = '%lu',`Appr1` = '%lu',`Appr2` = '%lu',`Appr3` = '%lu',`Appr4` = '%lu',`Nation` = '%s',`MapLoc` = '%s',`LocX` = '%d',`LocY` = '%d',`Profile` = '%s',`Contribution` = '%lu',`LeftSpecTime` = '%lu',`LockMapName` = '%s',`LockMapTime` = '%lu',`BlockDate` = '%s',`GuildName` = '%s',`GuildID` = '%d',`GuildRank` = '%d',`FightNum` = '%d',`FightDate` = '%lu',`FightTicket` = '%d',`QuestNum` = '%u',`QuestID` = '%u',`QuestCount` = '%u',`QuestRewType` = '%d',`QuestRewAmmount` = '%lu',\
 						  `QuestCompleted` = '%d',`EventID` = '%lu',`WarCon` = '%lu',`CruJob` = '%d',`CruID` = '%lu',`CruConstructPoint` = '%lu', `Popularity` = '%li' ,`HP` = '%lu',`MP` = '%lu',`SP` = '%lu',`EK` = '%lu',`PK` = '%lu',`RewardGold` = '%lu',`DownSkillID` = '%d',`Hunger` = '%d',`LeftSAC` = '%u',`LeftShutupTime` = '%lu',`LeftPopTime` = '%lu',`LeftForceRecallTime` = '%lu',`LeftFirmStaminarTime` = '%lu',`LeftDeadPenaltyTime` = '%lu',`MagicMastery` = '%s',`PartyID` = '%lu',`GizonItemUpgradeLeft` = '%lu',`elo` = '%lu' WHERE `CharID` = '%lu' LIMIT 1;",
-						  SaveDate, CharID1, CharID2, CharID3, Level, STR, VIT, DEX, INT, MAG, AGI, Luck, Exp, Sex, Skin, HairStyle, HairColor, Underwear, ApprColor, Appr1, Appr2, Appr3, Appr4, Location, MapName, MapLocX, MapLocY, GoodProfile, Contribution, SpecialAbilityTime, LockedMapName, LockedMapTime, BlockDate, GoodGuildName, GuildID, GuildRank, FightzoneNumber, ReserveTime, FightzoneTicketNumber, Quest, QuestID, CurQuestCount, QuestRewardType, QuestRewardAmmount, IsQuestCompleted, SpecialEventID, WarContribution, CrusadeDuty, CrusadeGUID, ConstructionPoint, Rating, HP, MP, SP, EK, PK, RewardGold, DownSkillIndex, HungerStatus, SuperAttackLeft, TimeLeftShutUp, TimeLeftRating, TimeLeftForceRecall, TimeLeftFirmStaminar, DeadPenaltyTime, MagicMastery, PartyID, Gizon, elo, CharID);
+						  CharID1, CharID2, CharID3, Level, STR, VIT, DEX, INT, MAG, AGI, Luck, Exp, Sex, Skin, HairStyle, HairColor, Underwear, ApprColor, Appr1, Appr2, Appr3, Appr4, Location, MapName, MapLocX, MapLocY, GoodProfile, Contribution, SpecialAbilityTime, LockedMapName, LockedMapTime, BlockDate, GoodGuildName, GuildID, GuildRank, FightzoneNumber, ReserveTime, FightzoneTicketNumber, Quest, QuestID, CurQuestCount, QuestRewardType, QuestRewardAmmount, IsQuestCompleted, SpecialEventID, WarContribution, CrusadeDuty, CrusadeGUID, ConstructionPoint, Rating, HP, MP, SP, EK, PK, RewardGold, DownSkillIndex, HungerStatus, SuperAttackLeft, TimeLeftShutUp, TimeLeftRating, TimeLeftForceRecall, TimeLeftFirmStaminar, DeadPenaltyTime, MagicMastery, PartyID, Gizon, elo, CharID);
 	//PutLogFileList(QueryConsult, "Logs/SaveCharQuery.txt");
 	if(ProcessQuery(&myConn, QueryConsult) == -1) return;
 	pQueryResult = mysql_store_result(&myConn);
